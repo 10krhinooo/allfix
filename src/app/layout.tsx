@@ -4,7 +4,7 @@ import { Archivo, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google"
 import { Header } from "@/components/Header"
 import { Footer } from "@/components/Footer"
 import { JsonLd } from "@/components/ui"
-import { SHOP } from "@/lib/format"
+import { SHOP, SITE } from "@/lib/format"
 import "./globals.css"
 
 const archivo = Archivo({ subsets: ["latin"], variable: "--font-archivo", display: "swap" })
@@ -22,7 +22,7 @@ const plexMono = IBM_Plex_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://allfix.co.ke"),
+  metadataBase: new URL(SITE),
   title: {
     default: "AllFix By Kipekee: curtain rails, rods and the parts that fit them",
     template: "%s | AllFix By Kipekee",
@@ -48,7 +48,7 @@ function businessSchema() {
     "@type": "HardwareStore",
     name: SHOP.name,
     telephone: SHOP.phoneIntl,
-    url: "https://allfix.co.ke",
+    url: SITE,
     address: {
       "@type": "PostalAddress",
       streetAddress: SHOP.street,
