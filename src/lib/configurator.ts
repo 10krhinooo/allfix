@@ -1,0 +1,247 @@
+/**
+ * The rail configurator's bill of materials.
+ *
+ * This is the storefront's hardest browse problem turned into its strongest
+ * sales tool: a customer states a window and gets the exact parts a rail takes,
+ * in the right quantities, guaranteed to fit because they all come off the one
+ * system. It answers the compatibility question the SKUs encode.
+ *
+ * The quantity maths lives here as pure functions, and runs on the client for a
+ * live feel. Price does not: the plan puts the priced bill of materials on the
+ * backend, resolved against the caller's account tier, and until that lands the
+ * configurator produces the list and hands it to WhatsApp for a quote, rather
+ * than inventing a total. That is the same reason a null price never renders as
+ * "KES 0" elsewhere: a figure we cannot stand behind is worse than none.
+ *
+ * `configuratorSystems()` reads the catalogue on the server and ships a compact
+ * projection, so the 200 KB of specs never reaches the browser. Everything below
+ * it is client-safe and depends only on that projection.
+ */
+import { systems, partsForSystem } from "@/lib/catalogue"
+import { SHOP } from "@/lib/format"
+
+/** A physical role in a built rail, in assembly order. */
+export type Role =
+  | "track"
+  | "bracket"
+  | "runner"
+  | "master-carrier"
+  | "stopper"
+  | "joint"
+  | "drive-unit"
+  | "roller-unit"
+  | "motor"
+  | "belt"
+
+/** A representative part for a role, matched from the system's catalogue. */
+export interface BuildPart {
+  sku: string
+  name: string
+}
+
+export interface BuildSystem {
+  slug: string
+  name: string
+  shortName: string
+  motorised: boolean
+  /** Stock length a track is sold in, in metres. Longer runs need a joint. */
+  stockLengthM: number
+  parts: Partial<Record<Role, BuildPart>>
+}
+
+export type Mount = "ceiling" | "wall"
+
+export interface BomInput {
+  /** Window width in metres, the finished track run. */
+  widthM: number
+  /** Curtain panels: one for a single draw, two for a centre-opening pair. */
+  panels: number
+  mount: Mount
+}
+
+export interface BomLine {
+  role: Role
+  /** The matched part name, or the generic role when the system has no match. */
+  label: string
+  qty: number
+  /** "" for a counted part, "m" for track and belt sold by the metre. */
+  unit: string
+  note: string
+  sku?: string
+  matched: boolean
+}
+
+export interface Bom {
+  lines: BomLine[]
+  /** Off-catalogue lines a survey confirms, so a caller can see they are coming. */
+  onSurvey: boolean
+}
+
+// A rail carries one bracket per metre and never fewer than two, and glides
+// roughly eight runners to the metre for an ordinary pinch pleat. These are the
+// counter's own rules of thumb, stated in the notes so a customer can see the
+// working rather than trust a black box.
+const BRACKETS_PER_M = 1
+const MIN_BRACKETS = 2
+const RUNNERS_PER_M = 8
+const STOPPERS = 2
+
+const ROLE_LABEL: Record<Role, string> = {
+  track: "Track",
+  bracket: "Bracket",
+  runner: "Runner",
+  "master-carrier": "Master carrier",
+  stopper: "Stopper",
+  joint: "Joint",
+  "drive-unit": "Drive unit",
+  "roller-unit": "Idle unit",
+  motor: "Motor",
+  belt: "Drive belt",
+}
+
+/** The systems the configurator applies to, projected small for the client. */
+export function configuratorSystems(): BuildSystem[] {
+  return systems
+    // A roman blind is raised on a cord, not drawn on runners, so a width and
+    // panel count does not describe it. It stays out of the configurator and
+    // keeps its own system page.
+    .filter((system) => system.slug !== "roman-blind")
+    .map((system) => {
+      const parts = partsForSystem(system.slug)
+      const pick = (component: string): BuildPart | undefined => {
+        const part = parts.find((candidate) => candidate.component === component)
+        return part ? { sku: part.sku ?? part.slug, name: part.name } : undefined
+      }
+
+      return {
+        slug: system.slug,
+        name: system.name,
+        shortName: system.shortName,
+        motorised: parts.some((part) =>
+          ["motor", "drive-unit", "belt"].includes(part.component),
+        ),
+        stockLengthM: 6,
+        parts: {
+          track: pick("track"),
+          bracket: pick("bracket"),
+          runner: pick("runner"),
+          "master-carrier": pick("master-carrier"),
+          stopper: pick("stopper"),
+          joint: pick("joint") ?? pick("corner-joint"),
+          "drive-unit": pick("drive-unit"),
+          "roller-unit": pick("roller-unit"),
+          motor: pick("motor"),
+          belt: pick("belt"),
+        },
+      }
+    })
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value))
+}
+
+function round1(value: number) {
+  return Math.round(value * 10) / 10
+}
+
+export const WIDTH_MIN = 0.3
+export const WIDTH_MAX = 12
+export const PANELS_MAX = 4
+
+export function defaultInput(): BomInput {
+  return { widthM: 2, panels: 2, mount: "ceiling" }
+}
+
+/**
+ * The bill of materials for a window on a system. Quantities only: what to fit,
+ * and how many, with the counter's rule of thumb shown in each note. A line
+ * carries the system's real part when there is one and a generic role when
+ * there is not, so the list is never empty for a rail we do not have every part
+ * of on the sheet yet.
+ */
+export function billOfMaterials(system: BuildSystem, input: BomInput): Bom {
+  const width = clamp(input.widthM, WIDTH_MIN, WIDTH_MAX)
+  const panels = clamp(Math.round(input.panels), 1, PANELS_MAX)
+  const centreOpen = panels >= 2
+  const lines: BomLine[] = []
+
+  const line = (role: Role, qty: number, unit: string, note: string) => {
+    const part = system.parts[role]
+    lines.push({
+      role,
+      label: part?.name ?? ROLE_LABEL[role],
+      qty,
+      unit,
+      note,
+      sku: part?.sku,
+      matched: Boolean(part),
+    })
+  }
+
+  line(
+    "track",
+    round1(width),
+    "m",
+    input.mount === "ceiling" ? "Cut to length, top fixed" : "Cut to length, face fixed",
+  )
+
+  line(
+    "bracket",
+    Math.max(MIN_BRACKETS, Math.ceil(width * BRACKETS_PER_M)),
+    "",
+    `One per metre, at least ${MIN_BRACKETS}. ${input.mount === "ceiling" ? "Ceiling" : "Wall"} brackets`,
+  )
+
+  const joints = Math.max(0, Math.ceil(width / system.stockLengthM) - 1)
+  if (joints > 0) {
+    line("joint", joints, "", `Track joined over the ${system.stockLengthM} m stock length`)
+  }
+
+  line(
+    "runner",
+    Math.ceil(width * RUNNERS_PER_M),
+    "",
+    `About ${RUNNERS_PER_M} per metre. Add more for a fuller pleat`,
+  )
+
+  if (centreOpen && system.parts["master-carrier"]) {
+    line("master-carrier", 1, "", "Overlap arm for a centre-opening pair")
+  }
+
+  line("stopper", STOPPERS, "", "One at each end")
+
+  if (system.motorised) {
+    line("drive-unit", 1, "", "Motor end of the run")
+    line("roller-unit", 1, "", "Idle end of the run")
+    line("motor", 1, "", "Sized to the length and weight on survey")
+    line("belt", round1(width * 2 + 0.4), "m", "Loops the run. Confirmed on survey")
+  }
+
+  return { lines, onSurvey: system.motorised }
+}
+
+/** A one-line summary of the window the bill was built for. */
+export function bomSummary(system: BuildSystem, input: BomInput) {
+  const width = clamp(input.widthM, WIDTH_MIN, WIDTH_MAX)
+  const panels = clamp(Math.round(input.panels), 1, PANELS_MAX)
+  const draw = panels >= 2 ? "centre-opening" : "single-draw"
+  return `${system.name} rail, ${round1(width)} m ${draw}, ${input.mount} mount`
+}
+
+/** The WhatsApp quote text: the summary, then the list, ready to send. */
+export function bomMessage(system: BuildSystem, input: BomInput, bom: Bom) {
+  const items = bom.lines
+    .map((item) => {
+      const quantity = item.unit ? `${item.qty} ${item.unit}` : `${item.qty}`
+      const sku = item.sku ? ` (${item.sku})` : ""
+      return `- ${item.label}${sku}: ${quantity}`
+    })
+    .join("\n")
+
+  return (
+    `Hello ${SHOP.name}, please quote this rail:\n` +
+    `${bomSummary(system, input)}\n\n${items}\n\n` +
+    "Can you confirm the price, cut lengths and stock?"
+  )
+}
