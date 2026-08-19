@@ -132,3 +132,31 @@ body {
 .logo-dark { display: none; }
 :root[data-theme="dark"] .logo-light { display: none; }
 :root[data-theme="dark"] .logo-dark { display: block; }
+
+/*
+ * The page shell.
+ *
+ * Fluid at every width rather than a fixed column that strands the catalogue in
+ * the middle of a wide monitor. There is no max-width: the gutters grow with the
+ * viewport instead, so the content always fills the screen it is on. Prose
+ * inside still sets its own max-width, so line length stays readable.
+ */
+.shell {
+  margin-inline: auto;
+  width: 100%;
+  padding-inline: clamp(1rem, 4vw, 7rem);
+}
+
+/*
+ * Grids that reflow by available width rather than by breakpoint, so a wider
+ * screen genuinely shows more parts instead of stretching the same few.
+ */
+.auto-grid {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--min, 15rem)), 1fr));
+}
+
+/* Display type scales with the viewport instead of stepping at breakpoints. */
+.display-xl { font-size: clamp(2.25rem, 5.2vw, 4.5rem); line-height: 1.03; }
+.display-lg { font-size: clamp(1.6rem, 2.6vw, 2.5rem); line-height: 1.1; }

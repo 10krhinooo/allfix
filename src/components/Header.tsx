@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Logo } from "@/components/Logo"
+import { MobileNav } from "@/components/MobileNav"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { SHOP } from "@/lib/format"
 
@@ -13,7 +14,7 @@ const NAV = [
 export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-rule bg-paper/95 backdrop-blur">
-      <div className="mx-auto flex h-20 max-w-6xl items-center gap-6 px-5">
+      <div className="shell flex h-20 items-center gap-6">
         <Link href="/" className="shrink-0" aria-label={`${SHOP.name} home`}>
           <Logo height={44} priority alt="" />
         </Link>
@@ -38,12 +39,13 @@ export function Header() {
             {SHOP.phone}
           </a>
           <ThemeToggle />
+          <MobileNav items={NAV} />
         </div>
       </div>
 
       {/* The counter is the business. Say where it is on every page. */}
       <div className="border-t border-rule bg-panel">
-        <div className="mx-auto flex max-w-6xl items-center gap-4 overflow-x-auto px-5 py-1.5">
+        <div className="shell flex items-center gap-4 overflow-x-auto py-1.5">
           <span className="callout whitespace-nowrap">
             Counter sales · {SHOP.street}, {SHOP.area}
           </span>

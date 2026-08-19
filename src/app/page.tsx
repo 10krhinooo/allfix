@@ -18,10 +18,10 @@ export default function Home() {
     <>
       {/* ---------------------------------------------------------- hero */}
       <section className="drafting border-b border-rule">
-        <div className="mx-auto max-w-6xl px-5 py-16 sm:py-24">
+        <div className="shell py-16 sm:py-24">
           <p className="callout">Njugu Lane · Nairobi CBD</p>
 
-          <h1 className="mt-4 max-w-3xl font-display text-4xl leading-[1.05] font-bold tracking-tight sm:text-6xl">
+          <h1 className="display-xl mt-4 max-w-[18ch] font-display font-bold tracking-tight">
             Which rail do you<br />
             already have?
           </h1>
@@ -57,12 +57,12 @@ export default function Home() {
       {/* ------------------------------------------------------ motorised */}
       {flagship && (
         <section className="bg-band text-white">
-          <div className="mx-auto grid max-w-6xl gap-10 px-5 py-16 lg:grid-cols-[1.2fr_1fr] lg:items-center">
+          <div className="shell grid gap-10 py-16 lg:grid-cols-[1.2fr_1fr] lg:items-center">
             <div>
               <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-white/60">
                 Flagship system
               </p>
-              <h2 className="mt-3 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+              <h2 className="display-lg mt-3 font-display font-bold tracking-tight">
                 Curtains that open on their own
               </h2>
               <p className="mt-4 max-w-lg leading-relaxed text-white/80">
@@ -86,7 +86,7 @@ export default function Home() {
               </div>
             </div>
 
-            <dl className="grid grid-cols-2 gap-px bg-white/15 text-sm">
+            <dl className="auto-grid bg-white/15 text-sm" style={{ ["--min" as string]: "11rem" }}>
               {[
                 ["Motors", "13W wifi, 45W, 75W"],
                 ["Control", "Remote, switch, app"],
@@ -104,15 +104,15 @@ export default function Home() {
       )}
 
       {/* ------------------------------------------------------- by part */}
-      <section className="mx-auto max-w-6xl px-5 py-16">
-        <h2 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+      <section className="shell py-16">
+        <h2 className="display-lg font-display font-bold tracking-tight">
           Or go straight to the part
         </h2>
         <p className="mt-2 text-slate">
           Everything for a curtain rail, on the shelf at the counter.
         </p>
 
-        <ul className="mt-8 grid gap-px bg-rule sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="auto-grid mt-8 bg-rule" style={{ ["--min" as string]: "20rem" }}>
           {componentsInOrder().map((component) => (
             <li key={component.slug}>
               <Link
@@ -129,8 +129,8 @@ export default function Home() {
 
       {/* ------------------------------------------------------ services */}
       <section className="border-y border-rule bg-panel">
-        <div className="mx-auto max-w-6xl px-5 py-16">
-          <h2 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
+        <div className="shell py-16">
+          <h2 className="display-lg font-display font-bold tracking-tight">
             We also fit it
           </h2>
           <p className="mt-2 max-w-xl text-slate">
@@ -138,7 +138,7 @@ export default function Home() {
             sews the curtains that go on them.
           </p>
 
-          <ul className="mt-8 grid gap-px bg-rule sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="auto-grid mt-8 bg-rule" style={{ ["--min" as string]: "17rem" }}>
             {SERVICES.map(([title, blurb]) => (
               <li key={title} className="bg-panel p-5">
                 <p className="font-display font-semibold tracking-tight">{title}</p>
@@ -157,10 +157,10 @@ export default function Home() {
       </section>
 
       {/* --------------------------------------------------------- trade */}
-      <section className="mx-auto grid max-w-6xl gap-8 px-5 py-16 lg:grid-cols-2">
+      <section className="shell grid gap-8 py-16 lg:grid-cols-2">
         <div>
           <p className="callout">Trade</p>
-          <h2 className="mt-3 font-display text-2xl font-bold tracking-tight sm:text-3xl">
+          <h2 className="display-lg mt-3 font-display font-bold tracking-tight">
             Fundis, curtain makers and fit-out contractors
           </h2>
           <p className="mt-3 leading-relaxed text-slate">

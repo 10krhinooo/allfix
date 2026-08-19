@@ -6,7 +6,7 @@ import { SHOP } from "@/lib/format"
 export function Footer() {
   return (
     <footer className="mt-24 border-t border-rule bg-panel">
-      <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="shell grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <Logo height={40} />
           <p className="mt-3 text-sm leading-relaxed text-slate">
@@ -55,7 +55,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-rule">
-        <div className="mx-auto flex max-w-6xl flex-wrap gap-x-5 gap-y-2 px-5 py-5">
+        <div className="shell flex flex-wrap gap-x-5 gap-y-2 py-5">
           <p className="callout">© {new Date().getFullYear()} AllFix By Kipekee</p>
           <Link href="/terms" className="callout hover:text-ink">Terms</Link>
           <Link href="/privacy" className="callout hover:text-ink">Privacy</Link>
