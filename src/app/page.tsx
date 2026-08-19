@@ -86,7 +86,10 @@ export default function Home() {
               </div>
             </div>
 
-            <dl className="auto-grid bg-white/15 text-sm" style={{ ["--min" as string]: "11rem" }}>
+            <dl
+              className="auto-grid flush text-sm"
+              style={{ ["--min" as string]: "11rem", ["--hairline" as string]: "rgba(255,255,255,0.22)" }}
+            >
               {[
                 ["Motors", "13W wifi, 45W, 75W"],
                 ["Control", "Remote, switch, app"],
@@ -112,7 +115,7 @@ export default function Home() {
           Everything for a curtain rail, on the shelf at the counter.
         </p>
 
-        <ul className="auto-grid mt-8 bg-rule" style={{ ["--min" as string]: "20rem" }}>
+        <ul className="auto-grid flush mt-8" style={{ ["--min" as string]: "20rem" }}>
           {componentsInOrder().map((component) => (
             <li key={component.slug}>
               <Link
@@ -138,7 +141,7 @@ export default function Home() {
             sews the curtains that go on them.
           </p>
 
-          <ul className="auto-grid mt-8 bg-rule" style={{ ["--min" as string]: "17rem" }}>
+          <ul className="auto-grid flush mt-8" style={{ ["--min" as string]: "17rem" }}>
             {SERVICES.map(([title, blurb]) => (
               <li key={title} className="bg-panel p-5">
                 <p className="font-display font-semibold tracking-tight">{title}</p>

@@ -30,6 +30,14 @@
 
   /* Fixed in both themes: it carries white text and must stay dark. */
   --band: #6d1215;
+
+  /*
+   * The height of the sticky header, declared once so anything that has to sit
+   * under it agrees with it: the system pages' jump bar, and the scroll offset
+   * that stops an anchored heading landing behind the header. The header builds
+   * this from a 5rem row, a 2rem counter strip and the two rules between them.
+   */
+  --header-h: calc(5rem + 2rem + 2px);
 }
 
 /*
@@ -155,6 +163,25 @@ body {
   display: grid;
   gap: 1px;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--min, 15rem)), 1fr));
+}
+
+/*
+ * Hairlines drawn by the cells rather than by a coloured gap showing through
+ * from behind them. A gap-drawn grid paints its background across the whole
+ * row, so any row that is not full ends in an empty grey band, and most of
+ * these grids hold an item count that does not divide by the column count.
+ *
+ * Override --hairline on the grid where the ground is not paper.
+ */
+.auto-grid.flush {
+  gap: 0;
+  border-top: 1px solid var(--hairline, var(--rule));
+  border-left: 1px solid var(--hairline, var(--rule));
+}
+
+.auto-grid.flush > * {
+  border-right: 1px solid var(--hairline, var(--rule));
+  border-bottom: 1px solid var(--hairline, var(--rule));
 }
 
 /* Display type scales with the viewport instead of stepping at breakpoints. */

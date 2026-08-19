@@ -16,7 +16,7 @@ import { SHOP, whatsapp } from "@/lib/format"
  */
 export function SystemPicker({ list }: { list: System[] }) {
   return (
-    <ul className="auto-grid overflow-hidden rounded-sm bg-rule" style={{ ["--min" as string]: "10rem" }}>
+    <ul className="auto-grid flush overflow-hidden rounded-sm" style={{ ["--min" as string]: "10rem" }}>
       {list.map((system, index) => (
           <li key={system.slug}>
             <Link

@@ -26,7 +26,7 @@ export default function Systems() {
       </p>
 
       <TraceOnView>
-        <ul className="auto-grid mt-10 bg-rule" style={{ ["--min" as string]: "22rem" }}>
+        <ul className="auto-grid flush mt-10" style={{ ["--min" as string]: "22rem" }}>
           {systems.map((system) => (
             <li key={system.slug}>
               <Link
