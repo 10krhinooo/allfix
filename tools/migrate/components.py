@@ -19,6 +19,16 @@ COMPONENT_TYPES = [
     ("holder",         "Holders",         ["holder"]),
     ("stopper",        "Stoppers",        ["stopper"]),
     ("runner",         "Runners",         ["runner", "glider"]),
+    # A roman blind is a different mechanism from a curtain track: it is raised
+    # by cords running through rings sewn to the back, over fibre rods that
+    # form each fold, with a weight bar in the hem. None of those parts has an
+    # equivalent on a curtain rail, so they get their own types rather than
+    # being forced into the nearest track part.
+    ("roller-unit",    "Roller units",    ["roller unit"]),
+    ("thread",         "Threads",         ["thread"]),
+    ("blind-ring",     "Blind rings",     ["blind plastic ring", "blind ring"]),
+    ("fibre",          "Fibre rods",      ["fiber", "fibre"]),
+    ("weight",         "Weights",         ["weight"]),
     ("track",          "Tracks",          ["track", "rail"]),
     # "Plastic Curtain Tape Hooks" is a hook and "Buckle Tape" is a tape, so
     # hooks are matched before tapes, and tapes before buckles.
@@ -26,6 +36,34 @@ COMPONENT_TYPES = [
     ("tape",           "Curtain tapes",   ["tape"]),
     ("buckle",         "Curtain buckles", ["buckle"]),
 ]
+
+# Rods are filed by the category column of the client sheet rather than by name.
+# On the rod line the categories are clean, and the names are not: a "Basket
+# Finial" and a "Trophy Finial" share no word with each other, and "End Cup"
+# appears in the name of a part that is filed as a bracket.
+ROD_COMPONENTS = {
+    "rods":          ("rod", "Curtain rods"),
+    "brackets":      ("bracket", "Brackets"),
+    "finials":       ("finial", "Finials"),
+    "end cups":      ("end-cup", "End cups"),
+    "rings":         ("ring", "Rings"),
+    "tie backs":     ("tie-back", "Tie backs"),
+    "corner joints": ("corner-joint", "Corner joints"),
+}
+
+
+def component_for_category(categories: str):
+    """
+    Read the part type out of `Curtain Rods > Finials, Curtain Rods`.
+
+    The sheet is hand written, so the separator, the spacing and the trailing
+    comma all vary. Only the segment between the chevron and the comma is
+    meaningful, and it is matched loosely.
+    """
+    if ">" not in (categories or ""):
+        return None
+    leaf = categories.split(">", 1)[1].split(",")[0].strip().lower()
+    return ROD_COMPONENTS.get(leaf)
 
 # What each component type is for, shown on the component filter and on the
 # system page so a first-time buyer can tell a runner from a carrier.
@@ -44,6 +82,16 @@ PURPOSE = {
     "tape":           "Sewn to the curtain header to form the pleat.",
     "hook":           "Joins the curtain tape to the runners.",
     "buckle":         "Holds the curtain back when it is open.",
+    "roller-unit":    "Winds the cord that raises a roman blind.",
+    "thread":         "The cord that runs through the rings to raise the blind.",
+    "blind-ring":     "Sewn to the back of the blind for the cord to run through.",
+    "fibre":          "Slots into the back of the blind to form each fold.",
+    "weight":         "Sits in the hem so the blind hangs straight.",
+    "rod":            "The pole itself, cut to your window width.",
+    "finial":         "The turned end that finishes the rod and keeps the rings on it.",
+    "end-cup":        "Seats the end of the rod against the wall where a bracket would show.",
+    "ring":           "Carries the curtain along the rod. Roughly seven per metre.",
+    "tie-back":       "Fixed to the wall beside the window, to hold the curtain open.",
 }
 
 def component_for_name(name: str):

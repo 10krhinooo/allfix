@@ -4,7 +4,8 @@ Declared variant groups.
 The WooCommerce catalogue has no attributes and no variations at all: the six
 buckle colours are six separate products. Collapsing them gives one product with
 a colour swatch, which is both the better shopping experience and the honest
-data model.
+data model. The gold buckle is a seventh: it is stocked and appears in the
+client sheet, but the old site never listed it at all.
 
 These groups are declared by SKU rather than inferred from names on purpose.
 Fuzzy name matching would merge parts that are genuinely different -- a
@@ -20,6 +21,7 @@ VARIANT_GROUPS = [
         "axis": "Finish",
         "members": {
             "RL#ACC_010": {"label": "Marble brown", "swatch": "#6B4A32"},
+            "RL#ACC_007": {"label": "Gold",         "swatch": "#C9A227"},
             "RL#ACC_009": {"label": "Marble black", "swatch": "#2B2B2E"},
             "RL#ACC_008": {"label": "Black",        "swatch": "#141416"},
             "RL#ACC_006": {"label": "Copper",       "swatch": "#B06B3A"},
