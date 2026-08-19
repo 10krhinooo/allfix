@@ -12,6 +12,10 @@ made a tidier grid but is not what the shop wants: the background is part of
 the picture, and nothing here crops it away or lifts it out. Squaring is done by
 padding with the shot's own edge colour, so a part on a black field stays on a
 black field and gains no visible bars.
+
+The one concession is the six shots taken on stark white rather than the black
+of the other fifty-six: their white field is warmed to a soft off-white so the
+grid does not read as two different photographers. The hardware is untouched.
 """
 
 import hashlib
@@ -23,6 +27,13 @@ from PIL import Image
 
 MASTER = 1200
 QUALITY = 82
+
+# Most shots are on a black field, six are on stark white, and a grid of both
+# reads as two photographers. The white ones are warmed to a soft off-white so
+# they settle in beside the black majority. Only the near-white field moves; the
+# hardware in these shots is gold, silver, copper or marble, nowhere near white.
+NEAR_WHITE = 236
+WARM_WHITE = (249, 246, 239)
 
 CACHE = Path(__file__).parent / "raw" / "images"
 
@@ -58,6 +69,24 @@ def ground(image):
     return tuple(sum(pixel[channel] for pixel in edge) // len(edge) for channel in range(3))
 
 
+def warm_white(image):
+    """
+    Settle a white-field shot in beside the black-field majority.
+
+    Only the near-white background moves, to a soft off-white. The parts in
+    these shots are gold, silver, copper, black or marble, none of which comes
+    close to the threshold, so the hardware is left exactly as photographed.
+    """
+    pixels = image.load()
+    width, height = image.size
+    for y in range(height):
+        for x in range(width):
+            r, g, b = pixels[x, y]
+            if r >= NEAR_WHITE and g >= NEAR_WHITE and b >= NEAR_WHITE:
+                pixels[x, y] = WARM_WHITE
+    return image
+
+
 def square(image, name=""):
     """
     The shot as taken, scaled to the master size and padded out to a square.
@@ -65,16 +94,23 @@ def square(image, name=""):
     Nothing is cropped and nothing is lifted: the background is part of the
     photograph. Padding uses the shot's own edge colour, so a part photographed
     on black keeps a black frame and the pad is invisible rather than reading as
-    two grey bars.
+    two grey bars. The square masters then fill the square card tiles exactly, so
+    a black-field shot simply becomes a black tile.
     """
     image = image.convert("RGB")
     image.thumbnail((MASTER, MASTER), Image.LANCZOS)
-    if image.width == image.height:
-        return image
 
-    canvas = Image.new("RGB", (MASTER, MASTER), ground(image))
-    canvas.paste(image, ((MASTER - image.width) // 2, (MASTER - image.height) // 2))
-    return canvas
+    if image.width == image.height:
+        result = image
+    else:
+        result = Image.new("RGB", (MASTER, MASTER), ground(image))
+        result.paste(image, ((MASTER - image.width) // 2, (MASTER - image.height) // 2))
+
+    # A light edge means the whole field is white, which is the set to warm. A
+    # dark edge is left alone, so the black-field shots keep their black.
+    if min(ground(result)) >= 200:
+        result = warm_white(result)
+    return result
 
 
 def key_for(sku, slug):
