@@ -1,0 +1,3217 @@
+{
+  "generatedFrom": "allfix.co.ke WooCommerce Store API",
+  "systems": [
+    {
+      "slug": "motorised",
+      "name": "Motorised",
+      "shortName": "Motorised",
+      "blurb": "Curtains that open at the touch of a button or on a schedule. A driven track with a motor sized to the run, for homes, offices and hotels.",
+      "flagship": true,
+      "skuPrefixes": [
+        "RL#MOTOR_"
+      ],
+      "partCount": 23,
+      "components": [
+        "belt",
+        "bracket",
+        "buckle",
+        "corner-joint",
+        "drive-unit",
+        "holder",
+        "hook",
+        "master-carrier",
+        "motor",
+        "runner",
+        "stopper",
+        "tape",
+        "track"
+      ]
+    },
+    {
+      "slug": "20-rubber",
+      "name": "#20 with rubber",
+      "shortName": "#20R",
+      "blurb": "The #20 profile with a rubber insert, for quieter gliding on a heavier curtain.",
+      "skuPrefixes": [
+        "RL#20R_"
+      ],
+      "partCount": 11,
+      "components": [
+        "buckle",
+        "corner-joint",
+        "hook",
+        "runner",
+        "stopper",
+        "tape",
+        "track"
+      ]
+    },
+    {
+      "slug": "20",
+      "name": "#20",
+      "shortName": "#20",
+      "blurb": "The workhorse aluminium track. The widest parts range we stock, in single and double, wall and ceiling.",
+      "skuPrefixes": [
+        "RL#20_"
+      ],
+      "partCount": 14,
+      "components": [
+        "bracket",
+        "buckle",
+        "hook",
+        "joint",
+        "runner",
+        "stopper",
+        "tape",
+        "track"
+      ]
+    },
+    {
+      "slug": "28",
+      "name": "#28",
+      "shortName": "#28",
+      "blurb": "A heavier profile for wide spans and heavy lined curtains, with a ripple option.",
+      "skuPrefixes": [
+        "RL#28_"
+      ],
+      "partCount": 14,
+      "components": [
+        "bracket",
+        "buckle",
+        "corner-joint",
+        "hook",
+        "runner",
+        "stopper",
+        "tape",
+        "track"
+      ]
+    },
+    {
+      "slug": "15-bendable",
+      "name": "#15 bendable",
+      "shortName": "#15",
+      "blurb": "A bendable track that follows a bay window or a curved wall.",
+      "skuPrefixes": [
+        "RL#15_"
+      ],
+      "partCount": 12,
+      "components": [
+        "buckle",
+        "hook",
+        "runner",
+        "stopper",
+        "tape",
+        "track"
+      ]
+    },
+    {
+      "slug": "17-rubber",
+      "name": "#17 groove rubber",
+      "shortName": "#17",
+      "blurb": "A bendable rubber groove track, for curves that need a quiet, soft glide.",
+      "skuPrefixes": [
+        "RL#17_"
+      ],
+      "partCount": 10,
+      "components": [
+        "bracket",
+        "buckle",
+        "hook",
+        "runner",
+        "stopper",
+        "tape",
+        "track"
+      ]
+    },
+    {
+      "slug": "ks",
+      "name": "KS",
+      "shortName": "KS",
+      "blurb": "A compact ceiling-fixed system for a discreet, recessed look.",
+      "skuPrefixes": [
+        "RL#KS_"
+      ],
+      "partCount": 11,
+      "components": [
+        "bracket",
+        "buckle",
+        "hook",
+        "runner",
+        "stopper",
+        "tape",
+        "track"
+      ]
+    },
+    {
+      "slug": "double-rail",
+      "name": "Double rail",
+      "shortName": "Double",
+      "blurb": "One track carrying both a sheer and a main curtain.",
+      "skuPrefixes": [
+        "RL#DR_"
+      ],
+      "partCount": 9,
+      "components": [
+        "buckle",
+        "hook",
+        "runner",
+        "stopper",
+        "tape",
+        "track"
+      ]
+    },
+    {
+      "slug": "roman-blind",
+      "name": "Roman blind",
+      "shortName": "Roman",
+      "blurb": "The corded track a roman blind is built on.",
+      "skuPrefixes": [
+        "RL#ROMAN_"
+      ],
+      "partCount": 8,
+      "components": [
+        "buckle",
+        "hook",
+        "runner",
+        "tape",
+        "track"
+      ]
+    }
+  ],
+  "components": [
+    {
+      "slug": "belt",
+      "name": "Belts",
+      "purpose": "The loop that transmits drive along a motorised track."
+    },
+    {
+      "slug": "bracket",
+      "name": "Brackets",
+      "purpose": "Fixes the track to the wall or ceiling. One per metre, never fewer than two."
+    },
+    {
+      "slug": "corner-joint",
+      "name": "Corner joints",
+      "purpose": "Turns the track around a corner or a bay."
+    },
+    {
+      "slug": "buckle",
+      "name": "Curtain buckles",
+      "purpose": "Holds the curtain back when it is open."
+    },
+    {
+      "slug": "hook",
+      "name": "Curtain hooks",
+      "purpose": "Joins the curtain tape to the runners."
+    },
+    {
+      "slug": "tape",
+      "name": "Curtain tapes",
+      "purpose": "Sewn to the curtain header to form the pleat."
+    },
+    {
+      "slug": "drive-unit",
+      "name": "Drive units",
+      "purpose": "The powered and idle ends of a motorised belt system."
+    },
+    {
+      "slug": "holder",
+      "name": "Holders",
+      "purpose": "Supports the track along its run."
+    },
+    {
+      "slug": "joint",
+      "name": "Joints",
+      "purpose": "Joins two lengths of track for a span longer than one stock length."
+    },
+    {
+      "slug": "master-carrier",
+      "name": "Master carriers",
+      "purpose": "The lead runner the motor pulls, carrying the leading edge of the curtain."
+    },
+    {
+      "slug": "motor",
+      "name": "Motors",
+      "purpose": "Drives a motorised track. Sized to the length and weight of the run."
+    },
+    {
+      "slug": "runner",
+      "name": "Runners",
+      "purpose": "The gliders the curtain hooks onto. Roughly 10 per metre of track."
+    },
+    {
+      "slug": "stopper",
+      "name": "Stoppers",
+      "purpose": "Caps each end so the runners cannot slide off. Two per track."
+    },
+    {
+      "slug": "track",
+      "name": "Tracks",
+      "purpose": "The rail itself, cut to your window width."
+    }
+  ],
+  "products": [
+    {
+      "sku": "RL#15_002",
+      "name": "#15 Bendable Runners",
+      "slug": "15-bendable-runners",
+      "system": "15-bendable",
+      "universal": false,
+      "fitsSystems": [
+        "15-bendable"
+      ],
+      "component": "runner",
+      "componentLabel": "Runners",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Durable plastic or nylon"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Hook Type",
+          "value": "Plastic with metal hook"
+        },
+        {
+          "label": "Function",
+          "value": "Smooth and silent glide through curved tracks"
+        },
+        {
+          "label": "Durability",
+          "value": "Resistant to wear and deformation"
+        },
+        {
+          "label": "Feature",
+          "value": "Easy to install and remove for cleaning or replacement"
+        },
+        {
+          "label": "Application",
+          "value": "Ripple or pleated curtain systems"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/15-Bendable-Runners.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/15-bendable-runners/"
+    },
+    {
+      "sku": "RL#15_003",
+      "name": "#15 Bendable Runners with Metal",
+      "slug": "15-bendable-runners-with-metal",
+      "system": "15-bendable",
+      "universal": false,
+      "fitsSystems": [
+        "15-bendable"
+      ],
+      "component": "runner",
+      "componentLabel": "Runners",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Durable plastic with metal"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Hook Type",
+          "value": "Plastic with metal hook"
+        },
+        {
+          "label": "Function",
+          "value": "Smooth and silent glide through curved tracks"
+        },
+        {
+          "label": "Durability",
+          "value": "Resistant to wear and deformation"
+        },
+        {
+          "label": "Feature",
+          "value": "Easy to install and remove for cleaning or replacement"
+        },
+        {
+          "label": "Application",
+          "value": "Ripple or pleated curtain systems"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/15-Bendable-Metal-Runners.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/15-bendable-runners-with-metal/"
+    },
+    {
+      "sku": "RL#15_006",
+      "name": "#15 Bendable Metal Stoppers",
+      "slug": "15-bendable-metal-stoppers",
+      "system": "15-bendable",
+      "universal": false,
+      "fitsSystems": [
+        "15-bendable"
+      ],
+      "component": "stopper",
+      "componentLabel": "Stoppers",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality metal"
+        },
+        {
+          "label": "Color",
+          "value": "Silver"
+        },
+        {
+          "label": "Function",
+          "value": "Prevents runners from sliding off the track ends"
+        },
+        {
+          "label": "Grip",
+          "value": "Firm hold even after bending the track"
+        },
+        {
+          "label": "Feature",
+          "value": "Adjustable and easy to install"
+        },
+        {
+          "label": "Durability",
+          "value": "Corrosion and impact resistant"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Fits perfectly into #15 bendable tracks"
+        },
+        {
+          "label": "Application",
+          "value": "Curtain systems with curved installations"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/15-Bendable-Metal-Stoppers.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/15-bendable-metal-stoppers/"
+    },
+    {
+      "sku": "RL#15_005",
+      "name": "#15 Bendable Stoppers",
+      "slug": "15-bendable-stoppers",
+      "system": "15-bendable",
+      "universal": false,
+      "fitsSystems": [
+        "15-bendable"
+      ],
+      "component": "stopper",
+      "componentLabel": "Stoppers",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality plastic"
+        },
+        {
+          "label": "Color",
+          "value": "White or silver"
+        },
+        {
+          "label": "Function",
+          "value": "Prevents runners from sliding off the track ends"
+        },
+        {
+          "label": "Grip",
+          "value": "Firm hold even after bending the track"
+        },
+        {
+          "label": "Feature",
+          "value": "Adjustable and easy to install"
+        },
+        {
+          "label": "Durability",
+          "value": "Corrosion and impact resistant"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Fits perfectly into #15 bendable tracks"
+        },
+        {
+          "label": "Application",
+          "value": "Curtain systems with curved installations"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/15-Bendable-Stoppers.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/15-bendable-stoppers/"
+    },
+    {
+      "sku": "RL#15_001",
+      "name": "#15 Bendable Track",
+      "slug": "15-bendable-track",
+      "system": "15-bendable",
+      "universal": false,
+      "fitsSystems": [
+        "15-bendable"
+      ],
+      "component": "track",
+      "componentLabel": "Tracks",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality flexible aluminum alloy"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Length",
+          "value": "Customizable upon request"
+        },
+        {
+          "label": "Surface Finish",
+          "value": "Smooth, anti-corrosive coating"
+        },
+        {
+          "label": "Type",
+          "value": "Bendable track for curved and bay window installations"
+        },
+        {
+          "label": "Function",
+          "value": "Allows both inward and outward bending without deformation"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Works with #15 bendable runners, brackets, and stoppers"
+        },
+        {
+          "label": "Load Capacity",
+          "value": "Suitable for light to medium curtain weights"
+        },
+        {
+          "label": "Installation",
+          "value": "Ceiling or wall mount depending on bracket choice"
+        },
+        {
+          "label": "Application",
+          "value": "Residential, hotel, or office window systems"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/15-Bendable-Track.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/15-bendable-track/"
+    },
+    {
+      "sku": "RL#17_002",
+      "name": "#17 Rubber Single Ceiling Bracket",
+      "slug": "17-rubber-single-ceiling-bracket",
+      "system": "17-rubber",
+      "universal": false,
+      "fitsSystems": [
+        "17-rubber"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Heavy-duty metal construction"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Type",
+          "value": "Single ceiling mount bracket for #17 rubber track"
+        },
+        {
+          "label": "Finish",
+          "value": "Rust-resistant coating for extended lifespan"
+        },
+        {
+          "label": "Design",
+          "value": "Compact and secure fit for ceiling installations"
+        },
+        {
+          "label": "Function",
+          "value": "Provides stable, noise-free curtain support"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Designed for #17 rubber curtain rails"
+        },
+        {
+          "label": "Installation",
+          "value": "Quick and easy with included mounting screws"
+        },
+        {
+          "label": "Application",
+          "value": "Suitable for single-track ceiling setups in residential or commercial spaces"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/17-Rubber-Single-Ceiling-Bracket.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/17-rubber-single-ceiling-bracket/"
+    },
+    {
+      "sku": "RL#17_004",
+      "name": "#17 Rubber Stoppers",
+      "slug": "17-rubber-stoppers",
+      "system": "17-rubber",
+      "universal": false,
+      "fitsSystems": [
+        "17-rubber"
+      ],
+      "component": "stopper",
+      "componentLabel": "Stoppers",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-strength plastic or metal"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Type",
+          "value": "Curtain track end stoppers for #17 rubber tracks"
+        },
+        {
+          "label": "Rubber Compatibility",
+          "value": "Firmly fits and grips rubber-lined tracks"
+        },
+        {
+          "label": "Function",
+          "value": "Prevents runners from slipping off track ends"
+        },
+        {
+          "label": "Design",
+          "value": "Easy to install or adjust without tools"
+        },
+        {
+          "label": "Durability",
+          "value": "Shock-resistant and long-lasting"
+        },
+        {
+          "label": "Application",
+          "value": "Suitable for #17 rubber track installations in both residential and commercial settings"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/17-Rubber-Stoppers.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/17-rubber-stoppers/"
+    },
+    {
+      "sku": "RL#17_001",
+      "name": "#17 Groove Bendable Rubber Track",
+      "slug": "17-groove-bendable-rubber-track",
+      "system": "17-rubber",
+      "universal": false,
+      "fitsSystems": [
+        "17-rubber"
+      ],
+      "component": "track",
+      "componentLabel": "Tracks",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality aluminum alloy with integrated rubber strip"
+        },
+        {
+          "label": "Surface Finish",
+          "value": "Anti-rust, polished finish for durability"
+        },
+        {
+          "label": "Color",
+          "value": "White finish with rubber lining"
+        },
+        {
+          "label": "Type",
+          "value": "Rubber-lined curtain track for smooth and silent operation"
+        },
+        {
+          "label": "Rubber Insert",
+          "value": "Reduces noise and friction during curtain movement"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Works with #17 rubber runners, stoppers, and brackets"
+        },
+        {
+          "label": "Mounting",
+          "value": "Suitable for ceiling or wall installation"
+        },
+        {
+          "label": "Load Capacity",
+          "value": "Supports medium to heavy curtain fabrics"
+        },
+        {
+          "label": "Length",
+          "value": "Customizable according to size."
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/17-Rubber-Track.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/17-groove-bendable-rubber-track/"
+    },
+    {
+      "sku": "RL#20_002",
+      "name": "#20 Double Ceiling Bracket",
+      "slug": "20-double-ceiling-bracket",
+      "system": "20",
+      "universal": false,
+      "fitsSystems": [
+        "20"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality metal"
+        },
+        {
+          "label": "Finish",
+          "value": "Powder-coated surface for durability"
+        },
+        {
+          "label": "Colour",
+          "value": "White"
+        },
+        {
+          "label": "Design",
+          "value": "Double-rail ceiling mount for layered curtains"
+        },
+        {
+          "label": "Mounting",
+          "value": "Secure ceiling installation with screws"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Fits #20 curtain rail tracks"
+        },
+        {
+          "label": "Support Capacity",
+          "value": "Handles medium curtain loads on dual rails"
+        },
+        {
+          "label": "Application",
+          "value": "Ideal for homes, offices, and hotels"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/20-Double-Ceiling-Bracket.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/20-double-ceiling-bracket/"
+    },
+    {
+      "sku": "RL#20_003",
+      "name": "#20 Single Ceiling Bracket",
+      "slug": "20-single-ceiling-bracket",
+      "system": "20",
+      "universal": false,
+      "fitsSystems": [
+        "20"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Strong, corrosion-resistant metal"
+        },
+        {
+          "label": "Finish",
+          "value": "Powder-coated surface for durability"
+        },
+        {
+          "label": "Colour",
+          "value": "White"
+        },
+        {
+          "label": "Design",
+          "value": "Compact single-rail ceiling support"
+        },
+        {
+          "label": "Mounting",
+          "value": "Screw-fixed for secure installation"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Made to fit #20 curtain rail track"
+        },
+        {
+          "label": "Durability",
+          "value": "Long-lasting and stable"
+        },
+        {
+          "label": "Application",
+          "value": "Best for single curtain layer installations"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/20-Single-Ceiling-Bracket.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/20-single-ceiling-bracket/"
+    },
+    {
+      "sku": "RL#20_006",
+      "name": "#20 Single Wall Bracket",
+      "slug": "20-single-wall-bracket",
+      "system": "20",
+      "universal": false,
+      "fitsSystems": [
+        "20"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Heavy-duty metal alloy"
+        },
+        {
+          "label": "Colour",
+          "value": "White powder-coated surface"
+        },
+        {
+          "label": "Design",
+          "value": "Single-rail wall-mounted bracket"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Fits all #20 curtain rail tracks"
+        },
+        {
+          "label": "Installation",
+          "value": "Wall-mounted with screws and anchors"
+        },
+        {
+          "label": "Strength",
+          "value": "Suitable for medium-weight curtains"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/20-Single-Wall-Bracket.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/20-single-wall-bracket/"
+    },
+    {
+      "sku": "RL#20_008",
+      "name": "#20 Joint",
+      "slug": "20-joint",
+      "system": "20",
+      "universal": false,
+      "fitsSystems": [
+        "20"
+      ],
+      "component": "joint",
+      "componentLabel": "Joints",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Heavy-duty aluminium or metal alloy"
+        },
+        {
+          "label": "Colour",
+          "value": "Silver"
+        },
+        {
+          "label": "Purpose",
+          "value": "Connects two #20 rails in a straight extension"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Designed to fit #20 curtain rail profile"
+        },
+        {
+          "label": "Installation",
+          "value": "Easy slide-in fitting for secure connection"
+        },
+        {
+          "label": "Strength",
+          "value": "Keeps rails aligned and stable"
+        },
+        {
+          "label": "Finish",
+          "value": "Matches #20 rail design for a uniform look"
+        },
+        {
+          "label": "Application",
+          "value": "Extends curtain rails for wide spans"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/20-Joint.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/20-joint/"
+    },
+    {
+      "sku": "RL#20_004",
+      "name": "#20 Runners",
+      "slug": "20-runners",
+      "system": "20",
+      "universal": false,
+      "fitsSystems": [
+        "20"
+      ],
+      "component": "runner",
+      "componentLabel": "Runners",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-grade plastic with roller design"
+        },
+        {
+          "label": "Colour",
+          "value": "White"
+        },
+        {
+          "label": "Glide",
+          "value": "Smooth, silent, and friction-free curtain movement"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Specifically for #20 curtain rail tracks"
+        },
+        {
+          "label": "Durability",
+          "value": "Resistant to wear and daily use"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/20-Runners.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/20-runners/"
+    },
+    {
+      "sku": "RL#20_005",
+      "name": "#20 Stoppers",
+      "slug": "20-stoppers",
+      "system": "20",
+      "universal": false,
+      "fitsSystems": [
+        "20"
+      ],
+      "component": "stopper",
+      "componentLabel": "Stoppers",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-grade durable plastic or metal construction"
+        },
+        {
+          "label": "Colour",
+          "value": "Off-White for the plastic stopper or Silver for metal stopper"
+        },
+        {
+          "label": "Purpose",
+          "value": "Prevents curtain runners from sliding off the track"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Tailored for #20 curtain rail tracks"
+        },
+        {
+          "label": "Design",
+          "value": "Compact and discreet appearance"
+        },
+        {
+          "label": "Installation",
+          "value": "Easy slot-in or screw-fix method"
+        },
+        {
+          "label": "Durability",
+          "value": "Built to withstand repeated use"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/20-Stoppers.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/20-stoppers/"
+    },
+    {
+      "sku": "RL#20_001",
+      "name": "#20 Track",
+      "slug": "20-track",
+      "system": "20",
+      "universal": false,
+      "fitsSystems": [
+        "20"
+      ],
+      "component": "track",
+      "componentLabel": "Tracks",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality aluminum alloy"
+        },
+        {
+          "label": "Finish",
+          "value": "Powder-coated surface for durability"
+        },
+        {
+          "label": "Colour",
+          "value": "White"
+        },
+        {
+          "label": "Profile Size",
+          "value": "#20 standard rail (compatible with all #20 accessories)"
+        },
+        {
+          "label": "Load Capacity",
+          "value": "Designed for light to medium curtain weights"
+        },
+        {
+          "label": "Operation",
+          "value": "Smooth and silent glide performance"
+        },
+        {
+          "label": "Length",
+          "value": "Customizable; can be cut to size or extended using joints"
+        },
+        {
+          "label": "Installation",
+          "value": "Supports both ceiling and wall mount brackets"
+        },
+        {
+          "label": "Durability",
+          "value": "Rust-resistant and built for long-term use"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/20-Track.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/20-track/"
+    },
+    {
+      "sku": "RL#20R_007",
+      "name": "#20 with Rubber Corner Joint",
+      "slug": "20-with-rubber-corner-joint",
+      "system": "20-rubber",
+      "universal": false,
+      "fitsSystems": [
+        "20-rubber"
+      ],
+      "component": "corner-joint",
+      "componentLabel": "Corner joints",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Heavy-duty metal construction"
+        },
+        {
+          "label": "Colour",
+          "value": "White powder-coated surface for enhanced durability"
+        },
+        {
+          "label": "Angle",
+          "value": "Precision 90? connector for corner setups"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Connects two #20 curtain rails with rubber insert"
+        },
+        {
+          "label": "Performance",
+          "value": "Ensures smooth, silent runner movement around corners"
+        },
+        {
+          "label": "Finish",
+          "value": "Matches #20 curtain track appearance"
+        },
+        {
+          "label": "Durability",
+          "value": "Built for long-term reliability"
+        },
+        {
+          "label": "Application",
+          "value": "Ideal for bay windows or L-shaped designs"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/20-with-Rubber-Corner-Joint.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/20-with-rubber-corner-joint/"
+    },
+    {
+      "sku": "RL#20R_004",
+      "name": "#20 with Rubber Runners",
+      "slug": "20-with-rubber-runners",
+      "system": "20-rubber",
+      "universal": false,
+      "fitsSystems": [
+        "20-rubber"
+      ],
+      "component": "runner",
+      "componentLabel": "Runners",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality plastic with smooth wheels"
+        },
+        {
+          "label": "Colour",
+          "value": "White"
+        },
+        {
+          "label": "Glide",
+          "value": "Extra-silent operation thanks to the rubber-lined track"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Fits perfectly with #20 curtain rail with rubber insert"
+        },
+        {
+          "label": "Durability",
+          "value": "Long-lasting and resistant to daily wear and tear"
+        },
+        {
+          "label": "Quantity",
+          "value": "Available in bulk packs for full installations"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/20-with-Rubber-Runners.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/20-with-rubber-runners/"
+    },
+    {
+      "sku": "RL#20R_005",
+      "name": "#20 with Rubber Stoppers",
+      "slug": "20-with-rubber-stoppers",
+      "system": "20-rubber",
+      "universal": false,
+      "fitsSystems": [
+        "20-rubber"
+      ],
+      "component": "stopper",
+      "componentLabel": "Stoppers",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Durable plastic"
+        },
+        {
+          "label": "Colour",
+          "value": "White"
+        },
+        {
+          "label": "Purpose",
+          "value": "Prevents curtain runners from sliding off the track"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Specially designed for #20 rail with rubber insert"
+        },
+        {
+          "label": "Design",
+          "value": "Small and discreet for a clean finish"
+        },
+        {
+          "label": "Installation",
+          "value": "Simple slot-in or screw-fix method"
+        },
+        {
+          "label": "Durability",
+          "value": "Reliable for frequent use"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/20-with-Rubber-Stoppers.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/20-with-rubber-stoppers/"
+    },
+    {
+      "sku": "RL#20R_001",
+      "name": "#20 with Rubber Track",
+      "slug": "20-with-rubber-track",
+      "system": "20-rubber",
+      "universal": false,
+      "fitsSystems": [
+        "20-rubber"
+      ],
+      "component": "track",
+      "componentLabel": "Tracks",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality aluminum alloy with integrated rubber insert"
+        },
+        {
+          "label": "Colour",
+          "value": "White powder-coated surface for enhanced durability"
+        },
+        {
+          "label": "Profile Size",
+          "value": "#20 standard rail with noise-reducing rubber lining"
+        },
+        {
+          "label": "Noise Control",
+          "value": "Rubber insert ensures ultra-quiet curtain movement"
+        },
+        {
+          "label": "Load Capacity",
+          "value": "Supports light to medium curtain weights"
+        },
+        {
+          "label": "Length",
+          "value": "Customizable; cut to size or extended using joints"
+        },
+        {
+          "label": "Installation",
+          "value": "Suitable for wall and ceiling mounting"
+        },
+        {
+          "label": "Durability",
+          "value": "Anti-rust, anti-corrosion, and long-lasting"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/20-with-Rubber-Track.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/20-with-rubber-track/"
+    },
+    {
+      "sku": "RL#28_007",
+      "name": "#28 Single Ceiling Bracket",
+      "slug": "28-single-ceiling-bracket",
+      "system": "28",
+      "universal": false,
+      "fitsSystems": [
+        "28"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Premium-grade aluminum alloy"
+        },
+        {
+          "label": "Colour",
+          "value": "White powder-coated surface for durability"
+        },
+        {
+          "label": "Design",
+          "value": "Single-rail support bracket for ceiling installations"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Fits #28 curtain rail track system"
+        },
+        {
+          "label": "Mounting",
+          "value": "Easy ceiling installation with included hardware"
+        },
+        {
+          "label": "Durability",
+          "value": "Corrosion-resistant and long-lasting"
+        },
+        {
+          "label": "Application",
+          "value": "Ideal for single curtain layers"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/28-Single-Ceiling-Bracket.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/28-single-ceiling-bracket/"
+    },
+    {
+      "sku": "RL#28_006",
+      "name": "#28 Single Wall Bracket",
+      "slug": "28-single-wall-bracket",
+      "system": "28",
+      "universal": false,
+      "fitsSystems": [
+        "28"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Premium-grade aluminum alloy"
+        },
+        {
+          "label": "Colour",
+          "value": "White powder-coated surface for durability"
+        },
+        {
+          "label": "Design",
+          "value": "Single-rail wall mount bracket"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Designed for #28 curtain rail tracks"
+        },
+        {
+          "label": "Mounting",
+          "value": "Easy wall installation with screws and anchors"
+        },
+        {
+          "label": "Durability",
+          "value": "Strong support for medium to heavy curtains"
+        },
+        {
+          "label": "Application",
+          "value": "Ideal for residential and hospitality spaces"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/28-Single-Wall-Bracket.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/28-single-wall-bracket/"
+    },
+    {
+      "sku": "RL#28_004",
+      "name": "#28 Corner Joint",
+      "slug": "28-corner-joint",
+      "system": "28",
+      "universal": false,
+      "fitsSystems": [
+        "28"
+      ],
+      "component": "corner-joint",
+      "componentLabel": "Corner joints",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Durable plastic/metal composite"
+        },
+        {
+          "label": "Colour",
+          "value": "White powder-coated surface for durability"
+        },
+        {
+          "label": "Angle",
+          "value": "Precision 90? connector for corner installations"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Connects two #28 curtain rails smoothly"
+        },
+        {
+          "label": "Glide",
+          "value": "Maintains smooth runner and curtain movement around corners"
+        },
+        {
+          "label": "Finish",
+          "value": "Matches #28 rail surface for uniformity"
+        },
+        {
+          "label": "Durability",
+          "value": "Long-lasting, reinforced construction"
+        },
+        {
+          "label": "Application",
+          "value": "Suitable for L-shaped and bay window"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/28-Corner-Joint.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/28-corner-joint/"
+    },
+    {
+      "sku": "RL#28_008",
+      "name": "#28 Runners",
+      "slug": "28-runners",
+      "system": "28",
+      "universal": false,
+      "fitsSystems": [
+        "28"
+      ],
+      "component": "runner",
+      "componentLabel": "Runners",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality plastic with smooth-glide rollers"
+        },
+        {
+          "label": "Colour",
+          "value": "White"
+        },
+        {
+          "label": "Glide",
+          "value": "Silent and friction-free operation"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Specifically designed for #28 curtain rail track"
+        },
+        {
+          "label": "Durability",
+          "value": "Resistant to daily wear and tear"
+        },
+        {
+          "label": "Finish",
+          "value": "Neutral color to blend with curtain hardware"
+        },
+        {
+          "label": "Quantity",
+          "value": "Available in bulk packs for large installations"
+        },
+        {
+          "label": "Application",
+          "value": "Suitable for homes, hotels, and office curtain systems"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/28-Runners.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/28-runners/"
+    },
+    {
+      "sku": "RL#28_002",
+      "name": "#28 Ripple Stopper",
+      "slug": "28-ripple-stopper",
+      "system": "28",
+      "universal": false,
+      "fitsSystems": [
+        "28"
+      ],
+      "component": "stopper",
+      "componentLabel": "Stoppers",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Premium-grade plastic"
+        },
+        {
+          "label": "Colour",
+          "value": "White"
+        },
+        {
+          "label": "Purpose",
+          "value": "Specially designed stopper for ripple fold curtain setups"
+        },
+        {
+          "label": "Application",
+          "value": "Ensures even spacing and consistent wave formation"
+        },
+        {
+          "label": "Durability",
+          "value": "Durable construction for long-term use"
+        },
+        {
+          "label": "Operation",
+          "value": "Prevents runners from moving beyond the set limit"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/28-Ripple-Stopper.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/28-ripple-stopper/"
+    },
+    {
+      "sku": "RL#28_003",
+      "name": "#28 Stopper",
+      "slug": "28-stopper",
+      "system": "28",
+      "universal": false,
+      "fitsSystems": [
+        "28"
+      ],
+      "component": "stopper",
+      "componentLabel": "Stoppers",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Premium-grade plastic"
+        },
+        {
+          "label": "Colour",
+          "value": "White"
+        },
+        {
+          "label": "Operation",
+          "value": "Durable stopper for securing curtain runners in place"
+        },
+        {
+          "label": "Purpose",
+          "value": "Prevents runners from sliding off the track ends"
+        },
+        {
+          "label": "Installation",
+          "value": "Easy clip-on or screw-in installation"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/28-Stopper.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/28-stopper/"
+    },
+    {
+      "sku": "RL#28_001",
+      "name": "#28 Track",
+      "slug": "28-track",
+      "system": "28",
+      "universal": false,
+      "fitsSystems": [
+        "28"
+      ],
+      "component": "track",
+      "componentLabel": "Tracks",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Premium-grade aluminum alloy"
+        },
+        {
+          "label": "Colour",
+          "value": "White powder-coated surface for durability"
+        },
+        {
+          "label": "Track Size",
+          "value": "#28 standard profile (compatible with #28 accessories)"
+        },
+        {
+          "label": "Operation",
+          "value": "Designed for smooth, silent curtain glide"
+        },
+        {
+          "label": "Load Capacity",
+          "value": "Supports medium to heavy curtain weights"
+        },
+        {
+          "label": "Length",
+          "value": "Customizable; can be cut to size or extended with joints"
+        },
+        {
+          "label": "Installation",
+          "value": "Compatible with both ceiling and wall mounting brackets"
+        },
+        {
+          "label": "Durability",
+          "value": "Rust-resistant and long-lasting construction"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/28-Track.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/28-track/"
+    },
+    {
+      "sku": "RL#DR_003",
+      "name": "Double Rail Stopper",
+      "slug": "double-rail-stopper",
+      "system": "double-rail",
+      "universal": false,
+      "fitsSystems": [
+        "double-rail"
+      ],
+      "component": "stopper",
+      "componentLabel": "Stoppers",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Durable plastic or metal alloy for reliable end-of-track protection"
+        },
+        {
+          "label": "Function",
+          "value": "Prevents runners from sliding off the track ends, ensuring safe curtain operation"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Adjustment",
+          "value": "Positioned at the end of the track"
+        },
+        {
+          "label": "Locking System",
+          "value": "Features screw mechanism for firm hold"
+        },
+        {
+          "label": "Durability",
+          "value": "Built to withstand frequent opening and closing without loosening"
+        },
+        {
+          "label": "Finish",
+          "value": "Smooth and discreet appearance matching the track color"
+        },
+        {
+          "label": "Installation",
+          "value": "Quick and tool-friendly mounting at either end of the rail"
+        },
+        {
+          "label": "Application",
+          "value": "Essential accessory for safe and controlled curtain operation in homes, hotels, and offices"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Double-Rail-Stopper.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/double-rail-stopper/"
+    },
+    {
+      "sku": "RL#DR_001",
+      "name": "Double Rail Track",
+      "slug": "double-rail-track",
+      "system": "double-rail",
+      "universal": false,
+      "fitsSystems": [
+        "double-rail"
+      ],
+      "component": "track",
+      "componentLabel": "Tracks",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-grade aluminum alloy for superior durability and corrosion resistance"
+        },
+        {
+          "label": "Finish",
+          "value": "Smooth powder-coated or anodized surface for a modern aesthetic and easy cleaning"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Dimensions",
+          "value": "Available in standard lengths (1m ? 6m) and customizable upon request"
+        },
+        {
+          "label": "Design",
+          "value": "Dual-channel rail design for operating two curtain layers (sheer and curtain) independently"
+        },
+        {
+          "label": "Operation",
+          "value": "Silent glide operation"
+        },
+        {
+          "label": "Load Capacity",
+          "value": "Designed to hold medium to heavy fabric weights securely"
+        },
+        {
+          "label": "Installation",
+          "value": "Supports ceiling or wall mount via compatible brackets"
+        },
+        {
+          "label": "Application",
+          "value": "Ideal for homes, hotels, offices, and high-end interior installations"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Double-Rail-Track.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/double-rail-track/"
+    },
+    {
+      "sku": "RL#KS_003",
+      "name": "KS Single Ceiling Bracket",
+      "slug": "ks-single-ceiling-bracket",
+      "system": "ks",
+      "universal": false,
+      "fitsSystems": [
+        "ks"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Heavy-duty metal construction"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Type",
+          "value": "Single ceiling mount bracket for KS groove tracks"
+        },
+        {
+          "label": "Design",
+          "value": "Compact and durable with secure locking mechanism"
+        },
+        {
+          "label": "Surface Finish",
+          "value": "Rust-resistant coating for extended life"
+        },
+        {
+          "label": "Function",
+          "value": "Provides firm and stable ceiling support for curtain tracks"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Designed to fit KS groove rails precisely"
+        },
+        {
+          "label": "Installation",
+          "value": "Quick and easy with standard mounting hardware"
+        },
+        {
+          "label": "Application",
+          "value": "Ideal for modern residential and commercial interiors"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/KS-Single-Ceiling-Bracket.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/ks-single-ceiling-bracket/"
+    },
+    {
+      "sku": "RL#KS_002",
+      "name": "KS Runners",
+      "slug": "ks-runners",
+      "system": "ks",
+      "universal": false,
+      "fitsSystems": [
+        "ks"
+      ],
+      "component": "runner",
+      "componentLabel": "Runners",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality plastic or nylon with stainless-steel hook"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Type",
+          "value": "Glide runners designed for KS groove curtain tracks"
+        },
+        {
+          "label": "Function",
+          "value": "Smooth, silent, and stable movement within the track groove"
+        },
+        {
+          "label": "Design",
+          "value": "Secure fit to prevent derailing or jamming"
+        },
+        {
+          "label": "Durability",
+          "value": "Long-lasting, wear-resistant, and corrosion-proof"
+        },
+        {
+          "label": "Installation",
+          "value": "Easy clip-in fitting for quick replacement or adjustment"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Designed exclusively for KS groove curtain tracks"
+        },
+        {
+          "label": "Application",
+          "value": "Suitable for pleated or ripple curtain setups"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/KS-Runners.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/ks-runners/"
+    },
+    {
+      "sku": "RL#KS_004",
+      "name": "KS Stoppers",
+      "slug": "ks-stoppers",
+      "system": "ks",
+      "universal": false,
+      "fitsSystems": [
+        "ks"
+      ],
+      "component": "stopper",
+      "componentLabel": "Stoppers",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-strength plastic or metal"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Type",
+          "value": "Curtain track end stopper for KS groove rails"
+        },
+        {
+          "label": "Function",
+          "value": "Prevents runners from sliding off track ends"
+        },
+        {
+          "label": "Design",
+          "value": "Easy clip-on installation with adjustable grip"
+        },
+        {
+          "label": "Durability",
+          "value": "Shock-resistant and wear-proof for long-term reliability"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Fits securely into KS groove curtain tracks"
+        },
+        {
+          "label": "Application",
+          "value": "Suitable for all KS groove track installations"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/KS-Stoppers.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/ks-stoppers/"
+    },
+    {
+      "sku": "RL#KS_001",
+      "name": "KS Track",
+      "slug": "ks-track",
+      "system": "ks",
+      "universal": false,
+      "fitsSystems": [
+        "ks"
+      ],
+      "component": "track",
+      "componentLabel": "Tracks",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Premium-grade aluminum alloy"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Type",
+          "value": "KS-style grooved curtain track for smooth, silent curtain movement"
+        },
+        {
+          "label": "Design",
+          "value": "Unique internal groove for secure and stable runner gliding"
+        },
+        {
+          "label": "Surface Finish",
+          "value": "Anodized or powder-coated for corrosion resistance"
+        },
+        {
+          "label": "Load Capacity",
+          "value": "Suitable for medium to heavy curtain fabrics"
+        },
+        {
+          "label": "Mounting",
+          "value": "Compatible with ceiling or wall installation using KS brackets"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Works with KS runners, stoppers, and accessories"
+        },
+        {
+          "label": "Function",
+          "value": "Ensures precise and frictionless curtain operation"
+        },
+        {
+          "label": "Application",
+          "value": "Ideal for residential, commercial, or hotel curtain systems"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/KS-Track.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/ks-track/"
+    },
+    {
+      "sku": "RL#MOTOR_005",
+      "name": "Motorized Belt",
+      "slug": "motorized-belt",
+      "system": "motorised",
+      "universal": false,
+      "fitsSystems": [
+        "motorised"
+      ],
+      "component": "belt",
+      "componentLabel": "Belts",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-strength reinforced polyester/nylon belt with rubberized teeth"
+        },
+        {
+          "label": "Color",
+          "value": "Green"
+        },
+        {
+          "label": "Function",
+          "value": "Transfers motor power to curtain runners for smooth opening & closing"
+        },
+        {
+          "label": "Length",
+          "value": "100mtrs (customizable depending on curtain track length)"
+        },
+        {
+          "label": "Installation",
+          "value": "Easily fitted inside curtain track with carriers and motor drive"
+        }
+      ],
+      "summary": "Compatibility: *Designed for use with Dooya motors Performance: *High tensile strength for heavy curtain *Smooth operation with minimal noise *Flexible design for straight or curved tracks",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motorized-Belt.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/motorized-belt/"
+    },
+    {
+      "sku": "RL#MOTOR_010",
+      "name": "Motorized Ceiling Bracket",
+      "slug": "motorized-ceiling-bracket",
+      "system": "motorised",
+      "universal": false,
+      "fitsSystems": [
+        "motorised"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Heavy-duty steel or aluminum alloy"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Design",
+          "value": "Flat, compact bracket with secure locking mechanism"
+        },
+        {
+          "label": "Dimensions",
+          "value": "Low-profile height for minimal ceiling gap"
+        },
+        {
+          "label": "Installation",
+          "value": "Mounted to ceiling surface"
+        }
+      ],
+      "summary": "Features: *Discreet design for modern interiors *Corrosion and wear resistant *Easy slide-and-lock installation for track",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motorized-Ceiling-Bracket.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/motorized-ceiling-bracket/"
+    },
+    {
+      "sku": "RL#MOTOR_015",
+      "name": "Motorized Single Wall Bracket",
+      "slug": "motorized-single-wall-bracket",
+      "system": "motorised",
+      "universal": false,
+      "fitsSystems": [
+        "motorised"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Heavy-duty steel or aluminum alloy"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Dimensions",
+          "value": "Approx. 5?7 cm projection from wall"
+        },
+        {
+          "label": "Function",
+          "value": "Holds one motorized curtain track securely on the wall"
+        },
+        {
+          "label": "Design",
+          "value": "Slim profile with screw mounting plate"
+        },
+        {
+          "label": "Installation",
+          "value": "Screws directly into wall surface"
+        }
+      ],
+      "summary": "Features: *Corrosion-resistant finish *Quick installation with pre-drilled holes *Strong grip for stable wall mounting",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motorized-Single-Wall-Bracket.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/motorized-single-wall-bracket/"
+    },
+    {
+      "sku": "RL#MOTOR_020",
+      "name": "Motorized 135 Degree Corner Joint",
+      "slug": "motorized-135-degree-corner-joint",
+      "system": "motorised",
+      "universal": false,
+      "fitsSystems": [
+        "motorised"
+      ],
+      "component": "corner-joint",
+      "componentLabel": "Corner joints",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality durable plastic with reinforced inner guide channel"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Function",
+          "value": "Connects two curtain track sections at a 135? angle for wide or open corner installations"
+        },
+        {
+          "label": "Dimensions",
+          "value": "Wide-angle precision-molded joint (approx. radius 10?14 cm)"
+        },
+        {
+          "label": "Load Capacity",
+          "value": "Supports smooth curtain travel for systems up to 50?70 kg total load"
+        },
+        {
+          "label": "Installation",
+          "value": "Connects securely between two track sections using screws"
+        },
+        {
+          "label": "Application",
+          "value": "Perfect for wide bay windows, U-shaped, or angled curtain layouts"
+        },
+        {
+          "label": "Package Includes",
+          "value": "1 ? 135? corner joint"
+        }
+      ],
+      "summary": "Features: *Smooth curve for belt and runner passage at 135? angle *Low-friction channel ensures quiet curtain movement *Anti-derail and anti-jamming design for reliability *Durable and long-lasting construction",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motorized-135-Degree-Corner-Joint.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/motorized-135-degree-corner-joint/"
+    },
+    {
+      "sku": "RL#MOTOR_019",
+      "name": "Motorized 45 Degree Corner Joint",
+      "slug": "motorized-45-degree-corner-joint",
+      "system": "motorised",
+      "universal": false,
+      "fitsSystems": [
+        "motorised"
+      ],
+      "component": "corner-joint",
+      "componentLabel": "Corner joints",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality durable plastic with reinforced inner guide channel"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Function",
+          "value": "Connects two curtain track sections at a 45? angle for corner or bay window installations"
+        },
+        {
+          "label": "Dimensions",
+          "value": "Compact insert-type joint with precision-molded curve (approx. radius 8?12 cm)"
+        },
+        {
+          "label": "Load Capacity",
+          "value": "Maintains smooth curtain movement for systems up to 50?70 kg total load"
+        },
+        {
+          "label": "Installation",
+          "value": "Slides into both track ends and secures with screws"
+        },
+        {
+          "label": "Application",
+          "value": "Ideal for angled curtain layouts, bay windows, or architectural corners"
+        },
+        {
+          "label": "Package Includes",
+          "value": "1 ? 45? corner joint"
+        }
+      ],
+      "summary": "Features: *Seamless transition for belt and runners at 45? angle *Low-friction inner surface for quiet, smooth glide *Anti-jamming design to ensure uninterrupted operation *Sturdy, wear-resistant plastic construction",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motorized-45-Degree-Corner-Joint.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/motorized-45-degree-corner-joint/"
+    },
+    {
+      "sku": "RL#MOTOR_008",
+      "name": "Motorized Drive Unit (Power Transmission End)",
+      "slug": "motorized-drive-unit-power-transmission-end",
+      "system": "motorised",
+      "universal": false,
+      "fitsSystems": [
+        "motorised"
+      ],
+      "component": "drive-unit",
+      "componentLabel": "Drive units",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality, durable plastic with reinforced internal gears"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Function",
+          "value": "Connects the motor to the curtain belt, transferring motion along the track"
+        },
+        {
+          "label": "Load Capacity",
+          "value": "Designed for curtain systems up to 50?70 kg (depending on motor)"
+        },
+        {
+          "label": "Installation Position",
+          "value": "Mounted at the motor end of the track"
+        },
+        {
+          "label": "Package Includes",
+          "value": "1 ? Plastic drive unit"
+        }
+      ],
+      "summary": "Features: *Precision gear movement for smooth belt drive *Low-noise operation *Lightweight yet strong plastic housing",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motorized-Drive-Unit-Power-Transmission-End.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/motorized-drive-unit-power-transmission-end/"
+    },
+    {
+      "sku": "RL#MOTOR_009",
+      "name": "Motorized Idle Unit (Tension Pulley End)",
+      "slug": "motorized-idle-unit-tension-pulley-end",
+      "system": "motorised",
+      "universal": false,
+      "fitsSystems": [
+        "motorised"
+      ],
+      "component": "drive-unit",
+      "componentLabel": "Drive units",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality, durable plastic with built-in pulley wheel"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Function",
+          "value": "Maintains belt tension and guides belt movement at the non-motor end"
+        },
+        {
+          "label": "Load Capacity",
+          "value": "Supports belt system tension for curtain systems up to 50?70 kg"
+        },
+        {
+          "label": "Installation Position",
+          "value": "Mounted at the opposite end of the track from drive unit"
+        },
+        {
+          "label": "Package Includes",
+          "value": "1 ? Plastic idle unit"
+        }
+      ],
+      "summary": "Features: *Smooth pulley for reduced friction *Wear-resistant plastic construction *Ensures stable and reliable curtain movement",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motorized-Idle-Unit-Tension-Pulley-End.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/motorized-idle-unit-tension-pulley-end/"
+    },
+    {
+      "sku": "RL#MOTOR_017",
+      "name": "Motorized Double Metal Holder",
+      "slug": "motorized-double-metal-holder",
+      "system": "motorised",
+      "universal": false,
+      "fitsSystems": [
+        "motorised"
+      ],
+      "component": "holder",
+      "componentLabel": "Holders",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-strength steel or aluminum alloy"
+        },
+        {
+          "label": "Color",
+          "value": "Silver"
+        },
+        {
+          "label": "Function",
+          "value": "Provides heavy-duty support for motorized curtain tracks"
+        },
+        {
+          "label": "Dimensions",
+          "value": "Sturdy, compact bracket design (length approx. 4?6 cm, thickness 2?3 mm)"
+        },
+        {
+          "label": "Load Capacity",
+          "value": "Reinforced for heavy curtains, up to 70+ kg system capacity"
+        },
+        {
+          "label": "Installation",
+          "value": "Screw-mounted to ceiling or wall; track slides/locks into holder"
+        },
+        {
+          "label": "Application",
+          "value": "Recommended for homes, hotels, offices, with installations of heavy drapes"
+        },
+        {
+          "label": "Package Includes",
+          "value": "1 ? Metal track holder"
+        }
+      ],
+      "summary": "Features: *Stronger and more durable than plastic holders *Corrosion- and rust-resistant finish *Ensures maximum stability for long tracks or heavy fabrics *Secure locking system to prevent track movement",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motorized-Double-Metal-Holder.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/motorized-double-metal-holder/"
+    },
+    {
+      "sku": "RL#MOTOR_016",
+      "name": "Motorized White Single Holder",
+      "slug": "motorized-white-single-holder",
+      "system": "motorised",
+      "universal": false,
+      "fitsSystems": [
+        "motorised"
+      ],
+      "component": "holder",
+      "componentLabel": "Holders",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality durable plastic"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Function",
+          "value": "Holds one motorized curtain track securely in place"
+        },
+        {
+          "label": "Dimensions",
+          "value": "Compact, low-profile design (length approx. 3?5 cm)"
+        },
+        {
+          "label": "Load Capacity",
+          "value": "Supports system weight up to 50?70 kg when installed at regular intervals"
+        },
+        {
+          "label": "Installation",
+          "value": "Mounted to ceiling or wall using screws; track clicks or slides into holder"
+        },
+        {
+          "label": "Application",
+          "value": "Suitable for residential and light commercial motorized curtain setups"
+        },
+        {
+          "label": "Package Includes",
+          "value": "1 ? Single plastic track holder"
+        }
+      ],
+      "summary": "Features: *Lightweight yet strong construction *Snap-fit or screw-on mounting for easy installation *Corrosion and wear resistant *Keeps track securely aligned during operation",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motorized-White-Single-Holder.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/motorized-white-single-holder/"
+    },
+    {
+      "sku": "RL#MOTOR_006",
+      "name": "Motorized Normal Master Carrier",
+      "slug": "motorized-normal-master-carrier",
+      "system": "motorised",
+      "universal": false,
+      "fitsSystems": [
+        "motorised"
+      ],
+      "component": "master-carrier",
+      "componentLabel": "Master carriers",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Durable plastic body with smooth-rolling nylon/POM wheels"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Function",
+          "value": "Attaches curtain hooks to the track belt, enabling smooth curtain glide"
+        },
+        {
+          "label": "Load Capacity",
+          "value": "Supports heavy curtains when distributed across the rail"
+        },
+        {
+          "label": "Installation",
+          "value": "Slides into the curtain track and connects to the curtain belt system"
+        },
+        {
+          "label": "Application",
+          "value": "Standard use for flat curtain tapes"
+        },
+        {
+          "label": "Package Contents",
+          "value": "Set of carriers"
+        }
+      ],
+      "summary": "Features: *Low-friction wheels for quiet operation *Anti-jamming design for smooth travel *Long-lasting wear resistance",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motorized-Normal-Master-Carrier.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/motorized-normal-master-carrier/"
+    },
+    {
+      "sku": "RL#MOTOR_007",
+      "name": "Motorized Ripple Master Carrier",
+      "slug": "motorized-ripple-master-carrier",
+      "system": "motorised",
+      "universal": false,
+      "fitsSystems": [
+        "motorised"
+      ],
+      "component": "master-carrier",
+      "componentLabel": "Master carriers",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Durable plastic body with smooth-rolling nylon/POM wheels"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Function",
+          "value": "Provides consistent ripple fold spacing for modern curtain styling"
+        },
+        {
+          "label": "Installation",
+          "value": "Easily clips onto the ripple fold cord/belt system inside the track"
+        },
+        {
+          "label": "Application",
+          "value": "Standard use for pleated curtain tapes"
+        },
+        {
+          "label": "Ideal for",
+          "value": "Hotels, offices, and modern interiors requiring ripple fold curtains"
+        },
+        {
+          "label": "Package Contents",
+          "value": "Set of ripple master carriers"
+        }
+      ],
+      "summary": "Features: *Maintains uniform wave/ripple curtain appearance *Smooth and quiet glide along the track *Anti-friction design for durability",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motorized-Ripple-Master-Carrier.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/motorized-ripple-master-carrier/"
+    },
+    {
+      "sku": "RL#MOTOR_002",
+      "name": "Motor 45 watts",
+      "slug": "motor-45-watts",
+      "system": "motorised",
+      "universal": false,
+      "fitsSystems": [
+        "motorised"
+      ],
+      "component": "motor",
+      "componentLabel": "Motors",
+      "specs": [
+        {
+          "label": "Model",
+          "value": "Dooya DT82TN/NAC-1.2/14"
+        },
+        {
+          "label": "Control Operation",
+          "value": "Remote control operation"
+        },
+        {
+          "label": "Motor Type",
+          "value": "Quiet DC motor with electronic limit setting"
+        },
+        {
+          "label": "Power Supply",
+          "value": "AC 100?240V, 50/60Hz"
+        },
+        {
+          "label": "Rated Power",
+          "value": "45W"
+        },
+        {
+          "label": "Speed",
+          "value": "14 cm/second (curtain opening/closing)"
+        },
+        {
+          "label": "Rated Torque",
+          "value": "1.2 Nm"
+        },
+        {
+          "label": "Installation",
+          "value": "Ceiling mounting and needs power supply socket"
+        },
+        {
+          "label": "Application",
+          "value": "Suitable for residential, hotel, and commercial curtain installations"
+        }
+      ],
+      "summary": "Load Capacity: *Curtain: up to 50 kgs Package Contents: *1 ? DT82TN/NAC-1.2/14 Curtain Motor *Remote with batteries",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motor-45-watts.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/motor-45-watts/"
+    },
+    {
+      "sku": "RL#MOTOR_003",
+      "name": "Motor 75 watts",
+      "slug": "motor-75-watts",
+      "system": "motorised",
+      "universal": false,
+      "fitsSystems": [
+        "motorised"
+      ],
+      "component": "motor",
+      "componentLabel": "Motors",
+      "specs": [
+        {
+          "label": "Model",
+          "value": "Dooya DT82E-75/20"
+        },
+        {
+          "label": "Control Operation",
+          "value": "Remote control operation"
+        },
+        {
+          "label": "Motor Type",
+          "value": "Quiet DC motor with electronic limit setting"
+        },
+        {
+          "label": "Power Supply",
+          "value": "AC 220V, 50Hz"
+        },
+        {
+          "label": "Rated Power",
+          "value": "75W"
+        },
+        {
+          "label": "Speed",
+          "value": "20 cm/second (curtain opening/closing)"
+        },
+        {
+          "label": "Rated Torque",
+          "value": "1.2 Nm"
+        },
+        {
+          "label": "Installation",
+          "value": "Ceiling mounting and needs power supply socket"
+        },
+        {
+          "label": "Application",
+          "value": "Suitable for residential, hotel, and commercial curtain installations"
+        }
+      ],
+      "summary": "Load Capacity: *Curtain: up to 100 kgs Package Contents: *1 ? DT82E-75/20 Curtain Motor *Remote with batteries",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motor-75-watts.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/motor-75-watts/"
+    },
+    {
+      "sku": "RL#MOTOR_001",
+      "name": "Wifi Motor 13 watts",
+      "slug": "wifi-motor-13-watts",
+      "system": "motorised",
+      "universal": false,
+      "fitsSystems": [
+        "motorised"
+      ],
+      "component": "motor",
+      "componentLabel": "Motors",
+      "specs": [
+        {
+          "label": "Model",
+          "value": "Dooya T10"
+        },
+        {
+          "label": "Smart Platform",
+          "value": "Tuya-powered (works with Tuya Smart / Smart Life apps)"
+        },
+        {
+          "label": "Control Options",
+          "value": "WiFi app control (iOS & Android)"
+        },
+        {
+          "label": "Control Operation",
+          "value": "Remote control operation"
+        },
+        {
+          "label": "Motor Type",
+          "value": "Quiet DC motor with smart control"
+        },
+        {
+          "label": "Power Supply",
+          "value": "AC 100?240V, 50/60Hz"
+        },
+        {
+          "label": "Rated Power",
+          "value": "13 Watts"
+        },
+        {
+          "label": "Speed",
+          "value": "14 cm/second (curtain opening/closing)"
+        },
+        {
+          "label": "Rated Torque",
+          "value": "1.2 Nm"
+        },
+        {
+          "label": "Installation",
+          "value": "Ceiling mounting and needs power supply socket"
+        },
+        {
+          "label": "Application",
+          "value": "Suitable for residential, hotel, and commercial curtain installations"
+        }
+      ],
+      "summary": "Load Capacity: *Curtain: up to 50 kgs Package Contents: *1 ? Dooya T10 WiFi Curtain Motor *Remote with batteries",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Wifi-Motor-13-watts.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/wifi-motor-13-watts/"
+    },
+    {
+      "sku": "RL#MOTOR_018",
+      "name": "Motorized Stopper",
+      "slug": "motorized-stopper",
+      "system": "motorised",
+      "universal": false,
+      "fitsSystems": [
+        "motorised"
+      ],
+      "component": "stopper",
+      "componentLabel": "Stoppers",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality durable metal"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motorized-Stopper.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/motorized-stopper/"
+    },
+    {
+      "sku": "RL#MOTOR_004",
+      "name": "Motorized Track",
+      "slug": "motorized-track",
+      "system": "motorised",
+      "universal": false,
+      "fitsSystems": [
+        "motorised"
+      ],
+      "component": "track",
+      "componentLabel": "Tracks",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Heavy-duty aluminum alloy track with reinforced fittings"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Finish",
+          "value": "Anodized / powder-coated for durability and smooth operation"
+        },
+        {
+          "label": "Length",
+          "value": "6.7mtrs (customizable depending on curtain track length)"
+        },
+        {
+          "label": "Speed",
+          "value": "14 & 20 cm/second (motor dependent)"
+        },
+        {
+          "label": "Mounting Options",
+          "value": "Ceiling mount or wall mount with provided brackets"
+        }
+      ],
+      "summary": "Motor Compatibility: *Designed for use with Dooya motors, supports WiFi/Tuya smart motors Control Options (with motor): *Remote control (RF) *Mobile app (with Tuya/WiFi-enabled motors) Curtain Operation Modes: *Single track ? one-way draw *Double track ? center opening (left & right split) Accessories Included: *Curtain runners/carriers with plastic lining for silent glide. *End caps for neat finish *Mounting brackets & screws *Optional corner joints for bay window/L-shaped installations",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motorized-Track.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/motorized-track/"
+    },
+    {
+      "sku": "RL#ROMAN_001",
+      "name": "Roman Blind Track",
+      "slug": "roman-blind-track",
+      "system": "roman-blind",
+      "universal": false,
+      "fitsSystems": [
+        "roman-blind"
+      ],
+      "component": "track",
+      "componentLabel": "Tracks",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality aluminum alloy"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Type",
+          "value": "Headrail track system for Roman blinds"
+        },
+        {
+          "label": "Mechanism",
+          "value": "Smooth rolling system for easy lifting and lowering"
+        },
+        {
+          "label": "Finish",
+          "value": "Powder-coated for corrosion and wear resistance"
+        },
+        {
+          "label": "Operation",
+          "value": "Compatible with chain-operated or motorized systems"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Works with Roman blind drive unit, roller unit, and accessories"
+        },
+        {
+          "label": "Installation",
+          "value": "Ceiling or wall mount option"
+        },
+        {
+          "label": "Application",
+          "value": "Suitable for residential, office, and hotel window systems"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Roman-Blind-Track.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/roman-blind-track/"
+    },
+    {
+      "sku": null,
+      "name": "Curtain Buckles",
+      "slug": "curtain-buckles",
+      "system": null,
+      "universal": true,
+      "fitsSystems": [
+        "motorised",
+        "20-rubber",
+        "20",
+        "28",
+        "15-bendable",
+        "17-rubber",
+        "ks",
+        "double-rail",
+        "roman-blind"
+      ],
+      "component": "buckle",
+      "componentLabel": "Curtain buckles",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality plastic for strength and longevity"
+        },
+        {
+          "label": "Color",
+          "value": "Marble Brown"
+        },
+        {
+          "label": "Design",
+          "value": "Snap-fit buckle for secure curtain attachment"
+        },
+        {
+          "label": "Function",
+          "value": "Used to fasten curtain fabrics or connect tapes to rods"
+        },
+        {
+          "label": "Finish",
+          "value": "Smooth, rust-resistant surface"
+        },
+        {
+          "label": "Durability",
+          "value": "Designed for long-term use without loosening or cracking"
+        },
+        {
+          "label": "Application",
+          "value": "Compatible with most curtain tapes and tracks"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Marble-Brown-Curtain-Buckles.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/marble-brown-curtain-buckles/",
+      "variantAxis": "Finish",
+      "variants": [
+        {
+          "sku": "RL#ACC_010",
+          "label": "Marble brown",
+          "swatch": "#6B4A32",
+          "priceKes": null,
+          "tradePriceKes": null,
+          "stock": null,
+          "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Marble-Brown-Curtain-Buckles.jpg",
+          "legacyUrl": "https://allfix.co.ke/product/marble-brown-curtain-buckles/"
+        },
+        {
+          "sku": "RL#ACC_009",
+          "label": "Marble black",
+          "swatch": "#2B2B2E",
+          "priceKes": null,
+          "tradePriceKes": null,
+          "stock": null,
+          "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Marble-Black-Curtain-Buckles.jpg",
+          "legacyUrl": "https://allfix.co.ke/product/marble-black-curtain-buckles/"
+        },
+        {
+          "sku": "RL#ACC_008",
+          "label": "Black",
+          "swatch": "#141416",
+          "priceKes": null,
+          "tradePriceKes": null,
+          "stock": null,
+          "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Black-Curtain-Buckles.jpg",
+          "legacyUrl": "https://allfix.co.ke/product/black-curtain-buckles/"
+        },
+        {
+          "sku": "RL#ACC_006",
+          "label": "Copper",
+          "swatch": "#B06B3A",
+          "priceKes": null,
+          "tradePriceKes": null,
+          "stock": null,
+          "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Copper-Curtain-Buckles.jpg",
+          "legacyUrl": "https://allfix.co.ke/product/copper-curtain-buckles/"
+        },
+        {
+          "sku": "RL#ACC_005",
+          "label": "Silver",
+          "swatch": "#B9BCC1",
+          "priceKes": null,
+          "tradePriceKes": null,
+          "stock": null,
+          "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Silver-Curtain-Buckles.jpg",
+          "legacyUrl": "https://allfix.co.ke/product/silver-curtain-buckles/"
+        },
+        {
+          "sku": "RL#ACC_004",
+          "label": "White",
+          "swatch": "#F2F2F0",
+          "priceKes": null,
+          "tradePriceKes": null,
+          "stock": null,
+          "image": "https://allfix.co.ke/wp-content/uploads/2026/04/White-Curtain-Buckles.jpg",
+          "legacyUrl": "https://allfix.co.ke/product/white-curtain-buckles/"
+        }
+      ]
+    },
+    {
+      "sku": "RL#ACC_001",
+      "name": "3 Pleat Hooks",
+      "slug": "3-pleat-hooks",
+      "system": null,
+      "universal": true,
+      "fitsSystems": [
+        "motorised",
+        "20-rubber",
+        "20",
+        "28",
+        "15-bendable",
+        "17-rubber",
+        "ks",
+        "double-rail",
+        "roman-blind"
+      ],
+      "component": "hook",
+      "componentLabel": "Curtain hooks",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Durable plastic or metal construction for long-lasting performance"
+        },
+        {
+          "label": "Color Options",
+          "value": "Commonly available in white or silver finish"
+        },
+        {
+          "label": "Design",
+          "value": "Triple-prong hook design to create elegant three-pleat curtain waves"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Fits 3 pleat tapes"
+        },
+        {
+          "label": "Finish",
+          "value": "Smooth edges to prevent fabric damage during installation"
+        },
+        {
+          "label": "Usage",
+          "value": "Ideal for triple pleat curtain styles"
+        },
+        {
+          "label": "Installation",
+          "value": "Easy to insert and adjust for uniform pleats"
+        },
+        {
+          "label": "Durability",
+          "value": "Resistant to corrosion, and breakage"
+        },
+        {
+          "label": "Application",
+          "value": "Suitable for residential, hotel, and office curtains"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/3-Pleat-Hooks.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/3-pleat-hooks/"
+    },
+    {
+      "sku": null,
+      "name": "Curtain Tape Hooks",
+      "slug": "curtain-tape-hooks",
+      "system": null,
+      "universal": true,
+      "fitsSystems": [
+        "motorised",
+        "20-rubber",
+        "20",
+        "28",
+        "15-bendable",
+        "17-rubber",
+        "ks",
+        "double-rail",
+        "roman-blind"
+      ],
+      "component": "hook",
+      "componentLabel": "Curtain hooks",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Premium-grade nylon or polypropylene plastic"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Design",
+          "value": "Lightweight and flexible hook for use with curtain heading tapes"
+        },
+        {
+          "label": "Finish",
+          "value": "Smooth surface to prevent tearing of the curtain tape"
+        },
+        {
+          "label": "Durability",
+          "value": "Resistant to wear, UV rays, and corrosion"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Fits standard curtain rods and rails"
+        },
+        {
+          "label": "Usage",
+          "value": "Ideal for light to medium-weight curtain fabrics"
+        },
+        {
+          "label": "Installation",
+          "value": "Simple or slide-in application"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Plastic-Curtain-Tape-Hooks.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/plastic-curtain-tape-hooks/",
+      "variantAxis": "Material",
+      "variants": [
+        {
+          "sku": "RL#ACC_003",
+          "label": "Plastic",
+          "swatch": "#E8E8E6",
+          "priceKes": null,
+          "tradePriceKes": null,
+          "stock": null,
+          "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Plastic-Curtain-Tape-Hooks.jpg",
+          "legacyUrl": "https://allfix.co.ke/product/plastic-curtain-tape-hooks/"
+        },
+        {
+          "sku": "RL#ACC_002",
+          "label": "Metal",
+          "swatch": "#9AA0A6",
+          "priceKes": null,
+          "tradePriceKes": null,
+          "stock": null,
+          "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Metal-Curtain-Tape-Hooks.jpg",
+          "legacyUrl": "https://allfix.co.ke/product/metal-curtain-tape-hooks/"
+        }
+      ]
+    },
+    {
+      "sku": "RL#ACC_015",
+      "name": "Ripple runners",
+      "slug": "ripple-runners",
+      "system": null,
+      "universal": true,
+      "fitsSystems": [
+        "motorised",
+        "20-rubber",
+        "20",
+        "28",
+        "15-bendable",
+        "17-rubber",
+        "ks",
+        "double-rail",
+        "roman-blind"
+      ],
+      "component": "runner",
+      "componentLabel": "Runners",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Woven polyester with evenly spaced pockets for ripple fold hooks"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Width",
+          "value": "Commonly 80mm wide for balanced wave flow"
+        },
+        {
+          "label": "Design",
+          "value": "Creates symmetrical, ripple-like curtain wave"
+        },
+        {
+          "label": "Durability",
+          "value": "Long-lasting and easy to sew onto curtain headers"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Designed for ripple fold and wave curtain systems"
+        },
+        {
+          "label": "Usage",
+          "value": "Ideal for both manual and motorized curtain tracks"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Ripple-Tape-with-runners.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/ripple-runners/"
+    },
+    {
+      "sku": "RL#ACC_012",
+      "name": "3 Pleat Tape",
+      "slug": "3-pleat-tape",
+      "system": null,
+      "universal": true,
+      "fitsSystems": [
+        "motorised",
+        "20-rubber",
+        "20",
+        "28",
+        "15-bendable",
+        "17-rubber",
+        "ks",
+        "double-rail",
+        "roman-blind"
+      ],
+      "component": "tape",
+      "componentLabel": "Curtain tapes",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-strength woven polyester fabric"
+        },
+        {
+          "label": "Width",
+          "value": "Commonly 75mm wide for stable pleat formation"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Design",
+          "value": "Pre-marked pockets for easy 3-pleat hook insertion"
+        },
+        {
+          "label": "Durability",
+          "value": "Resistant to tearing, wrinkling, and UV fading"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Works with 3-pleat hooks, standard rods and tracks"
+        },
+        {
+          "label": "Usage",
+          "value": "Ideal for creating structured, elegant drapery folds"
+        },
+        {
+          "label": "Application",
+          "value": "Suitable for living rooms, hotels, and offices"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/3-Pleat-Tape.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/3-pleat-tape/"
+    },
+    {
+      "sku": "RL#ACC_011",
+      "name": "Buckle Tape",
+      "slug": "buckle-tape",
+      "system": null,
+      "universal": true,
+      "fitsSystems": [
+        "motorised",
+        "20-rubber",
+        "20",
+        "28",
+        "15-bendable",
+        "17-rubber",
+        "ks",
+        "double-rail",
+        "roman-blind"
+      ],
+      "component": "tape",
+      "componentLabel": "Curtain tapes",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Strong woven polyester or cotton blend tape"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Width",
+          "value": "Standard 25mm?75mm sizes available"
+        },
+        {
+          "label": "Design",
+          "value": "Integrated loops or eyelets for easy hook or buckle insertion"
+        },
+        {
+          "label": "Durability",
+          "value": "Resistant to shrinkage, fraying, and UV damage"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Works with standard curtain buckles"
+        },
+        {
+          "label": "Usage",
+          "value": "Suitable for custom-made drapery and pleated curtains"
+        },
+        {
+          "label": "Application",
+          "value": "Used for precise curtain hanging and alignment"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Buckle-Tape.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/buckle-tape/"
+    },
+    {
+      "sku": "RL#ACC_014",
+      "name": "S-Tape",
+      "slug": "s-tape",
+      "system": null,
+      "universal": true,
+      "fitsSystems": [
+        "motorised",
+        "20-rubber",
+        "20",
+        "28",
+        "15-bendable",
+        "17-rubber",
+        "ks",
+        "double-rail",
+        "roman-blind"
+      ],
+      "component": "tape",
+      "componentLabel": "Curtain tapes",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Premium polyester or blended fabric tape"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Width",
+          "value": "Typically 80mm for ideal wave spacing"
+        },
+        {
+          "label": "Design",
+          "value": "Round metal pins create the flowing ?S? style curtain waves"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Works with S-fold runners and gliders"
+        },
+        {
+          "label": "Durability",
+          "value": "Resistant to shrinkage, wear, and sunlight"
+        },
+        {
+          "label": "Application",
+          "value": "Best suited for contemporary curtain installations"
+        }
+      ],
+      "summary": "",
+      "priceKes": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/S-Tape.jpg",
+      "legacyUrl": "https://allfix.co.ke/product/s-tape/"
+    }
+  ],
+  "dropped": [
+    "Product",
+    "Product",
+    "Product",
+    "Product",
+    "Product"
+  ],
+  "skuCount": 62
+}
