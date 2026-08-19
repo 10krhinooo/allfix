@@ -43,6 +43,42 @@ within it.
 | Antique copper | `RD#AC_` | 17 | 19, 25, 28mm |
 | Antique silver | `RD#MN_` | 12 | 19, 25, 28mm |
 
+## The storefront
+
+Next.js (App Router) with Tailwind, TypeScript throughout. Until the Quarkus backend lands,
+`src/lib/catalogue.ts` reads the migrated catalogue directly and is the seam the API slots
+into later without a page changing.
+
+```bash
+npm run dev      # start the storefront
+npm run build    # production build
+npm run lint     # eslint
+```
+
+| Route | What it is |
+| --- | --- |
+| `/` | Marketing front door, with a WhatsApp quote as the primary action |
+| `/systems`, `/systems/[slug]` | Browse by rail system, the primary axis, drawn in cross-section |
+| `/shop` | Faceted browser over every part, filtered in the client for an instant feel |
+| `/product/[slug]` | Gallery, variants, price, spec table, and the systems a part fits |
+| `/build` | The rail configurator: a window in, a bill of materials out |
+| `/services`, `/services/[slug]` | Installation, assembly, curtaining, motorisation, consultation |
+| `/book` | Measure-up and site-survey booking |
+| `/trade` | The wholesale proposition and account application |
+| `/privacy`, `/terms` | Legal pages |
+
+A price resolves to a real figure, to the client's pricing rule in words, or to "price on
+request", and never to "KES 0", the bug that left the old store unable to sell. The
+configurator computes quantities only and hands the finished list to WhatsApp for a quote,
+because a priced bill of materials belongs on the backend that resolves it against the
+caller's account tier.
+
+## Deployment
+
+Hosted on Vercel, git-connected to this repo. `main` is the production branch and deploys to
+[allfix-vkimanga-8886s-projects.vercel.app](https://allfix-vkimanga-8886s-projects.vercel.app);
+every other branch gets its own preview URL.
+
 ## Migration
 
 `tools/migrate/` rebuilds the catalogue from two sources, both committed under
