@@ -128,3 +128,27 @@ export function imageFor(product: Product, variant?: Variant) {
 export function skusOf(product: Product) {
   return product.variants?.length ?? 1
 }
+
+/**
+ * The parts for a system, bucketed by component type and still in assembly
+ * order. A system page reads as a build sheet rather than a wall of cards, and
+ * the buckets double as its jump links.
+ */
+export function partsForSystemByComponent(slug: string) {
+  const grouped = new Map<string, Product[]>()
+  for (const product of partsForSystem(slug)) {
+    const bucket = grouped.get(product.component)
+    if (bucket) bucket.push(product)
+    else grouped.set(product.component, [product])
+  }
+
+  return [...grouped].map(([component, parts]) => ({
+    component: getComponent(component) ?? { slug: component, name: parts[0].componentLabel, purpose: "" },
+    parts,
+  }))
+}
+
+/** How many orderable SKUs sit behind a system, counting variants separately. */
+export function skuCountForSystem(slug: string) {
+  return partsForSystem(slug).reduce((total, product) => total + skusOf(product), 0)
+}
