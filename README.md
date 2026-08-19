@@ -29,15 +29,35 @@ the site shows you every part that fits it. Component type stays as a filter.
 | Roman blind | `RL#ROMAN_` | 1 |
 | Curtain-side parts (fit any system) | `RL#ACC_` | 13 |
 
+## Rods browse by finish, not by system
+
+Rods are the other half of the shop, and the old site did not carry a single one. They do
+not belong on the rail axis: nothing that fits a #20 fits a 28mm pole. What a rod customer
+matches on is finish first, then diameter, so finish is the browse axis and the bore filters
+within it.
+
+| Range | SKU prefix | Parts | Diameters |
+| --- | --- | --- | --- |
+| Antique brass | `RD#AB_` | 27 | 19, 25, 28mm |
+| Antique black | `RD#BL_` | 18 | 19, 25, 28mm |
+| Antique copper | `RD#AC_` | 17 | 19, 25, 28mm |
+| Antique silver | `RD#MN_` | 12 | 19, 25, 28mm |
+
 ## Migration
 
-`tools/migrate/` rebuilds the catalogue from the old store's WooCommerce Store API. The raw
-export is committed under `tools/migrate/raw/` so the migration is reproducible offline.
+`tools/migrate/` rebuilds the catalogue from two sources, both committed under
+`tools/migrate/raw/` so the migration is reproducible offline. They answer different
+questions: the WooCommerce Store API export holds the rail parts and their photography but
+no usable price, and the client's product workbook holds the money, the unit each price is
+quoted in, and the entire rod line.
 
 ```bash
-python3 tools/migrate/migrate.py --images --prices data/price-list.csv
+python3 tools/migrate/migrate.py --images
 python3 -m unittest discover -s tools/migrate -t tools/migrate
 ```
+
+The workbook is the price of record. `--prices data/price-list.csv` still overrides it per
+SKU, so a correction can be made without waiting on a new workbook.
 
 What it does:
 
@@ -50,14 +70,28 @@ What it does:
 - collapses declared colour and material duplicates into variants. The six buckle colours
   were six separate products
 - resolves `fitsSystems` for every part
-- trims, squares and compresses the photography: 62 images, 18 KB average, down from
-  70 to 120 KB unoptimised JPEG
+- squares and compresses the photography as shot, background included: 62 images, 18 KB
+  average, down from 70 to 120 KB unoptimised JPEG. Nothing is cropped or cut out, and the
+  square is padded with the shot's own edge colour so the pad is invisible
+- adds the stock the old site never listed: the 74 rod SKUs, 25 rail SKUs including most of
+  the roman blind system, and a seventh buckle colour that joins the existing group
 
-Result: **56 products across 62 SKUs**, from 67 source rows.
+Result: **154 products across 161 SKUs**, 80 rail and 74 rod.
 
 ## Prices
 
-Prices are the one thing that cannot be recovered, because the source store prices everything at
-zero. `data/price-list-template.csv` lists all 62 SKUs with the product, system and part
-type pre-filled for the client to complete. Until it comes back, the catalogue builds with
-prices null and the storefront shows "price on request" rather than inventing a number.
+Prices could not be recovered from the old store, which quoted everything at zero. They come
+instead from the client's workbook, which prices 138 of the 154 products.
+
+Two things about that workbook drive the data model:
+
+- **A price says what it buys.** Track is quoted per metre, tie backs per pair, and there are
+  box and roll prices too. A bare figure would misprice both a 400 per metre track and a 300
+  per pair tie back, so `priceBasis` is carried on every product and rendered with the money.
+- **Some rows price in words.** Nine roman blind fittings read "Included in the cost of the
+  track per mtr", and the double rail track quotes a metre rate alongside a full length. Those
+  are pricing rules, not numbers. They are carried verbatim as `priceNote` and the part stays
+  unpriced, because a wrong number here is worse than no number.
+
+Seven products are still genuinely unpriced, so the storefront shows "price on request" for
+them rather than inventing a figure. Stock is not quoted at all, so it stays untracked.
