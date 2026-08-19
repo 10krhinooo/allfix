@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+/*
+ * AllFix design tokens.
+ *
+ * The palette is sampled from the shop's own logo: an oxblood wordmark whose X
+ * is a crossed spanner and screwdriver, and a brass "By Kipekee" script. Brass
+ * is the metal, used to draw the hardware itself, and oxblood is reserved for
+ * actions, so a control is never confused with an illustration. The ground is
+ * drafting paper rather than a warm cream, because the whole visual language
+ * here is the engineering drawing.
+ *
+ * The values live in plain custom properties and the theme references them with
+ * `@theme inline`. `@theme` is resolved at build time and hoisted out of any
+ * block it sits in, so a dark palette declared inside a media query would
+ * silently replace the light one rather than override it at runtime.
+ */
+:root {
+  --paper: #ffffff;
+  --panel: #f7f7f6;
+  --grid: #e7e8e9;
+  --rule: #dcdee0;
+  --ink: #16151a;
+  --slate: #5c5f66;
+  --mute: #8a8e96;
+  --brass: #9d840f;
+  --brass-soft: #f6f1d8;
+  --oxblood: #7c1518;
+  --oxblood-deep: #5d0f12;
+
+  /* Fixed in both themes: it carries white text and must stay dark. */
+  --band: #6d1215;
+}
+
+/*
+ * Dark is opt in, not automatic.
+ *
+ * The brand is oxblood and brass on white, and a shopper arriving with their
+ * operating system set to dark should still see the shop's own colours rather
+ * than an inverted approximation of them. The toggle in the header sets
+ * `data-theme` on the document, and that is the only thing that switches this.
+ */
+:root[data-theme="dark"] {
+  --paper: #141317;
+  --panel: #1c1b21;
+  --grid: #232229;
+  --rule: #2e2d36;
+  --ink: #f2f1ee;
+  --slate: #a8abb3;
+  --mute: #7b7f88;
+  --brass: #d4b73a;
+  --brass-soft: #2a2618;
+  /* Lifted for contrast on a dark ground, but held warm so it does not read pink. */
+  --oxblood: #e0705f;
+  --oxblood-deep: #c2453a;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-panel: var(--panel);
+  --color-grid: var(--grid);
+  --color-rule: var(--rule);
+  --color-ink: var(--ink);
+  --color-slate: var(--slate);
+  --color-mute: var(--mute);
+  --color-brass: var(--brass);
+  --color-brass-soft: var(--brass-soft);
+  --color-oxblood: var(--oxblood);
+  --color-oxblood-deep: var(--oxblood-deep);
+  --color-band: var(--band);
+
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+}
+
+html {
+  background: var(--paper);
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * The drafting grid. It sits behind the whole page at a low contrast so it
+ * reads as paper rather than as decoration, and it is what makes the profile
+ * drawings feel measured rather than floating.
+ */
+.drafting {
+  background-image:
+    linear-gradient(to right, var(--grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* An eyebrow label, in the voice of a drawing callout. */
+.callout {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+:where(a, button, input, select, summary):focus-visible {
+  outline: 2px solid var(--oxblood);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* TraceOnView checks this too, and simply does not run. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * Logo theming. Handled here rather than in React so the right mark is present
+ * on the first paint, with no swap after hydration.
+ */
+.logo-dark { display: none; }
+:root[data-theme="dark"] .logo-light { display: none; }
+:root[data-theme="dark"] .logo-dark { display: block; }

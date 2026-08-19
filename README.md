@@ -3,13 +3,13 @@
 Storefront for a Nairobi curtain-hardware supplier on Njugu Lane, CBD: rails, rods,
 motorised systems and the parts that fit them.
 
-Replaces `allfix.co.ke`, a WooCommerce store that could not take an order — every one of
+Replaces `allfix.co.ke`, a WooCommerce store that could not take an order. Every one of
 its 67 products was priced 0 in USD, the browse pages were disconnected from the shop, and
 the catalogue carried no structured data at all.
 
 ## The organising idea: shop by system, not by part
 
-The old site browsed by component type — Brackets, Stoppers, Runners — which makes every
+The old site browsed by component type (Brackets, Stoppers, Runners), which makes every
 customer solve compatibility themselves, and is why people buy a track and forget the
 stoppers. But the SKUs already encode the answer: `RL#20_004`, `RL#28_008`, `RL#KS_003`.
 
@@ -43,21 +43,21 @@ What it does:
 
 - drops the 5 placeholder rows named "Product" that carry no SKU, image or category
 - derives the rail system from the SKU prefix, and the part type from the product name
-  (the WooCommerce categories are corrupt — `Tapes` is its own parent, 5 products sit in
+  (the WooCommerce categories are corrupt: `Tapes` is its own parent, 5 products sit in
   `Uncategorized`)
 - recovers a specification table from the `Label: value<br/>` HTML the shop wrote into the
   descriptions, so specs render as data instead of prose
-- collapses declared colour and material duplicates into variants — the six buckle colours
+- collapses declared colour and material duplicates into variants. The six buckle colours
   were six separate products
 - resolves `fitsSystems` for every part
 - trims, squares and compresses the photography: 62 images, 18 KB average, down from
-  70–120 KB unoptimised JPEG
+  70 to 120 KB unoptimised JPEG
 
 Result: **56 products across 62 SKUs**, from 67 source rows.
 
 ## Prices
 
-Prices are the one thing that cannot be recovered — the source store prices everything at
+Prices are the one thing that cannot be recovered, because the source store prices everything at
 zero. `data/price-list-template.csv` lists all 62 SKUs with the product, system and part
 type pre-filled for the client to complete. Until it comes back, the catalogue builds with
 prices null and the storefront shows "price on request" rather than inventing a number.
