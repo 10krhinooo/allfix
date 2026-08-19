@@ -1,8 +1,23 @@
 import Link from "next/link"
 import { SystemPicker } from "@/components/SystemPicker"
 import { TraceOnView } from "@/components/TraceOnView"
-import { systems, componentsInOrder } from "@/lib/catalogue"
-import { SHOP } from "@/lib/format"
+import { systems, ranges, rails, rods } from "@/lib/catalogue"
+import { SHOP, whatsapp } from "@/lib/format"
+
+/**
+ * The marketing front door.
+ *
+ * An earlier version opened with "which rail do you already have?", which is
+ * the right question for a customer replacing a broken stopper and the wrong
+ * one for everybody else: it asks a first-time visitor to identify a track they
+ * do not own yet, and it buries the fact that the shop measures, sews, fits and
+ * motorises. The section matcher is still here, further down, where the repeat
+ * parts customer will look for it.
+ *
+ * Every call to action on this page reaches something that exists today. The
+ * highest-value jobs, motorisation and full curtain work, need a site survey
+ * anyway, so the primary action is a conversation rather than a checkout.
+ */
 
 const SERVICES = [
   ["Installation", "Measured, drilled and hung. We fit what we sell."],
@@ -10,6 +25,23 @@ const SERVICES = [
   ["Curtaining", "Made to your window, hemmed, pleated and finished."],
   ["Consultation", "Fabric, colour and hardware, in your home or on a call."],
 ]
+
+const TRUST = [
+  ["Delivered countrywide", "Or collect at the counter."],
+  ["M-Pesa, card or bank", "Paid the way you already pay."],
+  ["Our own fitters", "We hang it, and our workshop sews it."],
+  ["On Njugu Lane", "A real counter, not a warehouse."],
+]
+
+const QUOTE = whatsapp(
+  "Hello AllFix, I would like a quote for curtains. Here is my window and what I have in mind:",
+)
+const SURVEY = whatsapp(
+  "Hello AllFix, I am interested in motorised curtains and would like a site survey.",
+)
+const TRADE = whatsapp(
+  "Hello AllFix, I would like to open a trade account. I am a:",
+)
 
 export default function Home() {
   const flagship = systems.find((s) => s.flagship)
@@ -19,39 +51,92 @@ export default function Home() {
       {/* ---------------------------------------------------------- hero */}
       <section className="drafting border-b border-rule">
         <div className="shell py-16 sm:py-24">
-          <p className="callout">Njugu Lane · Nairobi CBD</p>
+          <p className="callout">{SHOP.street} · {SHOP.area}</p>
 
-          <h1 className="display-xl mt-4 max-w-[18ch] font-display font-bold tracking-tight">
-            Which rail do you<br />
-            already have?
+          <h1 className="display-xl mt-4 max-w-[16ch] font-display font-bold tracking-tight">
+            Curtains that hang properly.
           </h1>
 
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-slate">
-            Match the cut end of your track to a section below. Everything behind it fits,
-            so there is no guessing and no second trip to town.
+            Rails, rods and motorised tracks, with the fittings that actually match them.
+            We measure, we sew, and we come and hang it. Anywhere in Kenya.
           </p>
 
-          <div className="mt-12">
-            <TraceOnView>
-              <SystemPicker list={systems} />
-            </TraceOnView>
-            <p className="mt-4 callout">
-              Sections drawn to relative scale. Bring an offcut to the counter if you are unsure.
-            </p>
+          <div className="mt-9 flex flex-wrap items-center gap-4">
+            <a
+              href={QUOTE}
+              className="rounded-sm bg-oxblood px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+            >
+              Get a free quote
+            </a>
+            <Link
+              href="/shop"
+              className="rounded-sm border border-ink px-6 py-3.5 text-sm font-medium transition-colors hover:bg-ink hover:text-paper"
+            >
+              Shop the range
+            </Link>
+            <a href={`tel:${SHOP.phoneIntl}`} className="font-mono text-sm text-oxblood hover:underline">
+              or call {SHOP.phone}
+            </a>
           </div>
 
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <Link
-              href="/build"
-              className="rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
-            >
-              Build a complete rail
-            </Link>
-            <Link href="/shop" className="text-sm text-slate underline-offset-4 hover:text-ink hover:underline">
-              Or browse every part
-            </Link>
-          </div>
+          <ul className="auto-grid mt-14 bg-rule" style={{ ["--min" as string]: "15rem" }}>
+            {TRUST.map(([title, line]) => (
+              <li key={title} className="bg-paper px-5 py-4">
+                <p className="font-display text-sm font-semibold tracking-tight">{title}</p>
+                <p className="mt-1 text-sm leading-relaxed text-slate">{line}</p>
+              </li>
+            ))}
+          </ul>
         </div>
+      </section>
+
+      {/* --------------------------------------------------------- range */}
+      <section className="shell py-16">
+        <h2 className="display-lg font-display font-bold tracking-tight">
+          Everything a curtain hangs on
+        </h2>
+        <p className="mt-2 max-w-xl text-slate">
+          Priced, in stock, and on the shelf at the counter.
+        </p>
+
+        <ul className="auto-grid mt-8 bg-rule" style={{ ["--min" as string]: "18rem" }}>
+          <li>
+            <Link href="/systems" className="flex h-full flex-col bg-paper p-6 transition-colors hover:bg-brass-soft">
+              <p className="callout">{systems.length} systems</p>
+              <p className="mt-2 font-display text-xl font-semibold tracking-tight">Curtain rails</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate">
+                Aluminium track from the slim #15 to the heavy #28, bendable for a bay, and
+                every bracket, runner and stopper that fits it.
+              </p>
+              <p className="mt-4 text-sm font-medium text-oxblood">Browse rails</p>
+            </Link>
+          </li>
+
+          <li>
+            <Link href="/shop?family=rod" className="flex h-full flex-col bg-paper p-6 transition-colors hover:bg-brass-soft">
+              <p className="callout">{ranges.length} finishes</p>
+              <p className="mt-2 font-display text-xl font-semibold tracking-tight">Curtain rods</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate">
+                Poles in antique brass, black, copper and silver, with finials, rings and tie
+                backs to match. In 19, 25 and 28mm.
+              </p>
+              <p className="mt-4 text-sm font-medium text-oxblood">Browse rods</p>
+            </Link>
+          </li>
+
+          <li>
+            <Link href="/systems/motorised" className="flex h-full flex-col bg-paper p-6 transition-colors hover:bg-brass-soft">
+              <p className="callout">Flagship</p>
+              <p className="mt-2 font-display text-xl font-semibold tracking-tight">Motorised tracks</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate">
+                Curtains that open on a remote, a wall switch, an app or a schedule. Fitted to
+                a new track or to the one you already have.
+              </p>
+              <p className="mt-4 text-sm font-medium text-oxblood">See the motorised range</p>
+            </Link>
+          </li>
+        </ul>
       </section>
 
       {/* ------------------------------------------------------ motorised */}
@@ -68,28 +153,25 @@ export default function Home() {
               <p className="mt-4 max-w-lg leading-relaxed text-white/80">
                 A driven track with the motor sized to the length and weight of the run. Runs on a
                 remote, a wall switch or a schedule, and ties into a smart home. From{" "}
-                <span className="font-mono">KES 15,000</span>.
+                <span className="font-mono">KES 15,000</span>, fitted.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
-                <Link
-                  href="/systems/motorised"
+                <a
+                  href={SURVEY}
                   className="rounded-sm bg-white px-5 py-2.5 text-sm font-medium text-band transition-colors hover:bg-white/90"
                 >
-                  See the motorised range
-                </Link>
+                  Book a site survey
+                </a>
                 <Link
-                  href="/book"
+                  href="/systems/motorised"
                   className="rounded-sm border border-white/35 px-5 py-2.5 text-sm text-white transition-colors hover:bg-white/10"
                 >
-                  Book a site survey
+                  See the range
                 </Link>
               </div>
             </div>
 
-            <dl
-              className="auto-grid flush text-sm"
-              style={{ ["--min" as string]: "11rem", ["--hairline" as string]: "rgba(255,255,255,0.22)" }}
-            >
+            <dl className="auto-grid bg-white/15 text-sm" style={{ ["--min" as string]: "11rem" }}>
               {[
                 ["Motors", "13W wifi, 45W, 75W"],
                 ["Control", "Remote, switch, app"],
@@ -106,42 +188,18 @@ export default function Home() {
         </section>
       )}
 
-      {/* ------------------------------------------------------- by part */}
-      <section className="shell py-16">
-        <h2 className="display-lg font-display font-bold tracking-tight">
-          Or go straight to the part
-        </h2>
-        <p className="mt-2 text-slate">
-          Everything for a curtain rail, on the shelf at the counter.
-        </p>
-
-        <ul className="auto-grid flush mt-8" style={{ ["--min" as string]: "20rem" }}>
-          {componentsInOrder().map((component) => (
-            <li key={component.slug}>
-              <Link
-                href={`/shop?part=${component.slug}`}
-                className="flex h-full flex-col bg-paper p-5 transition-colors hover:bg-panel"
-              >
-                <span className="font-display font-semibold tracking-tight">{component.name}</span>
-                <span className="mt-1.5 text-sm leading-relaxed text-slate">{component.purpose}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-
       {/* ------------------------------------------------------ services */}
-      <section className="border-y border-rule bg-panel">
+      <section className="border-b border-rule bg-panel">
         <div className="shell py-16">
           <h2 className="display-lg font-display font-bold tracking-tight">
-            We also fit it
+            We measure, sew and fit it
           </h2>
           <p className="mt-2 max-w-xl text-slate">
-            Buying the parts is half of it. Our fitters measure, drill and hang, and our workshop
-            sews the curtains that go on them.
+            Buying the hardware is half of it. Tell us the window and we will handle the rest,
+            from the fabric to the last bracket.
           </p>
 
-          <ul className="auto-grid flush mt-8" style={{ ["--min" as string]: "17rem" }}>
+          <ul className="auto-grid mt-8 bg-rule" style={{ ["--min" as string]: "17rem" }}>
             {SERVICES.map(([title, blurb]) => (
               <li key={title} className="bg-panel p-5">
                 <p className="font-display font-semibold tracking-tight">{title}</p>
@@ -150,46 +208,82 @@ export default function Home() {
             ))}
           </ul>
 
-          <Link
-            href="/book"
-            className="mt-8 inline-block rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
-          >
-            Book a measure-up
-          </Link>
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <a
+              href={QUOTE}
+              className="rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+            >
+              Book a measure-up
+            </a>
+            <a href={`tel:${SHOP.phoneIntl}`} className="font-mono text-sm text-oxblood hover:underline">
+              {SHOP.phone}
+            </a>
+          </div>
         </div>
       </section>
 
-      {/* --------------------------------------------------------- trade */}
-      <section className="shell grid gap-8 py-16 lg:grid-cols-2">
-        <div>
-          <p className="callout">Trade</p>
-          <h2 className="display-lg mt-3 font-display font-bold tracking-tight">
-            Fundis, curtain makers and fit-out contractors
-          </h2>
-          <p className="mt-3 leading-relaxed text-slate">
-            Open an account for 20% off list, bulk quantity entry, and a proforma invoice you can
-            settle by bank transfer instead of paying at checkout.
+      {/* -------------------------------------------------- parts finder */}
+      <section className="shell py-16">
+        <p className="callout">Already have a rail</p>
+        <h2 className="display-lg mt-3 font-display font-bold tracking-tight">
+          Match the section, and the parts fit
+        </h2>
+        <p className="mt-3 max-w-2xl leading-relaxed text-slate">
+          Replacing a runner or a stopper? Every rail has a shape you can see looking down the
+          cut end of the track. Find yours and everything behind it is guaranteed to fit, so
+          there is no guessing and no second trip to town.
+        </p>
+
+        <div className="mt-9">
+          <TraceOnView>
+            <SystemPicker list={systems} />
+          </TraceOnView>
+          <p className="mt-4 callout">
+            Sections drawn to relative scale. Bring an offcut to the counter if you are unsure.
           </p>
-          <Link
-            href="/trade"
-            className="mt-6 inline-block rounded-sm border border-ink px-6 py-3 text-sm font-medium transition-colors hover:bg-ink hover:text-paper"
-          >
-            Open a trade account
-          </Link>
         </div>
 
-        <div className="border border-rule p-6">
-          <p className="callout">Visit the shop</p>
-          <p className="mt-3 font-display text-xl font-semibold tracking-tight">
-            {SHOP.street}, {SHOP.area}
-          </p>
-          <p className="mt-2 leading-relaxed text-slate">
-            The full range is on the shelf. Bring your offcut and we will match the section
-            across the counter.
-          </p>
-          <a href={`tel:${SHOP.phoneIntl}`} className="mt-5 inline-block font-mono text-lg text-oxblood">
-            {SHOP.phone}
-          </a>
+        <Link
+          href="/shop"
+          className="mt-8 inline-block text-sm text-slate underline-offset-4 hover:text-ink hover:underline"
+        >
+          Or browse all {rails.length + rods.length} parts
+        </Link>
+      </section>
+
+      {/* ------------------------------------------------- trade + visit */}
+      <section className="border-t border-rule">
+        <div className="shell grid gap-8 py-16 lg:grid-cols-2">
+          <div>
+            <p className="callout">Trade</p>
+            <h2 className="display-lg mt-3 font-display font-bold tracking-tight">
+              Fundis, curtain makers and fit-out contractors
+            </h2>
+            <p className="mt-3 leading-relaxed text-slate">
+              Open an account for 20% off list, bulk quantity entry, and a proforma invoice you can
+              settle by bank transfer instead of paying at checkout.
+            </p>
+            <a
+              href={TRADE}
+              className="mt-6 inline-block rounded-sm border border-ink px-6 py-3 text-sm font-medium transition-colors hover:bg-ink hover:text-paper"
+            >
+              Open a trade account
+            </a>
+          </div>
+
+          <div className="border border-rule p-6">
+            <p className="callout">Visit the shop</p>
+            <p className="mt-3 font-display text-xl font-semibold tracking-tight">
+              {SHOP.street}, {SHOP.area}
+            </p>
+            <p className="mt-2 leading-relaxed text-slate">
+              The full range is on the shelf. Bring your offcut and we will match the section
+              across the counter.
+            </p>
+            <a href={`tel:${SHOP.phoneIntl}`} className="mt-5 inline-block font-mono text-lg text-oxblood">
+              {SHOP.phone}
+            </a>
+          </div>
         </div>
       </section>
     </>

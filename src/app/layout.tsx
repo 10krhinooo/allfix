@@ -3,6 +3,7 @@ import Script from "next/script"
 import { Archivo, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google"
 import { Header } from "@/components/Header"
 import { Footer } from "@/components/Footer"
+import { JsonLd } from "@/components/ui"
 import { SHOP } from "@/lib/format"
 import "./globals.css"
 
@@ -72,10 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Script>
       </head>
       <body className="flex min-h-screen flex-col">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(businessSchema()) }}
-        />
+        <JsonLd schema={businessSchema()} />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

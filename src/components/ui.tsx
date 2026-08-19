@@ -61,6 +61,23 @@ export function Breadcrumbs({ trail }: { trail: { href?: string; label: string }
   )
 }
 
+/**
+ * A JSON-LD block.
+ *
+ * The `<` escape is what keeps a closing script tag inside the data from ending
+ * the script element early. Nothing in the catalogue carries one today, but the
+ * catalogue is regenerated from HTML descriptions and a spreadsheet the client
+ * emails in, so the copy is not ours to trust.
+ */
+export function JsonLd({ schema }: { schema: object }) {
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, "\\u003c") }}
+    />
+  )
+}
+
 export function Empty({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
     <div className="border border-dashed border-rule px-6 py-14 text-center">

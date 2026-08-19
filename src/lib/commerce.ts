@@ -1,4 +1,5 @@
 import type { Product, Variant } from "@/lib/catalogue"
+import { priceOrAsk } from "@/lib/format"
 
 /**
  * The storefront has to work in two states, and will for as long as the price
@@ -11,6 +12,29 @@ import type { Product, Variant } from "@/lib/catalogue"
  */
 export function sellable(entry: Pick<Product, "priceKes"> | Pick<Variant, "priceKes">) {
   return typeof entry.priceKes === "number" && entry.priceKes > 0
+}
+
+/**
+ * What goes where the price goes, in the three states a part can be in.
+ *
+ * A figure, when the sheet quoted one, carrying what it buys so a track reads
+ * "per metre". The client's own words, when they priced in prose instead: the
+ * roman blind fittings are included in the track's rate, which is a real answer
+ * and a better one than silence. Otherwise the honest fallback.
+ */
+export function priceLine(product: Product) {
+  if (sellable(product)) {
+    return {
+      text: priceOrAsk(product.priceKes, product.priceBasis),
+      note: product.priceNote,
+      buyable: true,
+    }
+  }
+  return {
+    text: product.priceNote ?? "Price on request",
+    note: null,
+    buyable: false,
+  }
 }
 
 /** The SKU a line in the cart refers to, once a variant has been chosen. */
