@@ -78,12 +78,26 @@ export interface System {
   skuPrefixes: string[]
   partCount: number
   components: string[]
+  /**
+   * The length track is stocked in, in metres. A run longer than this needs a
+   * joint, and the configurator counts joints against it. Unconfirmed with the
+   * client: see the note in `tools/migrate/systems.py`.
+   */
+  stockLengthM: number
 }
 
 export interface Component {
   slug: string
   name: string
   purpose: string
+  /**
+   * How many of this part a metre of run takes, and the fewest any run takes.
+   * The configurator counts with these, and `purpose` is written from them in
+   * the migration, so the sentence a customer reads and the quantity they are
+   * quoted can never drift apart.
+   */
+  perMetre: number | null
+  minimum: number | null
 }
 
 /**

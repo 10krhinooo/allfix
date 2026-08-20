@@ -1,13 +1,24 @@
 import type { Metadata } from "next"
 import Script from "next/script"
-import { Archivo, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google"
+import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google"
 import { Header } from "@/components/Header"
 import { Footer } from "@/components/Footer"
 import { JsonLd } from "@/components/ui"
 import { SHOP, SITE } from "@/lib/format"
 import "./globals.css"
 
-const archivo = Archivo({ subsets: ["latin"], variable: "--font-archivo", display: "swap" })
+/**
+ * Fraunces sets the headlines: a face with actual craft in it, for a shop that
+ * sews and fits soft furnishing, against the IBM Plex sans and mono that carry
+ * the technical half of the business, the SKUs, dimensions and spec tables.
+ * The `opsz` axis is the point of it, so the axes are requested explicitly.
+ */
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  display: "swap",
+  axes: ["SOFT", "WONK", "opsz"],
+})
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
@@ -62,7 +73,7 @@ function businessSchema() {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-KE" className={`${archivo.variable} ${plexSans.variable} ${plexMono.variable}`}>
+    <html lang="en-KE" className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable}`}>
       <head>
         {/*
           Applies the stored choice before the first paint. Without it a visitor
@@ -71,6 +82,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Script id="allfix-theme" strategy="beforeInteractive">
           {"try{var t=localStorage.getItem('allfix-theme');if(t==='dark')document.documentElement.dataset.theme='dark'}catch(e){}"}
         </Script>
+        {/*
+          The hero curtain is drawn closed in the HTML so it is in place at
+          first paint. Without JavaScript it could never open again, so it is
+          never drawn at all.
+        */}
+        <noscript>
+          <style>{".curtain{display:none!important}"}</style>
+        </noscript>
       </head>
       <body className="flex min-h-screen flex-col">
         <JsonLd schema={businessSchema()} />

@@ -81,6 +81,21 @@ SYSTEMS = [
 # with any system, so they are marked universal rather than given a system.
 UNIVERSAL_PREFIX = "RL#ACC_"
 
+# The length a track is stocked in, in metres. A run longer than this needs a
+# joint, so this figure is what the configurator counts joints against.
+#
+# UNCONFIRMED. Six metres is the common aluminium stock length and it is what
+# the configurator has always assumed, but nothing in the client's sheet or the
+# old site states it, and it may well differ per system. It sits here, beside
+# the systems, so the client's answer lands in one place rather than being
+# hunted for in the configurator. Worth noting that the plan's own verification
+# case, "a 5 m span needing a joint", cannot pass at 6 m.
+STOCK_LENGTH_M = 6
+
+
+def stock_length_for(slug: str) -> int:
+    return STOCK_LENGTH_M
+
 def system_for_sku(sku: str):
     """Return the system slug for a SKU, or None if the part is universal."""
     if not sku:

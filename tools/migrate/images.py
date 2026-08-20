@@ -50,11 +50,15 @@ def fetch(url):
 
 def ground(image):
     """
-    The colour of the field, averaged right around the edge of the frame.
+    The colour of the field, taken from around the edge of the frame.
 
-    Sampled from the border rather than the corners alone, because a shot with
-    a vignette or a shadow along one side would otherwise pad out to a square
-    with a bar that is visibly the wrong shade.
+    The median rather than the mean, per channel. Averaging looked right and was
+    not: a handful of brighter border pixels, the corner of a watermark, a strip
+    of lighter backdrop, part of the product running off the edge, drag the mean
+    up far enough to matter. On a black field the mean landed on 12 where the
+    field itself is 0, which is invisible in isolation and an obvious seam once
+    it is padding a photograph. The median ignores those outliers and lands on
+    the colour the field actually is.
     """
     width, height = image.size
     step_x = max(1, width // 64)
@@ -66,7 +70,12 @@ def ground(image):
     for y in range(0, height, step_y):
         edge.append(image.getpixel((0, y)))
         edge.append(image.getpixel((width - 1, y)))
-    return tuple(sum(pixel[channel] for pixel in edge) // len(edge) for channel in range(3))
+
+    def middle(channel):
+        values = sorted(pixel[channel] for pixel in edge)
+        return values[len(values) // 2]
+
+    return tuple(middle(channel) for channel in range(3))
 
 
 def warm_white(image):

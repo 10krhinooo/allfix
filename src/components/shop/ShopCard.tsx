@@ -18,7 +18,7 @@ export function ShopCard({ item }: { item: ShopItem }) {
       <Link
         href={`/product/${item.slug}`}
         aria-label={item.name}
-        className="relative block aspect-square overflow-hidden bg-black"
+        className="relative block aspect-square overflow-hidden bg-shot"
       >
         {item.image ? (
           // The square master fills the square tile exactly, so a black-field

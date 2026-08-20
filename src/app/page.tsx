@@ -1,4 +1,6 @@
+import Image from "next/image"
 import Link from "next/link"
+import { Curtain } from "@/components/Curtain"
 import { SystemPicker } from "@/components/SystemPicker"
 import { TraceOnView } from "@/components/TraceOnView"
 import { systems, ranges, rails, rods } from "@/lib/catalogue"
@@ -49,42 +51,76 @@ export default function Home() {
   return (
     <>
       {/* ---------------------------------------------------------- hero */}
-      <section className="drafting border-b border-rule">
-        <div className="shell py-16 sm:py-24">
-          <p className="callout">{SHOP.street} · {SHOP.area}</p>
+      <section className="stage relative isolate overflow-hidden">
+        <Curtain />
 
-          <h1 className="display-xl mt-4 max-w-[16ch] font-display font-bold tracking-tight">
-            Curtains that hang properly.
-          </h1>
+        <div className="shell relative z-10 py-20 sm:py-28">
+          <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+            <div>
+              <p className="callout">{SHOP.street} · {SHOP.area}</p>
 
-          <p className="mt-5 max-w-xl text-lg leading-relaxed text-slate">
-            Rails, rods and motorised tracks, with the fittings that actually match them.
-            We measure, we sew, and we come and hang it. Anywhere in Kenya.
-          </p>
+              <h1 className="display-xl mt-5 max-w-[15ch] font-display font-semibold">
+                Curtains that hang properly.
+              </h1>
 
-          <div className="mt-9 flex flex-wrap items-center gap-4">
-            <a
-              href={QUOTE}
-              className="rounded-sm bg-oxblood px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
-            >
-              Get a free quote
-            </a>
-            <Link
-              href="/shop"
-              className="rounded-sm border border-ink px-6 py-3.5 text-sm font-medium transition-colors hover:bg-ink hover:text-paper"
-            >
-              Shop the range
-            </Link>
-            <a href={`tel:${SHOP.phoneIntl}`} className="font-mono text-sm text-oxblood hover:underline">
-              or call {SHOP.phone}
-            </a>
+              {/* The brass rule the curtain ran off, left behind as the track. */}
+              <div className="mt-8 h-px w-24 bg-stage-brass" />
+
+              <p className="mt-8 max-w-xl text-lg leading-relaxed text-stage-ink/75">
+                Rails, rods and motorised tracks, with the fittings that actually match them.
+                We measure, we sew, and we come and hang it. Anywhere in Kenya.
+              </p>
+
+              <div className="mt-10 flex flex-wrap items-center gap-4">
+                <a
+                  href={QUOTE}
+                  className="rounded-sm bg-oxblood px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+                >
+                  Get a free quote
+                </a>
+                <Link
+                  href="/shop"
+                  className="rounded-sm border border-stage-rule px-6 py-3.5 text-sm font-medium text-stage-ink transition-colors hover:border-stage-brass hover:text-stage-brass"
+                >
+                  Shop the range
+                </Link>
+                <a
+                  href={`tel:${SHOP.phoneIntl}`}
+                  className="font-mono text-sm text-stage-brass hover:underline"
+                >
+                  or call {SHOP.phone}
+                </a>
+              </div>
+            </div>
+
+            {/*
+              The flagship track, on the black field it was shot on. This is the
+              whole reason the hero is dark: the photograph has no edge against
+              the stage, so the product appears to be lying on the page rather
+              than inside a box cut into it.
+            */}
+            <figure className="relative hidden lg:block">
+              <Image
+                src="/products/rlmotor_004.webp"
+                alt="A motorised curtain track with its drive unit and runners"
+                width={1200}
+                height={1200}
+                priority
+                className="w-full"
+              />
+              <figcaption className="callout absolute bottom-6 left-0 w-full text-center">
+                Motorised track · from KES 15,000, fitted
+              </figcaption>
+            </figure>
           </div>
 
-          <ul className="auto-grid flush mt-14" style={{ ["--min" as string]: "15rem" }}>
+          {/* Four cells, so the grid says four rather than letting auto-fill
+              leave a fifth track empty at wide widths. */}
+          <ul className="flush mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {TRUST.map(([title, line]) => (
-              <li key={title} className="bg-paper px-5 py-4">
-                <p className="font-display text-sm font-semibold tracking-tight">{title}</p>
-                <p className="mt-1 text-sm leading-relaxed text-slate">{line}</p>
+              <li key={title} className="px-5 py-4">
+                <p className="font-display text-base font-semibold">{title}</p>
+                <p className="mt-1 text-sm leading-relaxed text-stage-ink/60">{line}</p>
               </li>
             ))}
           </ul>
@@ -100,7 +136,7 @@ export default function Home() {
           Priced, in stock, and on the shelf at the counter.
         </p>
 
-        <ul className="auto-grid flush mt-8" style={{ ["--min" as string]: "18rem" }}>
+        <ul className="flush mt-8 grid grid-cols-1 md:grid-cols-3">
           <li>
             <Link href="/systems" className="flex h-full flex-col bg-paper p-6 transition-colors hover:bg-brass-soft">
               <p className="callout">{systems.length} systems</p>

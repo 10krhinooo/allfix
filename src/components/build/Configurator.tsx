@@ -9,6 +9,12 @@ import {
   defaultInput,
   WIDTH_MAX,
   WIDTH_MIN,
+  RUNNERS_MIN,
+  RUNNERS_MAX,
+  BRACKETS_MIN,
+  BRACKETS_MAX,
+  DEFAULT_RUNNERS_PER_M,
+  DEFAULT_BRACKETS_PER_M,
   type BuildSystem,
   type Mount,
 } from "@/lib/configurator"
@@ -23,8 +29,15 @@ import {
  * the finished list, because the priced version of this belongs on the backend
  * that does not exist yet.
  */
-export function Configurator({ systems }: { systems: BuildSystem[] }) {
-  const [slug, setSlug] = useState(systems[0]?.slug ?? "")
+export function Configurator({
+  systems,
+  initialSlug,
+}: {
+  systems: BuildSystem[]
+  /** The system named by `?system=`, already resolved on the server. */
+  initialSlug: string
+}) {
+  const [slug, setSlug] = useState(initialSlug || systems[0]?.slug || "")
   const [input, setInput] = useState(defaultInput)
 
   const system = useMemo(
@@ -127,6 +140,57 @@ export function Configurator({ systems }: { systems: BuildSystem[] }) {
               )
             })}
           </div>
+        </fieldset>
+
+        {/*
+          The rates are the counter's rule of thumb, not a law. A curtain maker
+          working to a heading knows the number better than the site does, so
+          the form opens on the catalogue's figure and lets them say otherwise.
+        */}
+        <fieldset className="border-b border-rule p-6">
+          <legend className="callout">Fittings per metre</legend>
+          <div className="mt-3 grid grid-cols-2 gap-4">
+            <label className="block">
+              <span className="text-sm text-slate">Runners</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                min={RUNNERS_MIN}
+                max={RUNNERS_MAX}
+                step={1}
+                value={input.runnersPerM}
+                onChange={(event) =>
+                  setInput((prev) => ({
+                    ...prev,
+                    runnersPerM: Number(event.target.value) || DEFAULT_RUNNERS_PER_M,
+                  }))
+                }
+                className="mt-1.5 w-full border border-rule bg-paper px-3 py-2 font-mono text-ink focus:outline-none"
+              />
+            </label>
+            <label className="block">
+              <span className="text-sm text-slate">Brackets</span>
+              <input
+                type="number"
+                inputMode="numeric"
+                min={BRACKETS_MIN}
+                max={BRACKETS_MAX}
+                step={1}
+                value={input.bracketsPerM}
+                onChange={(event) =>
+                  setInput((prev) => ({
+                    ...prev,
+                    bracketsPerM: Number(event.target.value) || DEFAULT_BRACKETS_PER_M,
+                  }))
+                }
+                className="mt-1.5 w-full border border-rule bg-paper px-3 py-2 font-mono text-ink focus:outline-none"
+              />
+            </label>
+          </div>
+          <p className="mt-2 callout">
+            Counter default is {DEFAULT_RUNNERS_PER_M} runners and {DEFAULT_BRACKETS_PER_M} bracket
+            to the metre
+          </p>
         </fieldset>
 
         <fieldset className="p-6">
