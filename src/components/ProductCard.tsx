@@ -14,7 +14,13 @@ export function ProductCard({ product }: { product: Product }) {
         href={`/product/${product.slug}`}
         className="group flex h-full flex-col bg-paper p-4 transition-colors hover:bg-panel"
       >
-        <div className="relative aspect-square overflow-hidden bg-white">
+        {/*
+          The well is the colour of the photographs' own field. 56 of the 62
+          shots are white hardware on near-black, so on a white card each one
+          reads as a black tile punched into the grid. Against `--shot` the
+          photograph has no edge and the part appears to sit on the page.
+        */}
+        <div className="relative aspect-square overflow-hidden bg-shot">
           {photo ? (
             <Image
               src={photo}

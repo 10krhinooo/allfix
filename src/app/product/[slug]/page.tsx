@@ -119,7 +119,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
       <div className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         {/* ------------------------------------------------------ picture */}
-        <div className="relative aspect-square overflow-hidden border border-rule bg-white">
+        <div className="relative aspect-square overflow-hidden border border-rule bg-shot">
           {photo ? (
             <Image
               src={photo}
