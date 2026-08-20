@@ -1,11 +1,12 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { WhatsAppIcon } from "@/components/ui"
 import { whatsapp } from "@/lib/format"
+import { SendList } from "@/components/build/SendList"
 import {
   billOfMaterials,
   bomMessage,
+  bomSummary,
   defaultInput,
   WIDTH_MAX,
   WIDTH_MIN,
@@ -252,12 +253,12 @@ export function Configurator({
             {bom.onSurvey && " A motorised run is sized on a site survey."} Send it over and we
             confirm the price, the cut lengths and stock, then pull it at the counter.
           </p>
-          <a
-            href={whatsapp(bomMessage(system, input, bom))}
-            className="inline-flex items-center gap-2 rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
-          >
-            <WhatsAppIcon /> Send this list for a quote
-          </a>
+          <SendList
+            summary={`I have worked out a parts list for a ${system.shortName} rail.`}
+            detail={bomSummary(system, input)}
+            system={system.slug}
+            whatsappText={whatsapp(bomMessage(system, input, bom))}
+          />
         </div>
       </div>
     </div>

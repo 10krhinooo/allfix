@@ -12,7 +12,8 @@
  * right shape for the work.
  */
 
-export type EnquiryKind = "quote" | "survey" | "trade" | "parts"
+export type { EnquiryKind } from "@/lib/enquiry"
+import type { EnquiryKind } from "@/lib/enquiry"
 
 export interface Enquiry {
   id: string

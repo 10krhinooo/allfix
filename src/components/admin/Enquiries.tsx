@@ -1,6 +1,7 @@
 "use client"
 
 import { ENQUIRIES, KIND_LABEL } from "@/lib/admin/desk"
+import type { Enquiry } from "@/lib/admin/desk"
 import type { EnquiryState } from "@/lib/admin/store"
 import { useAdmin, setEnquiry } from "@/lib/admin/store"
 import { SHOP, whatsapp } from "@/lib/format"
@@ -9,15 +10,19 @@ import { PageHead, Figures, Figure } from "@/components/admin/parts"
 /**
  * The queue.
  *
- * Nothing here is real, and the page says so, because there is no enquiries
- * table yet: the storefront's quote, survey and trade forms compose a WhatsApp
- * message rather than posting anywhere. That is honest about a shop that
- * genuinely does its business on WhatsApp, and it is also why a screen like
- * this has nothing to show until those forms post as well as open a chat.
+ * Two sorts of thing land here. The seeded ones are invented, so the screen can
+ * be shown with work on it. Anything marked "through the site" is real: the
+ * booking form and the configurator now file an enquiry as well as offering
+ * WhatsApp, and this is where it arrives.
  *
- * The reply action stays a WhatsApp deep link even so. When the queue is real,
- * the record will be here and the conversation will still be on the customer's
- * phone, which is where they want it.
+ * That split is the argument for the second path, and it is visible on purpose.
+ * An enquiry sent by WhatsApp never reaches this screen at all, because it only
+ * exists in one phone's chat history. Whoever is at the counter cannot pick it
+ * up and nothing counts it.
+ *
+ * The reply action stays a WhatsApp deep link regardless. The record belongs
+ * here; the conversation belongs on the customer's phone, which is where they
+ * want it.
  */
 
 const STATES: { value: EnquiryState; label: string }[] = [
@@ -31,8 +36,29 @@ export function Enquiries() {
   const state = useAdmin()
   const statusOf = (id: string) => state.enquiries[id] ?? "new"
 
-  const open = ENQUIRIES.filter((enquiry) => statusOf(enquiry.id) !== "closed")
-  const surveys = ENQUIRIES.filter((enquiry) => enquiry.kind === "survey" && statusOf(enquiry.id) !== "closed")
+  // Filed enquiries first: they are the newest, and they are the ones nobody
+  // has seen yet.
+  const filed: (Enquiry & { reference: string; at: number })[] = state.inbox.map((entry) => ({
+    id: entry.id,
+    kind: entry.kind,
+    name: entry.name,
+    phone: entry.phone,
+    area: entry.area.trim() || "Not given",
+    // The clock time it arrived rather than how long ago, which would mean
+    // reading the clock during render. It is also the better answer on a
+    // counter screen: "14:32, 3 Aug" is what you repeat down a phone, and it
+    // does not quietly go stale while the tab sits open all afternoon.
+    hoursAgo: 0,
+    at: entry.at,
+    summary: entry.summary,
+    detail: entry.detail,
+    system: entry.system ?? null,
+    reference: entry.reference,
+  }))
+
+  const all = [...filed, ...ENQUIRIES]
+  const open = all.filter((enquiry) => statusOf(enquiry.id) !== "closed")
+  const surveys = all.filter((enquiry) => enquiry.kind === "survey" && statusOf(enquiry.id) !== "closed")
 
   return (
     <>
@@ -41,19 +67,26 @@ export function Enquiries() {
         lead="Quotes, site visits, trade accounts and parts, in the order they came in."
       >
         <p className="max-w-xs border-l-2 border-brass bg-brass-soft px-3 py-2 text-xs leading-relaxed">
-          Invented, so the screen can be shown working. The shop&apos;s forms open WhatsApp today
-          rather than posting anywhere.
+          {filed.length > 0
+            ? `${filed.length} sent through the site. The rest are invented, so the screen can be shown with work on it.`
+            : "Invented, so the screen can be shown with work on it. Book a visit on the shop and it appears here."}
         </p>
       </PageHead>
 
       <Figures>
         <Figure value={open.length} label="still open" tone={open.length ? "warn" : "ink"} />
         <Figure value={surveys.length} label="want a site visit" note="The jobs worth a survey." tone="quiet" />
-        <Figure value={ENQUIRIES.length - open.length} label="closed" tone="quiet" />
+        <Figure
+          value={filed.length}
+          label="came through the site"
+          note="A WhatsApp enquiry never reaches this screen."
+          tone="quiet"
+        />
+        <Figure value={all.length - open.length} label="closed" tone="quiet" />
       </Figures>
 
       <ul className="bg-paper">
-        {ENQUIRIES.map((enquiry) => {
+        {all.map((enquiry) => {
           const status = statusOf(enquiry.id)
           const closed = status === "closed"
           return (
@@ -68,11 +101,22 @@ export function Enquiries() {
                   <p className="mt-1 flex flex-wrap items-baseline gap-x-3 font-mono text-[11px] text-mute">
                     <span>{enquiry.phone}</span>
                     <span>{enquiry.area}</span>
-                    <span>{hours(enquiry.hoursAgo)}</span>
-                    <span>{enquiry.id}</span>
+                    <span>{"at" in enquiry ? arrived((enquiry as { at: number }).at) : hours(enquiry.hoursAgo)}</span>
+                    {/* The seeded ones carry a readable id. A filed one's is a
+                        storage key, and its reference is already on the badge
+                        above, so showing it here would be noise the counter has
+                        no use for. */}
+                    {!("at" in enquiry) && <span>{enquiry.id}</span>}
                   </p>
                 </div>
-                <span className="callout shrink-0">{KIND_LABEL[enquiry.kind]}</span>
+                <span className="flex shrink-0 items-baseline gap-3">
+                  {"reference" in enquiry && (
+                    <span className="rounded-sm bg-brass-soft px-2 py-0.5 font-mono text-[11px] text-ink">
+                      {(enquiry as { reference: string }).reference} through the site
+                    </span>
+                  )}
+                  <span className="callout">{KIND_LABEL[enquiry.kind]}</span>
+                </span>
               </div>
 
               <p className="mt-3 text-sm font-medium text-ink">{enquiry.summary}</p>
@@ -114,6 +158,16 @@ export function Enquiries() {
       </ul>
     </>
   )
+}
+
+/** Pure, unlike a relative time: the same timestamp always reads the same. */
+function arrived(at: number) {
+  return new Date(at).toLocaleString("en-KE", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  })
 }
 
 function hours(ago: number) {

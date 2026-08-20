@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react"
 import type { PriceBasis } from "@/lib/catalogue"
+import type { EnquiryDraft } from "@/lib/enquiry"
 
 /**
  * The console's state, held in this browser and nowhere else.
@@ -41,6 +42,13 @@ export interface PriceLog {
 
 export type EnquiryState = "new" | "working" | "quoted" | "closed"
 
+/** An enquiry somebody sent through the site, as opposed to the seeded ones. */
+export interface FiledEnquiry extends EnquiryDraft {
+  id: string
+  reference: string
+  at: number
+}
+
 export interface AdminState {
   /** The member of staff at the counter. A name, not a session: see the sign in page. */
   who: string | null
@@ -48,6 +56,14 @@ export interface AdminState {
   prices: Record<string, PriceEdit>
   log: PriceLog[]
   enquiries: Record<string, EnquiryState>
+  /**
+   * Enquiries sent through the site rather than by WhatsApp.
+   *
+   * Standing in for the table the backend will own. It is what makes the whole
+   * loop demonstrable: fill the form on the shop, and the enquiry is in the
+   * console queue before you have finished walking to the counter.
+   */
+  inbox: FiledEnquiry[]
 }
 
 /**
@@ -55,7 +71,7 @@ export interface AdminState {
  * browser that has never been used. React compares snapshots by identity, so a
  * fresh object here would re-render on every check.
  */
-const EMPTY: AdminState = { who: null, prices: {}, log: [], enquiries: {} }
+const EMPTY: AdminState = { who: null, prices: {}, log: [], enquiries: {}, inbox: [] }
 
 let state: AdminState = EMPTY
 let hydrated = false
@@ -92,6 +108,7 @@ function hydrate() {
       prices: stored.prices ?? {},
       log: stored.log ?? [],
       enquiries: stored.enquiries ?? {},
+      inbox: stored.inbox ?? [],
     }
     emit()
   } catch {
@@ -162,6 +179,26 @@ export function setPrice(
     // Newest first, which is the order the counter reads it in.
     log: [entry, ...state.log],
   })
+}
+
+/**
+ * Files an enquiry and hands back its reference.
+ *
+ * Called from the storefront rather than the console, which is the one place
+ * those two touch. It is deliberate: this function is the stand-in for a POST,
+ * and when the endpoint exists it is the only thing that changes.
+ */
+export function fileEnquiry(draft: EnquiryDraft, reference: (count: number) => string): string {
+  const count = state.inbox.length + 1
+  const filed: FiledEnquiry = {
+    ...draft,
+    id: `filed-${count}-${Date.now()}`,
+    reference: reference(count),
+    at: Date.now(),
+  }
+  // Newest first, matching the order the queue reads in.
+  set({ ...state, inbox: [filed, ...state.inbox] })
+  return filed.reference
 }
 
 export function setEnquiry(id: string, next: EnquiryState) {

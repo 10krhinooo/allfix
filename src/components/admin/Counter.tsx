@@ -22,8 +22,14 @@ export function Counter({ rows }: { rows: DeskRow[] }) {
 
   const unpriced = rows.filter((row) => !isSellable(currentPrice(row, state.prices)))
   const unshot = rows.filter((row) => !row.photographed)
-  const open = ENQUIRIES.filter((enquiry) => (state.enquiries[enquiry.id] ?? "new") !== "closed")
-  const answered = ENQUIRIES.length - open.length
+  // The filed ones are real, sent through the site by somebody who used the
+  // booking form rather than opening a chat. They count the same.
+  const enquiries = [
+    ...state.inbox.map((entry) => ({ id: entry.id, name: entry.name, area: entry.area.trim() || "Not given", kind: entry.kind, summary: entry.summary, hoursAgo: 0, at: entry.at })),
+    ...ENQUIRIES,
+  ]
+  const open = enquiries.filter((enquiry) => (state.enquiries[enquiry.id] ?? "new") !== "closed")
+  const answered = enquiries.length - open.length
 
   // Counted separately because they are not the same job. A part the client
   // priced in words has an answer already and needs a decision, not a figure.
@@ -119,12 +125,12 @@ export function Counter({ rows }: { rows: DeskRow[] }) {
             title="Latest enquiries"
             action={
               <Link href="/admin/enquiries" className="callout hover:text-ink">
-                All {ENQUIRIES.length}
+                All {enquiries.length}
               </Link>
             }
           >
             <ul className="border-t border-rule bg-paper">
-              {ENQUIRIES.slice(0, 4).map((enquiry) => {
+              {enquiries.slice(0, 4).map((enquiry) => {
                 const status = state.enquiries[enquiry.id] ?? "new"
                 return (
                   <li key={enquiry.id} className="border-b border-rule px-4 py-3">
@@ -138,7 +144,7 @@ export function Counter({ rows }: { rows: DeskRow[] }) {
                       </span>
                       <span className="mt-1.5 flex flex-wrap items-baseline gap-x-3 font-mono text-[11px] text-mute">
                         <span>{enquiry.area}</span>
-                        <span>{hours(enquiry.hoursAgo)}</span>
+                        <span>{"at" in enquiry ? arrived(enquiry.at as number) : hours(enquiry.hoursAgo)}</span>
                         {status !== "new" && <span className="text-brass">{status}</span>}
                       </span>
                     </Link>
@@ -177,6 +183,11 @@ export function Counter({ rows }: { rows: DeskRow[] }) {
       )}
     </>
   )
+}
+
+/** Pure, unlike a relative time: the same timestamp always reads the same. */
+function arrived(at: number) {
+  return new Date(at).toLocaleString("en-KE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })
 }
 
 function hours(ago: number) {
