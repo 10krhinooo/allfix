@@ -25,8 +25,22 @@ const HELP = whatsapp(
  * but not the whole catalogue. Everything interactive is in the client
  * component below it.
  */
-export default function Build() {
+export default async function Build({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
   const systems = configuratorSystems()
+
+  // Every system page links here as `/build?system=<slug>`. That parameter used
+  // to go nowhere: the configurator always opened on the first system in the
+  // list, so a customer who pressed "Build a complete #28 rail" silently got a
+  // motorised one. Resolving it here rather than in the client means the right
+  // rail is selected in the first render, with no flash and no JavaScript
+  // needed to read the URL. An unknown slug falls back rather than erroring.
+  const wanted = searchParams ? (await searchParams).system : undefined
+  const asked = Array.isArray(wanted) ? wanted[0] : wanted
+  const initialSlug = systems.find((system) => system.slug === asked)?.slug ?? systems[0]?.slug ?? ""
 
   return (
     <div className="shell py-12">
@@ -42,7 +56,7 @@ export default function Build() {
       </p>
 
       <div className="mt-10">
-        <Configurator systems={systems} />
+        <Configurator systems={systems} initialSlug={initialSlug} />
       </div>
 
       <p className="mt-8 text-sm text-slate">

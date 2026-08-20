@@ -65,13 +65,33 @@ def component_for_category(categories: str):
     leaf = categories.split(">", 1)[1].split(",")[0].strip().lower()
     return ROD_COMPONENTS.get(leaf)
 
+# How many of a part a metre of run takes.
+#
+# These are the counter's rules of thumb, and they are the same numbers the rail
+# configurator counts with. They live here as figures rather than as words
+# inside the sentences below, because the configurator was quoting eight runners
+# to the metre while the catalogue copy beside it said ten. A rate stated twice
+# gets to disagree with itself; stated once it cannot.
+PER_METRE = {
+    "runner": 10,
+    "bracket": 1,
+    "ring": 7,
+}
+
+# The fewest a run takes whatever its width. A two metre track still needs a
+# bracket at each end.
+MINIMUM = {
+    "bracket": 2,
+    "stopper": 2,
+}
+
 # What each component type is for, shown on the component filter and on the
 # system page so a first-time buyer can tell a runner from a carrier.
 PURPOSE = {
     "track":          "The rail itself, cut to your window width.",
-    "runner":         "The gliders the curtain hooks onto. Roughly 10 per metre of track.",
-    "bracket":        "Fixes the track to the wall or ceiling. One per metre, never fewer than two.",
-    "stopper":        "Caps each end so the runners cannot slide off. Two per track.",
+    "runner":         f"The gliders the curtain hooks onto. Roughly {PER_METRE['runner']} per metre of track.",
+    "bracket":        f"Fixes the track to the wall or ceiling. One per metre, never fewer than {MINIMUM['bracket']}.",
+    "stopper":        f"Caps each end so the runners cannot slide off. {MINIMUM['stopper']} per track.",
     "joint":          "Joins two lengths of track for a span longer than one stock length.",
     "corner-joint":   "Turns the track around a corner or a bay.",
     "holder":         "Supports the track along its run.",
@@ -90,7 +110,7 @@ PURPOSE = {
     "rod":            "The pole itself, cut to your window width.",
     "finial":         "The turned end that finishes the rod and keeps the rings on it.",
     "end-cup":        "Seats the end of the rod against the wall where a bracket would show.",
-    "ring":           "Carries the curtain along the rod. Roughly seven per metre.",
+    "ring":           f"Carries the curtain along the rod. Roughly {PER_METRE['ring']} per metre.",
     "tie-back":       "Fixed to the wall beside the window, to hold the curtain open.",
 }
 

@@ -26,7 +26,8 @@
         "stopper",
         "tape",
         "track"
-      ]
+      ],
+      "stockLengthM": 6
     },
     {
       "slug": "20-rubber",
@@ -47,7 +48,8 @@
         "stopper",
         "tape",
         "track"
-      ]
+      ],
+      "stockLengthM": 6
     },
     {
       "slug": "20",
@@ -68,7 +70,8 @@
         "stopper",
         "tape",
         "track"
-      ]
+      ],
+      "stockLengthM": 6
     },
     {
       "slug": "28",
@@ -88,7 +91,8 @@
         "stopper",
         "tape",
         "track"
-      ]
+      ],
+      "stockLengthM": 6
     },
     {
       "slug": "15-bendable",
@@ -107,7 +111,8 @@
         "stopper",
         "tape",
         "track"
-      ]
+      ],
+      "stockLengthM": 6
     },
     {
       "slug": "17-rubber",
@@ -126,7 +131,8 @@
         "stopper",
         "tape",
         "track"
-      ]
+      ],
+      "stockLengthM": 6
     },
     {
       "slug": "ks",
@@ -145,7 +151,8 @@
         "stopper",
         "tape",
         "track"
-      ]
+      ],
+      "stockLengthM": 6
     },
     {
       "slug": "double-rail",
@@ -163,7 +170,8 @@
         "stopper",
         "tape",
         "track"
-      ]
+      ],
+      "stockLengthM": 6
     },
     {
       "slug": "roman-blind",
@@ -188,7 +196,8 @@
         "thread",
         "track",
         "weight"
-      ]
+      ],
+      "stockLengthM": 6
     }
   ],
   "ranges": [
@@ -295,122 +304,170 @@
     {
       "slug": "belt",
       "name": "Belts",
-      "purpose": "The loop that transmits drive along a motorised track."
+      "purpose": "The loop that transmits drive along a motorised track.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "blind-ring",
       "name": "Blind rings",
-      "purpose": "Sewn to the back of the blind for the cord to run through."
+      "purpose": "Sewn to the back of the blind for the cord to run through.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "bracket",
       "name": "Brackets",
-      "purpose": "Fixes the track to the wall or ceiling. One per metre, never fewer than two."
+      "purpose": "Fixes the track to the wall or ceiling. One per metre, never fewer than 2.",
+      "perMetre": 1,
+      "minimum": 2
     },
     {
       "slug": "corner-joint",
       "name": "Corner joints",
-      "purpose": "Turns the track around a corner or a bay."
+      "purpose": "Turns the track around a corner or a bay.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "buckle",
       "name": "Curtain buckles",
-      "purpose": "Holds the curtain back when it is open."
+      "purpose": "Holds the curtain back when it is open.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "hook",
       "name": "Curtain hooks",
-      "purpose": "Joins the curtain tape to the runners."
+      "purpose": "Joins the curtain tape to the runners.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "rod",
       "name": "Curtain rods",
-      "purpose": "The pole itself, cut to your window width."
+      "purpose": "The pole itself, cut to your window width.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "tape",
       "name": "Curtain tapes",
-      "purpose": "Sewn to the curtain header to form the pleat."
+      "purpose": "Sewn to the curtain header to form the pleat.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "drive-unit",
       "name": "Drive units",
-      "purpose": "The powered and idle ends of a motorised belt system."
+      "purpose": "The powered and idle ends of a motorised belt system.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "end-cup",
       "name": "End cups",
-      "purpose": "Seats the end of the rod against the wall where a bracket would show."
+      "purpose": "Seats the end of the rod against the wall where a bracket would show.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "fibre",
       "name": "Fibre rods",
-      "purpose": "Slots into the back of the blind to form each fold."
+      "purpose": "Slots into the back of the blind to form each fold.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "finial",
       "name": "Finials",
-      "purpose": "The turned end that finishes the rod and keeps the rings on it."
+      "purpose": "The turned end that finishes the rod and keeps the rings on it.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "holder",
       "name": "Holders",
-      "purpose": "Supports the track along its run."
+      "purpose": "Supports the track along its run.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "joint",
       "name": "Joints",
-      "purpose": "Joins two lengths of track for a span longer than one stock length."
+      "purpose": "Joins two lengths of track for a span longer than one stock length.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "master-carrier",
       "name": "Master carriers",
-      "purpose": "The lead runner the motor pulls, carrying the leading edge of the curtain."
+      "purpose": "The lead runner the motor pulls, carrying the leading edge of the curtain.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "motor",
       "name": "Motors",
-      "purpose": "Drives a motorised track. Sized to the length and weight of the run."
+      "purpose": "Drives a motorised track. Sized to the length and weight of the run.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "ring",
       "name": "Rings",
-      "purpose": "Carries the curtain along the rod. Roughly seven per metre."
+      "purpose": "Carries the curtain along the rod. Roughly 7 per metre.",
+      "perMetre": 7,
+      "minimum": null
     },
     {
       "slug": "roller-unit",
       "name": "Roller units",
-      "purpose": "Winds the cord that raises a roman blind."
+      "purpose": "Winds the cord that raises a roman blind.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "runner",
       "name": "Runners",
-      "purpose": "The gliders the curtain hooks onto. Roughly 10 per metre of track."
+      "purpose": "The gliders the curtain hooks onto. Roughly 10 per metre of track.",
+      "perMetre": 10,
+      "minimum": null
     },
     {
       "slug": "stopper",
       "name": "Stoppers",
-      "purpose": "Caps each end so the runners cannot slide off. Two per track."
+      "purpose": "Caps each end so the runners cannot slide off. 2 per track.",
+      "perMetre": null,
+      "minimum": 2
     },
     {
       "slug": "thread",
       "name": "Threads",
-      "purpose": "The cord that runs through the rings to raise the blind."
+      "purpose": "The cord that runs through the rings to raise the blind.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "tie-back",
       "name": "Tie backs",
-      "purpose": "Fixed to the wall beside the window, to hold the curtain open."
+      "purpose": "Fixed to the wall beside the window, to hold the curtain open.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "track",
       "name": "Tracks",
-      "purpose": "The rail itself, cut to your window width."
+      "purpose": "The rail itself, cut to your window width.",
+      "perMetre": null,
+      "minimum": null
     },
     {
       "slug": "weight",
       "name": "Weights",
-      "purpose": "Sits in the hem so the blind hangs straight."
+      "purpose": "Sits in the hem so the blind hangs straight.",
+      "perMetre": null,
+      "minimum": null
     }
   ],
   "products": [

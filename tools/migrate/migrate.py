@@ -28,8 +28,8 @@ from collections import defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from systems import SYSTEMS, system_for_sku, UNIVERSAL_PREFIX
-from components import component_for_name, component_for_category, PURPOSE
+from systems import SYSTEMS, system_for_sku, UNIVERSAL_PREFIX, stock_length_for
+from components import component_for_name, component_for_category, PURPOSE, PER_METRE, MINIMUM
 from variants import VARIANT_GROUPS, group_for_sku
 from ranges import RANGES, ROD_PREFIX, range_for_sku
 from sheet import load_sheet
@@ -354,6 +354,10 @@ def build(prices, sheet):
                 "slug": product["component"],
                 "name": product["componentLabel"],
                 "purpose": PURPOSE.get(product["component"], ""),
+                # The fitting rates travel with the data so the configurator
+                # counts with the same numbers the copy beside it quotes.
+                "perMetre": PER_METRE.get(product["component"]),
+                "minimum": MINIMUM.get(product["component"]),
             },
         )
 
@@ -365,6 +369,7 @@ def build(prices, sheet):
             "skuPrefixes": system["prefixes"],
             "partCount": len(parts),
             "components": sorted({p["component"] for p in parts}),
+            "stockLengthM": stock_length_for(system["slug"]),
         })
 
     ranges_out = []

@@ -17,7 +17,7 @@
  * projection, so the 200 KB of specs never reaches the browser. Everything below
  * it is client-safe and depends only on that projection.
  */
-import { systems, partsForSystem } from "@/lib/catalogue"
+import { getComponent, systems, partsForSystem } from "@/lib/catalogue"
 import { SHOP } from "@/lib/format"
 
 /** A physical role in a built rail, in assembly order. */
@@ -57,6 +57,19 @@ export interface BomInput {
   /** Curtain panels: one for a single draw, two for a centre-opening pair. */
   panels: number
   mount: Mount
+  /**
+   * Fittings a metre of run takes.
+   *
+   * The catalogue's rates are the counter's rule of thumb for an ordinary
+   * pinch pleat, and they are only ever a starting point: a fuller heading
+   * wants more runners to the metre, a wave heading fewer, and a heavy lined
+   * curtain on a long span wants more brackets than the usual one. These are
+   * inputs rather than constants so the fundi who knows the job can say so,
+   * instead of ordering to a number the site chose and correcting it at the
+   * counter.
+   */
+  runnersPerM: number
+  bracketsPerM: number
 }
 
 export interface BomLine {
@@ -77,14 +90,25 @@ export interface Bom {
   onSurvey: boolean
 }
 
-// A rail carries one bracket per metre and never fewer than two, and glides
-// roughly eight runners to the metre for an ordinary pinch pleat. These are the
-// counter's own rules of thumb, stated in the notes so a customer can see the
-// working rather than trust a black box.
-const BRACKETS_PER_M = 1
-const MIN_BRACKETS = 2
-const RUNNERS_PER_M = 8
-const STOPPERS = 2
+/**
+ * The counter's rules of thumb, read from the catalogue rather than restated.
+ *
+ * These used to be literals here, and one of them was wrong: the configurator
+ * counted eight runners to the metre while the component copy printed beside it
+ * on every system page said ten. The rates now live once, in the migration, and
+ * both the sentence and the quantity come from that.
+ *
+ * The fallbacks are the same figures and exist only so a catalogue built before
+ * this change still produces a bill of materials.
+ */
+function rate(component: string, per: "perMetre" | "minimum", fallback: number) {
+  return getComponent(component)?.[per] ?? fallback
+}
+
+const BRACKETS_PER_M = rate("bracket", "perMetre", 1)
+const MIN_BRACKETS = rate("bracket", "minimum", 2)
+const RUNNERS_PER_M = rate("runner", "perMetre", 10)
+const STOPPERS = rate("stopper", "minimum", 2)
 
 const ROLE_LABEL: Record<Role, string> = {
   track: "Track",
@@ -120,7 +144,7 @@ export function configuratorSystems(): BuildSystem[] {
         motorised: parts.some((part) =>
           ["motor", "drive-unit", "belt"].includes(part.component),
         ),
-        stockLengthM: 6,
+        stockLengthM: system.stockLengthM,
         parts: {
           track: pick("track"),
           bracket: pick("bracket"),
@@ -149,8 +173,26 @@ export const WIDTH_MIN = 0.3
 export const WIDTH_MAX = 12
 export const PANELS_MAX = 4
 
+// The range a rate can be set to. Wide enough for a wave heading at the bottom
+// and a tightly gathered one at the top, and bounded so a slip of the keyboard
+// cannot quote four hundred runners.
+export const RUNNERS_MIN = 4
+export const RUNNERS_MAX = 20
+export const BRACKETS_MIN = 1
+export const BRACKETS_MAX = 4
+
+/** The catalogue's rates, which is what the form opens on. */
+export const DEFAULT_RUNNERS_PER_M = RUNNERS_PER_M
+export const DEFAULT_BRACKETS_PER_M = BRACKETS_PER_M
+
 export function defaultInput(): BomInput {
-  return { widthM: 2, panels: 2, mount: "ceiling" }
+  return {
+    widthM: 2,
+    panels: 2,
+    mount: "ceiling",
+    runnersPerM: RUNNERS_PER_M,
+    bracketsPerM: BRACKETS_PER_M,
+  }
 }
 
 /**
@@ -163,6 +205,8 @@ export function defaultInput(): BomInput {
 export function billOfMaterials(system: BuildSystem, input: BomInput): Bom {
   const width = clamp(input.widthM, WIDTH_MIN, WIDTH_MAX)
   const panels = clamp(Math.round(input.panels), 1, PANELS_MAX)
+  const runnersPerM = clamp(input.runnersPerM || RUNNERS_PER_M, RUNNERS_MIN, RUNNERS_MAX)
+  const bracketsPerM = clamp(input.bracketsPerM || BRACKETS_PER_M, BRACKETS_MIN, BRACKETS_MAX)
   const centreOpen = panels >= 2
   const lines: BomLine[] = []
 
@@ -188,9 +232,9 @@ export function billOfMaterials(system: BuildSystem, input: BomInput): Bom {
 
   line(
     "bracket",
-    Math.max(MIN_BRACKETS, Math.ceil(width * BRACKETS_PER_M)),
+    Math.max(MIN_BRACKETS, Math.ceil(width * bracketsPerM)),
     "",
-    `One per metre, at least ${MIN_BRACKETS}. ${input.mount === "ceiling" ? "Ceiling" : "Wall"} brackets`,
+    `${bracketsPerM} per metre, at least ${MIN_BRACKETS}. ${input.mount === "ceiling" ? "Ceiling" : "Wall"} brackets`,
   )
 
   const joints = Math.max(0, Math.ceil(width / system.stockLengthM) - 1)
@@ -200,9 +244,9 @@ export function billOfMaterials(system: BuildSystem, input: BomInput): Bom {
 
   line(
     "runner",
-    Math.ceil(width * RUNNERS_PER_M),
+    Math.ceil(width * runnersPerM),
     "",
-    `About ${RUNNERS_PER_M} per metre. Add more for a fuller pleat`,
+    `${runnersPerM} per metre. More for a fuller pleat, fewer for a wave`,
   )
 
   if (centreOpen && system.parts["master-carrier"]) {
