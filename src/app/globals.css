@@ -267,6 +267,7 @@ body {
   background-image:
     linear-gradient(to bottom, #fdfdfc 0%, #ececeb 38%, #c9c9c6 62%, #a9a9a5 100%);
   box-shadow: 0 1px 0 rgb(0 0 0 / 0.45), inset 0 -2px 0 rgb(0 0 0 / 0.22);
+  will-change: transform;
 }
 
 /* The drive end. Darker than the track so it reads as the motor housing
@@ -283,6 +284,21 @@ body {
   border-radius: 0 0 4px 4px;
   background-image: linear-gradient(to bottom, #e9e9e7, #bdbdb9);
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.4);
+}
+
+/*
+ * The moving half of the curtain, promoted to its own layer for the length of
+ * the reveal.
+ *
+ * The fold striping below is a repeating gradient across a full half of the
+ * viewport. Without this the compositor repaints that gradient on every frame
+ * of the slide, which is what made the reveal stutter; with it the gradient is
+ * painted once and the frames are pure transform. The leaves are thrown away
+ * when the animation ends, so the layers go with them rather than being held
+ * for the life of the page.
+ */
+.curtain-leaf {
+  will-change: transform;
 }
 
 .curtain-panel {

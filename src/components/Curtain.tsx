@@ -117,12 +117,12 @@ export function Curtain() {
         style={{ opacity: 0 }}
       />
 
-      <div ref={left} className="absolute inset-y-0 left-0 top-3.5 w-[50.5%]">
+      <div ref={left} className="curtain-leaf absolute inset-y-0 left-0 top-3.5 w-[50.5%]">
         <Runners innerRef={leftRunners} side="left" />
         <div className="curtain-panel h-full w-full" />
       </div>
 
-      <div ref={right} className="absolute inset-y-0 right-0 top-3.5 w-[50.5%]">
+      <div ref={right} className="curtain-leaf absolute inset-y-0 right-0 top-3.5 w-[50.5%]">
         <Runners innerRef={rightRunners} side="right" />
         <div className="curtain-panel h-full w-full" />
       </div>

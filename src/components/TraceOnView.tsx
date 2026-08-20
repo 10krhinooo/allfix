@@ -30,24 +30,43 @@ export function TraceOnView({
     if (!node) return
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
 
-    const strokes = Array.from(node.querySelectorAll<SVGElement>("[data-trace] :is(path, circle, line)"))
-    if (strokes.length === 0) return
+    const drawings = Array.from(node.querySelectorAll<SVGElement>("[data-trace]"))
+    if (drawings.length === 0) return
 
+    /*
+     * Each drawing is watched on its own rather than the group as a whole.
+     *
+     * The systems index holds nine profiles and the home page picker holds
+     * nine more. Watching the container meant one drawing scrolling into view
+     * started every stroke on the page at once, and stroke dashing is painted
+     * on the CPU, so a hundred-odd of them in the same frames is what made
+     * those pages stutter. Now a profile draws when it is actually reached,
+     * which spreads the work across the scroll and never animates a drawing
+     * the visitor has not looked at.
+     */
     const observer = new IntersectionObserver(
       (entries) => {
-        if (!entries.some((entry) => entry.isIntersecting)) return
-        observer.disconnect()
-        animate(svg.createDrawable(strokes as never), {
-          draw: ["0 0", "0 1"],
-          ease: "inOutQuad",
-          duration,
-          delay: stagger(step),
-        })
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue
+          observer.unobserve(entry.target)
+
+          const strokes = Array.from(
+            entry.target.querySelectorAll<SVGElement>(":is(path, circle, line)"),
+          )
+          if (strokes.length === 0) continue
+
+          animate(svg.createDrawable(strokes as never), {
+            draw: ["0 0", "0 1"],
+            ease: "inOutQuad",
+            duration,
+            delay: stagger(step),
+          })
+        }
       },
       { threshold: 0.2 },
     )
 
-    observer.observe(node)
+    for (const drawing of drawings) observer.observe(drawing)
     return () => observer.disconnect()
   }, [step, duration])
 
