@@ -1,9 +1,6 @@
 import type { Metadata } from "next"
 import Script from "next/script"
 import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google"
-import { Header } from "@/components/Header"
-import { Footer } from "@/components/Footer"
-import { JsonLd } from "@/components/ui"
 import { SHOP, SITE } from "@/lib/format"
 import "./globals.css"
 
@@ -48,29 +45,6 @@ export const metadata: Metadata = {
   },
 }
 
-/**
- * Structured data the old site had none of. A LocalBusiness record is what puts
- * the Njugu Lane shop into a map result, which matters more than any on-page
- * change for a CBD counter trade.
- */
-function businessSchema() {
-  return {
-    "@context": "https://schema.org",
-    "@type": "HardwareStore",
-    name: SHOP.name,
-    telephone: SHOP.phoneIntl,
-    url: SITE,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: SHOP.street,
-      addressLocality: SHOP.area,
-      addressCountry: "KE",
-    },
-    currenciesAccepted: "KES",
-    paymentAccepted: "M-Pesa, Cash, Card, Bank transfer",
-  }
-}
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-KE" className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable}`}>
@@ -91,12 +65,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <style>{".curtain{display:none!important}"}</style>
         </noscript>
       </head>
-      <body className="flex min-h-screen flex-col">
-        <JsonLd schema={businessSchema()} />
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-      </body>
+      {/*
+        Deliberately bare. The chrome lives in the route groups: the storefront
+        has a header, a footer and a shop's structured data, and the staff
+        console has none of them. Everything common to both, the fonts, the
+        theme and the stylesheet, is what is left here.
+      */}
+      <body className="flex min-h-screen flex-col">{children}</body>
     </html>
   )
 }
