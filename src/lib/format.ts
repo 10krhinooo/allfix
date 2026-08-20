@@ -36,6 +36,14 @@ export const SHOP = {
   phoneIntl: "+254759963137",
 }
 
+/**
+ * The canonical origin, used for metadata, the sitemap, robots and the
+ * structured-data URLs. It is the domain the old store already ranks on, so
+ * canonicals point here even while the site is served from a Vercel URL, to
+ * consolidate that history rather than split it across two hosts.
+ */
+export const SITE = "https://allfix.co.ke"
+
 export function whatsapp(message: string) {
   return `https://wa.me/${SHOP.phoneIntl.replace("+", "")}?text=${encodeURIComponent(message)}`
 }
