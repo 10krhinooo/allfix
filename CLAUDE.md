@@ -75,6 +75,31 @@ public/products/  optimised product photography, one file per SKU
 tools/migrate/    WooCommerce to catalogue.json migration, plus its Python tests
 ```
 
+## The console, and its door
+
+`/admin` is staff only and gated in two places. `src/proxy.ts` turns a signed out request
+away before a route renders, and `requireConsole()` in `src/lib/admin/guard.ts` checks again
+on the server. Both, not either: the Next 16 proxy documentation is explicit that Server
+Functions are not separate routes in the matcher chain, so a matcher typo can silently drop
+coverage. The proxy is for the redirect, the guard is authoritative.
+
+Sign in is at `/sign-in`, against the demo table in `src/lib/admin/accounts.ts`. That file is
+the seam: it is written to the contract `allfix-backend` already implements on
+`feature/authentication`, refusal messages included, so pointing it at the real service is a
+change to one function. The session is an HttpOnly SameSite=Lax cookie carrying a signed
+payload (`src/lib/admin/session.ts`), which stops a role being edited in devtools but is
+explicitly **not** a revocable session: that needs the backend's token table.
+
+Roles are `ADMIN | STAFF | TRADE | CUSTOMER`, and `src/lib/admin/roles.ts` is the single
+answer to what each may do. The split follows `ROLE_NOTE` in `desk.ts` rather than one
+invented for the demo: staff price parts because that is counter work, and only admin sees
+People. Trade has no console at all and lands on `/trade/account`.
+
+Four console screens, not five: prices and the shot list were two lenses on one part and are
+now one worksheet at `/admin/parts`, filtered by what is missing. The old paths redirect.
+`src/components/admin/parts.tsx` holds the console's own primitives; reach for those rather
+than the storefront's, which assume a page that is selling something.
+
 Built: `/`, `/systems`, `/systems/[slug]`, `/shop`, `/product/[slug]`, plus the
 layout/header/footer chrome. **Still missing, and linked from the header and footer:**
 `/build`, `/services`, `/trade`, `/privacy`, `/terms`. Those nav links 404 today. Routes are
@@ -151,6 +176,8 @@ python3 tools/migrate/migrate.py --prices data/price-list.csv   # per-SKU overri
 ## Conventions
 
 - No semicolons, `interface` over `type` for object shapes (see `catalogue.ts`).
+- **Never add a `middleware.ts`.** Next 16 renamed the convention to `proxy.ts`, and having
+  both files present is a hard build error. The gate lives in `src/proxy.ts`.
 - `@/*` path alias resolves to `src/*` (`tsconfig.json`).
 - Comments in this codebase explain *why*, not *what*. Follow that pattern; don't add
   comments describing obvious code.
