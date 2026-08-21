@@ -47,3 +47,28 @@ export const SITE = "https://allfix.co.ke"
 export function whatsapp(message: string) {
   return `https://wa.me/${SHOP.phoneIntl.replace("+", "")}?text=${encodeURIComponent(message)}`
 }
+
+/**
+ * When an enquiry arrived, as a clock time rather than a relative one.
+ *
+ * Pure, unlike "20 minutes ago": the same timestamp always reads the same, so
+ * it cannot go stale while a counter screen sits open all afternoon, and it
+ * cannot differ between the server's render and the browser's. "14:32, 3 Aug"
+ * is also what gets repeated down a phone.
+ */
+export function arrived(at: number) {
+  return new Date(at).toLocaleString("en-KE", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+}
+
+/** How long ago a seeded enquiry came in, which is stored as an offset so it does not age. */
+export function hours(ago: number) {
+  if (ago < 1) return "just now"
+  if (ago < 24) return `${ago}h ago`
+  const days = Math.round(ago / 24)
+  return days === 1 ? "yesterday" : `${days} days ago`
+}

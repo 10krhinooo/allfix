@@ -1,12 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import type { DeskRow } from "@/lib/admin/rows"
+import { deskEnquiries, type DeskRow } from "@/lib/admin/rows"
 import { useAdmin } from "@/lib/admin/store"
+import { useDesk } from "@/components/admin/identity"
 import { currentPrice, isSellable } from "@/lib/admin/pricing"
-import { ENQUIRIES, KIND_LABEL } from "@/lib/admin/desk"
-import { price } from "@/lib/format"
+import { KIND_LABEL } from "@/lib/admin/desk"
+import { price, arrived, hours } from "@/lib/format"
 import { PageHead, Figures, Figure, Section, Blank } from "@/components/admin/parts"
+import { Empty } from "@/components/ui"
 
 /**
  * What is open, and nothing else.
@@ -19,15 +21,13 @@ import { PageHead, Figures, Figure, Section, Blank } from "@/components/admin/pa
  */
 export function Counter({ rows }: { rows: DeskRow[] }) {
   const state = useAdmin()
+  const desk = useDesk()
 
   const unpriced = rows.filter((row) => !isSellable(currentPrice(row, state.prices)))
   const unshot = rows.filter((row) => !row.photographed)
   // The filed ones are real, sent through the site by somebody who used the
   // booking form rather than opening a chat. They count the same.
-  const enquiries = [
-    ...state.inbox.map((entry) => ({ id: entry.id, name: entry.name, area: entry.area.trim() || "Not given", kind: entry.kind, summary: entry.summary, hoursAgo: 0, at: entry.at })),
-    ...ENQUIRIES,
-  ]
+  const enquiries = deskEnquiries(state.inbox)
   const open = enquiries.filter((enquiry) => (state.enquiries[enquiry.id] ?? "new") !== "closed")
   const answered = enquiries.length - open.length
 
@@ -38,7 +38,7 @@ export function Counter({ rows }: { rows: DeskRow[] }) {
   return (
     <>
       <PageHead
-        title={`Good to see you, ${state.who?.split(" ")[0] ?? "there"}.`}
+        title={`Good to see you, ${desk.name.split(" ")[0]}.`}
         lead="What is still open. The counter's own numbers, not the ones that look best."
       />
 
@@ -52,14 +52,14 @@ export function Counter({ rows }: { rows: DeskRow[] }) {
               : "Every part has a price."
           }
           tone={unpriced.length > 0 ? "warn" : "ink"}
-          href="/admin/prices?show=unpriced"
+          href="/admin/parts?show=unpriced"
         />
         <Figure
           value={unshot.length}
           label="parts have no photograph"
           note="They show a placeholder on the shop, not a broken image."
           tone={unshot.length > 0 ? "warn" : "ink"}
-          href="/admin/shots"
+          href="/admin/parts?show=unshot"
         />
         <Figure
           value={open.length}
@@ -73,7 +73,7 @@ export function Counter({ rows }: { rows: DeskRow[] }) {
           label="parts ready to sell"
           note={`Out of ${rows.length} in the catalogue.`}
           tone="quiet"
-          href="/admin/prices"
+          href="/admin/parts"
         />
       </Figures>
 
@@ -82,22 +82,22 @@ export function Counter({ rows }: { rows: DeskRow[] }) {
           <Section
             title="Waiting on a price"
             action={
-              <Link href="/admin/prices?show=unpriced" className="callout hover:text-ink">
+              <Link href="/admin/parts?show=unpriced" className="callout hover:text-ink">
                 All {unpriced.length}
               </Link>
             }
           >
             {unpriced.length === 0 ? (
-              <p className="text-sm text-slate">
-                Nothing outstanding. Every part in the catalogue carries a figure.
-              </p>
+              <Empty title="Nothing outstanding">
+                Every part in the catalogue carries a figure.
+              </Empty>
             ) : (
               <ul className="border-t border-rule bg-paper">
                 {unpriced.slice(0, 6).map((row) => {
                   const now = currentPrice(row, state.prices)
                   return (
                     <li key={row.slug} className="border-b border-rule px-4 py-3">
-                      <Link href={`/admin/prices?q=${encodeURIComponent(row.ref)}`} className="block">
+                      <Link href={`/admin/parts?q=${encodeURIComponent(row.ref)}`} className="block">
                         <span className="flex items-baseline justify-between gap-4">
                           <span className="text-sm font-medium text-ink">{row.name}</span>
                           <Blank>{now.priceNote ? "in words" : ""}</Blank>
@@ -129,6 +129,12 @@ export function Counter({ rows }: { rows: DeskRow[] }) {
               </Link>
             }
           >
+            {enquiries.length === 0 ? (
+              <Empty title="Nobody has called in">
+                Enquiries sent through the shop land here, alongside the ones taken over the
+                counter.
+              </Empty>
+            ) : (
             <ul className="border-t border-rule bg-paper">
               {enquiries.slice(0, 4).map((enquiry) => {
                 const status = state.enquiries[enquiry.id] ?? "new"
@@ -152,6 +158,7 @@ export function Counter({ rows }: { rows: DeskRow[] }) {
                 )
               })}
             </ul>
+            )}
           </Section>
         </div>
       </div>
@@ -185,14 +192,4 @@ export function Counter({ rows }: { rows: DeskRow[] }) {
   )
 }
 
-/** Pure, unlike a relative time: the same timestamp always reads the same. */
-function arrived(at: number) {
-  return new Date(at).toLocaleString("en-KE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })
-}
 
-function hours(ago: number) {
-  if (ago < 1) return "just now"
-  if (ago < 24) return `${ago}h ago`
-  const days = Math.round(ago / 24)
-  return days === 1 ? "yesterday" : `${days} days ago`
-}

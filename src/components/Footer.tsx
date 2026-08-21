@@ -59,6 +59,12 @@ export function Footer() {
           <p className="callout">© {new Date().getFullYear()} AllFix By Kipekee</p>
           <Link href="/terms" className="callout hover:text-ink">Terms</Link>
           <Link href="/privacy" className="callout hover:text-ink">Privacy</Link>
+          {/*
+            The counter console's only way in. It belongs on the last rule of the
+            footer: findable by the two people who need it, and prominent to
+            nobody. The door itself is what keeps anybody else out.
+          */}
+          <Link href="/sign-in" className="callout ml-auto hover:text-ink">Staff</Link>
         </div>
       </div>
     </footer>

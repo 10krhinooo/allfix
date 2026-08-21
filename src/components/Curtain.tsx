@@ -54,7 +54,21 @@ export function Curtain() {
 
     // In development the reveal plays on every mount, so it can actually be
     // looked at while it is being worked on.
-    const seen = process.env.NODE_ENV === "production" && sessionStorage.getItem(SEEN) === "1"
+    //
+    // A reload counts as a fresh visit. The flag exists so that navigating back
+    // to the home page from elsewhere on the site does not replay the reveal
+    // every time, which is a different thing from refreshing: somebody who
+    // presses reload is asking to see the page again, and sessionStorage
+    // outlives a reload, so without this the curtain never opened twice in a
+    // tab.
+    const entry = performance.getEntriesByType("navigation")[0] as
+      | PerformanceNavigationTiming
+      | undefined
+    const reloaded = entry?.type === "reload"
+    const seen =
+      process.env.NODE_ENV === "production" &&
+      !reloaded &&
+      sessionStorage.getItem(SEEN) === "1"
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || seen) {
       node.style.display = "none"

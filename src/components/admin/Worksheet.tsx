@@ -6,8 +6,9 @@ import type { DeskRow } from "@/lib/admin/rows"
 import { useAdmin, setPrice } from "@/lib/admin/store"
 import type { PriceEdit } from "@/lib/admin/store"
 import { currentPrice, isSellable, samePrice } from "@/lib/admin/pricing"
-import { PageHead } from "@/components/admin/parts"
+import { PageHead, Figures, Figure, Note, Choices, Toolbar } from "@/components/admin/parts"
 import { PriceRow } from "@/components/admin/PriceRow"
+import { useDesk } from "@/components/admin/identity"
 
 /**
  * The worksheet.
@@ -22,22 +23,31 @@ import { PriceRow } from "@/components/admin/PriceRow"
  * button per row. Somebody working down a price list has the list in one hand
  * and wants to type, tab, type, tab. Anything that puts a dialog between them
  * and the next figure turns twenty minutes of work into an afternoon.
+ *
+ * Prices and the shot list used to be two screens. They were two lenses on one
+ * object: both listed parts, both answered a version of "why can this not be
+ * sold yet", and both were filtered the same way. Splitting them meant knowing
+ * in advance whether a part's problem was money or photography, which is
+ * exactly what somebody at the counter does not know yet. One list, filtered by
+ * what is missing, answers the question they actually have.
  */
 
-type Show = "all" | "unpriced" | "priced" | "words" | "edited"
+type Show = "all" | "unpriced" | "priced" | "words" | "edited" | "unshot" | "ready"
 
 /** Stable, so the memo below is not invalidated by a fresh empty set each render. */
 const EMPTY: ReadonlySet<string> = new Set()
 
 const SHOWS: { value: Show; label: string }[] = [
   { value: "unpriced", label: "Cannot be sold" },
+  { value: "unshot", label: "No photograph" },
   { value: "words", label: "Priced in words" },
-  { value: "priced", label: "Priced" },
+  { value: "ready", label: "Ready to sell" },
   { value: "edited", label: "Changed here" },
+  { value: "priced", label: "Priced" },
   { value: "all", label: "Everything" },
 ]
 
-export function Prices({
+export function Worksheet({
   rows,
   components,
   groups,
@@ -48,11 +58,13 @@ export function Prices({
 }) {
   const params = useSearchParams()
   const state = useAdmin()
+  const desk = useDesk()
 
   const [show, setShow] = useState<Show>(() => readShow(params.get("show")))
   const [query, setQuery] = useState(() => params.get("q") ?? "")
   const [group, setGroup] = useState(() => params.get("group") ?? "")
   const [component, setComponent] = useState(() => params.get("part") ?? "")
+  const [copied, setCopied] = useState(false)
 
   // The URL mirrors the view rather than driving it, the same arrangement the
   // shop's browser uses: typing must not run a navigation per keystroke, but a
@@ -70,7 +82,7 @@ export function Prices({
       if (group) next.set("group", group)
       if (component) next.set("part", component)
       const search = next.toString()
-      window.history.replaceState(window.history.state, "", search ? `/admin/prices?${search}` : "/admin/prices")
+      window.history.replaceState(window.history.state, "", search ? `/admin/parts?${search}` : "/admin/parts")
     }, 250)
     return () => clearTimeout(timer)
   }, [show, query, group, component])
@@ -103,6 +115,8 @@ export function Prices({
       if (show === "priced" && !isSellable(now)) return false
       if (show === "words" && (isSellable(now) || !now.priceNote)) return false
       if (show === "edited" && !state.prices[row.slug]) return false
+      if (show === "unshot" && row.photographed) return false
+      if (show === "ready" && (!isSellable(now) || !row.photographed)) return false
       if (group && row.group !== group) return false
       if (component && row.component !== component) return false
       if (needle && !row.name.toLowerCase().includes(needle) && !row.ref.toLowerCase().includes(needle)) {
@@ -113,6 +127,10 @@ export function Prices({
   }, [rows, state.prices, show, group, component, query, heldNow])
 
   const unpriced = rows.filter((row) => !isSellable(currentPrice(row, state.prices))).length
+  const unshot = rows.filter((row) => !row.photographed).length
+  const ready = rows.filter(
+    (row) => isSellable(currentPrice(row, state.prices)) && row.photographed,
+  ).length
   const changed = Object.keys(state.prices).length
 
   function save(row: DeskRow, next: PriceEdit, reason: string | null) {
@@ -125,46 +143,89 @@ export function Prices({
       filter,
       slugs: new Set(previous.filter === filter ? [...previous.slugs, row.slug] : [row.slug]),
     }))
-    setPrice(row, from, next, reason)
+    setPrice(row, from, next, reason, desk.name)
+  }
+
+  /**
+   * The photographer's brief, as text.
+   *
+   * Carried over from the shot list, which is the one thing that screen did
+   * that a worksheet row cannot: a photographer wants the whole list grouped by
+   * system, in something they can paste into a message, not a filtered table.
+   */
+  async function copyBrief() {
+    const waiting = visible.filter((row) => !row.photographed)
+    const groupsInOrder = [...new Set(waiting.map((row) => row.group))]
+    const brief = groupsInOrder
+      .map((name) => {
+        const inGroup = waiting.filter((row) => row.group === name)
+        return `${name} (${inGroup.length})\n${inGroup
+          .map((row) => `  ${row.ref}  ${row.name}  ${row.imageName ?? "no filename set"}`)
+          .join("\n")}`
+      })
+      .join("\n\n")
+
+    try {
+      await navigator.clipboard.writeText(brief)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // The list is on the screen either way, so a refused clipboard is not
+      // worth an error dialog.
+    }
   }
 
   return (
     <>
       <PageHead
-        title="Prices"
+        title="Parts"
         lead={
           unpriced === 0
             ? "Every part in the catalogue carries a figure."
             : `${unpriced} of ${rows.length} parts cannot be sold, because nobody has priced them yet. A part left blank shows "price on request" on the shop and can still be asked about.`
         }
       >
-        <p className="max-w-xs border-l-2 border-brass bg-brass-soft px-3 py-2 text-xs leading-relaxed">
-          Edits are held in this browser only, until the backend is deployed.
-        </p>
+        <Note>Edits are held in this browser only, until the backend is deployed.</Note>
       </PageHead>
 
-      <div className="sticky top-[3.25rem] z-30 border-b border-rule bg-paper px-5 py-3 sm:px-8">
+      <Figures>
+        <Figure
+          value={unpriced}
+          label="cannot be sold"
+          tone={unpriced > 0 ? "warn" : "ink"}
+          note="No figure, so the shop can only take an enquiry."
+        />
+        <Figure
+          value={unshot}
+          label="have no photograph"
+          tone={unshot > 0 ? "warn" : "ink"}
+          note="Listed, but with a placeholder where the shot goes."
+        />
+        <Figure value={ready} label="ready to sell" note="Priced and photographed." />
+        {/* A dash until localStorage has been read, so a zero on this tile always
+            means zero rather than "not asked yet". */}
+        <Figure
+          value={state.ready ? changed : "\u2014"}
+          label="changed here"
+          tone="quiet"
+          note="Held in this browser."
+        />
+      </Figures>
+
+      <Toolbar>
         <div className="flex flex-wrap items-center gap-2">
-          {SHOWS.map((option) => {
-            const active = show === option.value
-            return (
-              <button
-                key={option.value}
-                type="button"
-                aria-pressed={active}
-                onClick={() => setShow(option.value)}
-                className={`rounded-sm border px-3 py-1.5 text-xs transition-colors ${
-                  active
-                    ? "border-ink bg-ink text-paper"
-                    : "border-rule text-slate hover:border-ink hover:text-ink"
-                }`}
-              >
-                {option.label}
-              </button>
-            )
-          })}
+          <Choices label="Which parts to show" options={SHOWS} value={show} onChange={setShow} />
 
           <div className="ml-auto flex flex-wrap items-center gap-2">
+            {show === "unshot" && (
+              <button
+                type="button"
+                onClick={copyBrief}
+                className="rounded-sm border border-ink px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-ink hover:text-paper"
+              >
+                {copied ? "Copied" : "Copy the shot list"}
+              </button>
+            )}
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
@@ -201,11 +262,12 @@ export function Prices({
           </div>
         </div>
 
-        <p className="mt-2 font-mono text-[11px] text-mute">
+        <p aria-live="polite" className="mt-2 font-mono text-[11px] text-mute">
           {visible.length} of {rows.length} parts
           {changed > 0 ? `, ${changed} changed here` : ""}
+          {copied ? ", shot list copied" : ""}
         </p>
-      </div>
+      </Toolbar>
 
       {visible.length === 0 ? (
         <p className="px-5 py-16 text-center text-sm text-slate sm:px-8">

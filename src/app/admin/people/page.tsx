@@ -1,6 +1,9 @@
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 import { PEOPLE, ROLE_NOTE } from "@/lib/admin/desk"
-import { PageHead } from "@/components/admin/parts"
+import { readDesk } from "@/lib/admin/guard"
+import { capabilities } from "@/lib/admin/roles"
+import { PageHead, Figures, Note, Section } from "@/components/admin/parts"
 
 export const metadata: Metadata = { title: "People" }
 
@@ -15,7 +18,12 @@ export const metadata: Metadata = { title: "People" }
  * at once. None of that can be demonstrated from a browser holding its own
  * state, so this screen shows the model and says plainly that it is reading.
  */
-export default function PeoplePage() {
+export default async function PeoplePage() {
+  // Admin only, checked here as well as in the proxy. `notFound` rather than a
+  // redirect: somebody who guesses the URL should not learn the screen exists.
+  const desk = await readDesk()
+  if (!desk || !capabilities(desk.role).people) notFound()
+
   const roles = ["ADMIN", "STAFF", "TRADE", "CUSTOMER"] as const
 
   return (
@@ -24,16 +32,13 @@ export default function PeoplePage() {
         title="People"
         lead="Roles are granted, never claimed. Every account starts as a customer, and staff, trade and admin are given by somebody who already has them."
       >
-        <p className="max-w-xs border-l-2 border-brass bg-brass-soft px-3 py-2 text-xs leading-relaxed">
+        <Note>
           Read only. Granting a role is the one thing on this console that will not be
           prototyped: it waits for the real backend.
-        </p>
+        </Note>
       </PageHead>
 
-      <div
-        className="flush grid border-b border-rule bg-paper"
-        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 15rem), 1fr))" }}
-      >
+      <Figures>
         {roles.map((role) => (
           <div key={role} className="px-5 py-5 sm:px-6">
             <span className="callout">{role}</span>
@@ -43,7 +48,7 @@ export default function PeoplePage() {
             </p>
           </div>
         ))}
-      </div>
+      </Figures>
 
       <ul className="bg-paper">
         {PEOPLE.map((person) => (
@@ -68,9 +73,8 @@ export default function PeoplePage() {
         ))}
       </ul>
 
-      <div className="px-5 py-8 sm:px-8">
-        <h2 className="callout">What the backend already enforces</h2>
-        <ul className="mt-4 max-w-2xl space-y-3 text-sm leading-relaxed text-slate">
+      <Section title="What the backend already enforces">
+        <ul className="max-w-2xl space-y-3 text-sm leading-relaxed text-slate">
           <li>
             A wrong password and an address nobody has registered give the same answer, byte for
             byte, so this list cannot be read a name at a time by guessing.
@@ -85,7 +89,7 @@ export default function PeoplePage() {
           </li>
           <li>Passwords are stored only as a BCrypt hash, and session tokens only as a SHA-256.</li>
         </ul>
-      </div>
+      </Section>
     </>
   )
 }

@@ -53,22 +53,39 @@ export function Figure({
   href?: string
 }) {
   const colour = tone === "warn" ? "text-oxblood" : tone === "quiet" ? "text-mute" : "text-ink"
+
+  /*
+   * The number and its label are one statement, so they are marked up as one:
+   * a description list, with the figure as the term. Read as three loose spans
+   * they were announced as a single run of text, and when the tile was a link
+   * the note became part of the link's name, so every tile read as a paragraph.
+   */
   const body = (
     <>
-      <span className={`block font-mono text-3xl leading-none ${colour}`}>{value}</span>
-      <span className="mt-2 block text-sm font-medium text-ink">{label}</span>
-      {note && <span className="mt-1 block text-xs leading-relaxed text-slate">{note}</span>}
+      <dt className={`block font-mono text-3xl leading-none ${colour}`}>{value}</dt>
+      <dd className="mt-2 block text-sm font-medium text-ink">{label}</dd>
+      {note && <dd className="mt-1 block text-xs leading-relaxed text-slate">{note}</dd>}
     </>
   )
 
   if (href) {
     return (
-      <Link href={href} className="block px-5 py-5 transition-colors hover:bg-panel sm:px-6">
-        {body}
-      </Link>
+      <div className="px-5 py-5 sm:px-6">
+        <dl>{body}</dl>
+        <Link
+          href={href}
+          className="mt-3 inline-block text-xs font-medium text-oxblood hover:underline"
+        >
+          {/* Named for where it goes, so a screen reader hears four distinct
+              destinations rather than four identical "read more" links. */}
+          Open {label}
+        </Link>
+      </div>
     )
   }
-  return <div className="px-5 py-5 sm:px-6">{body}</div>
+  return (
+    <dl className="px-5 py-5 sm:px-6">{body}</dl>
+  )
 }
 
 /**
@@ -125,5 +142,89 @@ export function Blank({ children }: { children?: React.ReactNode }) {
     <span className="inline-flex min-w-24 items-end border-b border-dashed border-mute pb-0.5 text-xs text-mute">
       {children ?? " "}
     </span>
+  )
+}
+
+/**
+ * The aside that says what is real and what is standing in.
+ *
+ * Four screens had this box pasted byte for byte, at three different sizes,
+ * which is how a prototype's honesty note quietly drifts out of date on one
+ * screen and not another.
+ */
+export function Note({
+  tone = "brass",
+  children,
+}: {
+  tone?: "brass" | "warn"
+  children: React.ReactNode
+}) {
+  const colour = tone === "warn" ? "border-oxblood bg-oxblood/5" : "border-brass bg-brass-soft"
+  return (
+    <p className={`max-w-xs border-l-2 px-3 py-2 text-xs leading-relaxed ${colour}`}>{children}</p>
+  )
+}
+
+/**
+ * One of several, as a radio group.
+ *
+ * The worksheet and the enquiry queue both had this as a row of buttons
+ * carrying `aria-pressed`, which describes four independent toggles that happen
+ * to look exclusive. A screen reader then announces "pressed" or "not pressed"
+ * four times and never "one of five". Radios say the true thing, and the labels
+ * keep the segmented look.
+ */
+export function Choices<T extends string>({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string
+  options: { value: T; label: string }[]
+  value: T
+  onChange: (next: T) => void
+}) {
+  return (
+    <fieldset className="flex flex-wrap items-center gap-2">
+      <legend className="sr-only">{label}</legend>
+      {options.map((option) => {
+        const active = value === option.value
+        return (
+          <label
+            key={option.value}
+            className={`cursor-pointer rounded-sm border px-3 py-1.5 text-xs transition-colors ${
+              active
+                ? "border-ink bg-ink text-paper"
+                : "border-rule text-slate hover:border-ink hover:text-ink"
+            }`}
+          >
+            <input
+              type="radio"
+              className="sr-only"
+              checked={active}
+              onChange={() => onChange(option.value)}
+            />
+            {option.label}
+          </label>
+        )
+      })}
+    </fieldset>
+  )
+}
+
+/**
+ * The bar that sticks under the console header.
+ *
+ * The height comes from `--desk-header` in globals.css rather than a repeated
+ * magic number, because the two used to be set independently and adjusting the
+ * header's padding left the toolbar floating over the content it was meant to
+ * sit below.
+ */
+export function Toolbar({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="sticky top-[var(--desk-header)] z-30 border-b border-rule bg-paper px-5 py-3 sm:px-8">
+      {children}
+    </div>
   )
 }

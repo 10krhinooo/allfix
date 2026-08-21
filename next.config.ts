@@ -28,13 +28,34 @@ const WOOCOMMERCE_REDIRECTS: { source: string; destination: string }[] = [
   { source: "/rods-accessories", destination: "/shop?family=rod" },
 ]
 
+/**
+ * The console's own history. Prices and the shot list merged into one parts
+ * worksheet, and the counter's figures linked straight into both, so the old
+ * paths redirect rather than 404. Next carries the query string across, which
+ * is what keeps `?show=unpriced` landing on the filtered view.
+ *
+ * Temporary rather than permanent: these are staff paths behind a sign in, and
+ * a 308 would be cached in a browser long after the console moves on again.
+ */
+const CONSOLE_REDIRECTS: { source: string; destination: string }[] = [
+  { source: "/admin/prices", destination: "/admin/parts" },
+  { source: "/admin/shots", destination: "/admin/parts?show=unshot" },
+]
+
 const nextConfig: NextConfig = {
   async redirects() {
-    return WOOCOMMERCE_REDIRECTS.map(({ source, destination }) => ({
-      source,
-      destination,
-      permanent: true,
-    }))
+    return [
+      ...WOOCOMMERCE_REDIRECTS.map(({ source, destination }) => ({
+        source,
+        destination,
+        permanent: true,
+      })),
+      ...CONSOLE_REDIRECTS.map(({ source, destination }) => ({
+        source,
+        destination,
+        permanent: false,
+      })),
+    ]
   },
 }
 

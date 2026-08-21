@@ -66,6 +66,13 @@
    * this from a 5rem row, a 2rem counter strip and the two rules between them.
    */
   --header-h: calc(5rem + 2rem + 2px);
+
+  /*
+   * The console header's height. The sidebar and the parts worksheet toolbar
+   * both stick underneath it, and both used to hardcode the same magic value,
+   * so changing the header's padding silently broke them.
+   */
+  --desk-header: 3.25rem;
 }
 
 /*
