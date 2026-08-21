@@ -38,7 +38,7 @@ export function PriceRow({
 
   /**
    * Follows the stored value when it changes underneath, which happens on the
-   * first hydration from localStorage and when the prototype's edits are
+   * first hydration from localStorage and when the console's edits are
    * cleared.
    *
    * Adjusted during render rather than in an effect. An effect would render the

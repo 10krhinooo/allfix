@@ -6,9 +6,9 @@ import { deskRows } from "@/lib/admin/rows"
 import { ENQUIRIES } from "@/lib/admin/desk"
 
 /**
- * Kept out of search results. The console holds nothing secret today, being a
- * prototype over the public catalogue, but a staff screen indexed once stays
- * indexed, and robots.txt disallows this path for the same reason.
+ * Kept out of search results. A staff screen indexed once stays indexed long
+ * after the mistake is noticed, and robots.txt disallows this path for the same
+ * reason.
  */
 export const metadata: Metadata = {
   title: "Counter console",

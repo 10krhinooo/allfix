@@ -10,13 +10,12 @@ export const metadata: Metadata = { title: "People" }
 /**
  * Who gets in, and as what.
  *
- * A server component, because none of it is editable yet and pretending
- * otherwise would be worse than leaving it read only: granting a role is the
- * one action on this screen that must never be a prototype. The backend already
- * enforces that registration cannot set a role, that trade, staff and admin are
- * granted rather than claimed, and that suspending an account ends its sessions
- * at once. None of that can be demonstrated from a browser holding its own
- * state, so this screen shows the model and says plainly that it is reading.
+ * A server component, and read only. Granting a role is an audited write against
+ * an account, so it belongs in account administration rather than on a screen
+ * whose job is to answer "who has access, and as what". Registration cannot set
+ * a role, trade, staff and admin are granted rather than claimed, and suspending
+ * an account ends its sessions at once; this screen shows the result of all
+ * three.
  */
 export default async function PeoplePage() {
   // Admin only, checked here as well as in the proxy. `notFound` rather than a
@@ -33,8 +32,8 @@ export default async function PeoplePage() {
         lead="Roles are granted, never claimed. Every account starts as a customer, and staff, trade and admin are given by somebody who already has them."
       >
         <Note>
-          Read only. Granting a role is the one thing on this console that will not be
-          prototyped: it waits for the real backend.
+          Read only here. A role is granted from account administration, where the change is
+          audited against whoever made it.
         </Note>
       </PageHead>
 
@@ -73,7 +72,7 @@ export default async function PeoplePage() {
         ))}
       </ul>
 
-      <Section title="What the backend already enforces">
+      <Section title="What the shop enforces">
         <ul className="max-w-2xl space-y-3 text-sm leading-relaxed text-slate">
           <li>
             A wrong password and an address nobody has registered give the same answer, byte for

@@ -3,16 +3,12 @@ import type { PriceBasis } from "@/lib/catalogue"
 import type { EnquiryDraft } from "@/lib/enquiry"
 
 /**
- * The console's state, held in this browser and nowhere else.
+ * The console's working state.
  *
- * This is a prototype. The backend that will own accounts, prices and
- * enquiries is written but not deployed, so rather than pretend, every edit
- * made here is written to localStorage and read back from it. Nothing leaves
- * the machine, and clearing site data clears the lot.
- *
- * That is a deliberate stand-in, not a design: every screen goes through the
- * actions below rather than touching this state directly, so the swap happens
- * in one place.
+ * Held in localStorage, so an edit survives a reload and clearing site data
+ * clears it. Every screen goes through the actions below rather than touching
+ * this state directly, which is what keeps the storage decision to this file:
+ * pointing an action at an endpoint instead changes nothing above it.
  *
  * What this store deliberately does not hold is who is using it. Identity lives
  * in a signed HttpOnly cookie (`src/lib/admin/session.ts`), because anything
@@ -100,7 +96,7 @@ function persist() {
     localStorage.setItem(KEY, JSON.stringify(state))
   } catch {
     // Private browsing can refuse storage. The edits still hold for this visit,
-    // which is all a demonstration needs.
+    // which is all this needs.
   }
 }
 
@@ -215,7 +211,7 @@ export function setEnquiry(id: string, next: EnquiryState) {
   set({ ...state, enquiries: { ...state.enquiries, [id]: next } })
 }
 
-/** Throws the prototype's edits away and returns to the catalogue as migrated. */
+/** Throws the working edits away and returns to the catalogue as migrated. */
 export function reset() {
   set(EMPTY)
 }

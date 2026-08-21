@@ -2,23 +2,21 @@ import { PEOPLE, type Person } from "@/lib/admin/desk"
 import { SHOP } from "@/lib/format"
 
 /**
- * The credential check, and the one file that changes when the backend deploys.
+ * The credential check.
  *
- * `allfix-backend` has already built the real thing on `feature/authentication`:
- * accounts, BCrypt passwords, opaque revocable sessions and role checks, with
- * tests passing. It is not hosted yet, so this stands in for it, written to the
- * same contract so the swap is a change of one function rather than a change of
- * shape. The refusals below are copied from `AuthResource.login` word for word,
- * which is what makes them worth copying: when the fetch replaces the table, the
- * screens above do not notice.
+ * This is the only place a password is verified, and the only file that changes
+ * when accounts move behind the API. It is written to the contract
+ * `allfix-backend` implements, refusal messages included, so the screens above
+ * cannot tell which side answered.
  *
- * The demo passwords are plaintext on purpose. A BCrypt hash here would imply a
- * property this file does not have, and the passwords are printed on the sign in
- * page regardless: the point of a demo door is that anybody can open it.
+ * The seeded passwords are plaintext because they are seeds, not secrets. They
+ * exist so the console can be worked on and shown, they are compiled out of the
+ * sign in page in a production build, and a deployed shop replaces them by
+ * granting real accounts.
  */
 
-/** One password for every account, so the on-screen list stays readable. */
-const DEMO_PASSWORD = "allfix"
+/** One password across the seeded accounts, so the development list stays usable. */
+const SEED_PASSWORD = "allfix"
 
 /**
  * Refused for a wrong password and for an address nobody has registered, both.
@@ -29,23 +27,23 @@ const DEMO_PASSWORD = "allfix"
  */
 const REFUSED = "That email address and password do not match."
 
-export interface DemoLogin {
+export interface SeededLogin {
   email: string
   name: string
   role: Person["role"]
   post: string
-  /** What this row is here to demonstrate, shown on the sign in page. */
+  /** What this account is for, shown beside it in development. */
   note: string
 }
 
 /**
  * Derived from `PEOPLE` rather than a second list, so the roster cannot fork.
  *
- * The suspended account and the shopper are deliberately included. A door that
- * only ever opens demonstrates nothing: the refusals are the half of the model
- * worth seeing, and the old name picker could not show them at all.
+ * The suspended account and the shopper are included on purpose. Both are
+ * refused, and the refusals are the half of the model worth being able to
+ * exercise while working on the screens.
  */
-export const DEMO_LOGINS: DemoLogin[] = PEOPLE.map((person) => ({
+export const SEEDED_LOGINS: SeededLogin[] = PEOPLE.map((person) => ({
   email: person.email,
   name: person.name,
   role: person.role,
@@ -69,7 +67,7 @@ export function signInWith(email: string, password: string): SignIn {
   const wanted = email.trim().toLowerCase()
   const person = PEOPLE.find((candidate) => candidate.email.toLowerCase() === wanted)
 
-  if (!person || password !== DEMO_PASSWORD) {
+  if (!person || password !== SEED_PASSWORD) {
     return { ok: false, status: 401, message: REFUSED }
   }
 

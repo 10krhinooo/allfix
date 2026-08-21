@@ -2,22 +2,20 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import type { DemoLogin } from "@/lib/admin/accounts"
+import type { SeededLogin } from "@/lib/admin/accounts"
 
 /**
- * Email, password, and the demo credentials printed underneath.
+ * The sign in form.
  *
- * The honesty note is the part worth keeping from the old name picker. What has
- * changed is that there is now a password and a role check behind it, so the
- * note says what is real (the refusals, the roles, the HttpOnly cookie) and what
- * is not (a revocable session, which needs the backend's token table), rather
- * than apologising for having no password at all.
+ * The account list below it is a development affordance and is compiled out of a
+ * production build, the same way `Curtain` gates its reveal. Seeded accounts are
+ * how this is worked on and shown; a deployed shop hands them out through the
+ * People screen instead, and a sign in page that lists them would be a hole.
  *
- * The demo list is passed in from the server component so the credential module
- * never enters the browser bundle. That is a seam with no value today, since the
- * passwords are printed on this very screen, and all the value later.
+ * The list is passed in from the server component rather than imported here, so
+ * the credential module never reaches the browser bundle even in development.
  */
-export function SignInForm({ logins, next }: { logins: DemoLogin[]; next: string | null }) {
+export function SignInForm({ logins, next }: { logins: SeededLogin[]; next: string | null }) {
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -98,34 +96,32 @@ export function SignInForm({ logins, next }: { logins: DemoLogin[]; next: string
         </button>
       </form>
 
-      <div className="mt-8 border-l-2 border-brass bg-brass-soft px-4 py-3 text-sm leading-relaxed text-ink">
-        <span className="font-medium">This is a prototype.</span> The roles and the refusals
-        below are real, and the session is an HttpOnly cookie. What is missing is the part
-        that needs a database: a session here cannot be revoked before it expires.
-      </div>
-
-      <h2 className="callout mt-8">Demo accounts, password {"allfix"}</h2>
-      <ul className="mt-3 border-t border-rule">
-        {logins.map((login) => (
-          <li key={login.email} className="border-b border-rule">
-            <button
-              type="button"
-              onClick={() => {
-                setEmail(login.email)
-                setPassword("allfix")
-                setProblem(null)
-              }}
-              className="flex w-full items-baseline justify-between gap-3 py-2.5 text-left transition-colors hover:bg-brass-soft"
-            >
-              <span className="min-w-0">
-                <span className="block font-mono text-[11px] text-mute">{login.email}</span>
-                <span className="mt-0.5 block text-xs text-slate">{login.note}</span>
-              </span>
-              <span className="callout shrink-0">{login.role}</span>
-            </button>
-          </li>
-        ))}
-      </ul>
+      {process.env.NODE_ENV !== "production" && logins.length > 0 && (
+        <>
+          <h2 className="callout mt-10">Seeded accounts, development only</h2>
+          <ul className="mt-3 border-t border-rule">
+            {logins.map((login) => (
+              <li key={login.email} className="border-b border-rule">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail(login.email)
+                    setPassword("allfix")
+                    setProblem(null)
+                  }}
+                  className="flex w-full items-baseline justify-between gap-3 py-2.5 text-left transition-colors hover:bg-brass-soft"
+                >
+                  <span className="min-w-0">
+                    <span className="block font-mono text-[11px] text-mute">{login.email}</span>
+                    <span className="mt-0.5 block text-xs text-slate">{login.note}</span>
+                  </span>
+                  <span className="callout shrink-0">{login.role}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   )
 }

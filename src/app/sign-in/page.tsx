@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
-import { DEMO_LOGINS } from "@/lib/admin/accounts"
+import { SEEDED_LOGINS } from "@/lib/admin/accounts"
 import { readDesk } from "@/lib/admin/guard"
 import { landing, safeNext } from "@/lib/admin/roles"
 import { SignInForm } from "@/components/admin/SignInForm"
@@ -55,7 +55,7 @@ export default async function SignInPage({
       </div>
 
       <div className="flex items-center justify-center bg-paper p-8 sm:p-12">
-        <SignInForm logins={DEMO_LOGINS} next={safeNext(next)} />
+        <SignInForm logins={SEEDED_LOGINS} next={safeNext(next)} />
       </div>
     </div>
   )

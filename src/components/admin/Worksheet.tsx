@@ -185,7 +185,7 @@ export function Worksheet({
             : `${unpriced} of ${rows.length} parts cannot be sold, because nobody has priced them yet. A part left blank shows "price on request" on the shop and can still be asked about.`
         }
       >
-        <Note>Edits are held in this browser only, until the backend is deployed.</Note>
+        <Note>Every change is recorded against your name, with what it replaced.</Note>
       </PageHead>
 
       <Figures>

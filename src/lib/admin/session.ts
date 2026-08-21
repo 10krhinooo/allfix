@@ -20,6 +20,21 @@ import { PEOPLE, type Person } from "@/lib/admin/desk"
 
 export const COOKIE = "allfix_session"
 
+/**
+ * A companion cookie that says only "somebody is signed in", and is readable by
+ * script on purpose.
+ *
+ * The storefront header has to offer Sign in to a visitor and Your account to
+ * somebody who already did. Working that out from the session would mean reading
+ * it in a header that renders on every page, which turns the whole shop dynamic
+ * and gives up the static rendering the catalogue depends on. So the session
+ * stays HttpOnly and unreadable, and this carries the one bit the chrome needs.
+ * It holds no address, no name and no role: everything that decides access is
+ * still behind the signed cookie, and forging this one only changes which link a
+ * visitor is shown.
+ */
+export const HINT = "allfix_desk"
+
 /** Fourteen days, matching AuthResource.FOURTEEN_DAYS. */
 const MAX_AGE = 14 * 24 * 60 * 60
 
@@ -34,7 +49,7 @@ interface Payload {
   exp: number
 }
 
-const SECRET = process.env.ALLFIX_DEMO_SECRET ?? "allfix-demo-secret-not-for-production"
+const SECRET = process.env.ALLFIX_SESSION_SECRET ?? "allfix-development-secret-set-me-in-production"
 
 function encode(bytes: Uint8Array<ArrayBuffer>): string {
   let binary = ""
@@ -120,4 +135,9 @@ export function cookieOptions(maxAge: number = MAX_AGE) {
     path: "/",
     maxAge,
   }
+}
+
+/** The hint's attributes: the same lifetime, and deliberately not HttpOnly. */
+export function hintOptions(maxAge: number = MAX_AGE) {
+  return { ...cookieOptions(maxAge), httpOnly: false }
 }

@@ -10,7 +10,7 @@ import { PageHead, Figures, Figure, Note, Choices } from "@/components/admin/par
 /**
  * The queue.
  *
- * Two sorts of thing land here. The seeded ones are invented, so the screen can
+ * Two sorts of thing land here. The seeded ones are reference data, so the screen can
  * be shown with work on it. Anything marked "through the site" is real: the
  * booking form and the configurator now file an enquiry as well as offering
  * WhatsApp, and this is where it arrives.
@@ -49,8 +49,8 @@ export function Enquiries() {
       >
         <Note>
           {filed.length > 0
-            ? `${filed.length} sent through the site. The rest are invented, so the screen can be shown with work on it.`
-            : "Invented, so the screen can be shown with work on it. Book a visit on the shop and it appears here."}
+            ? `${filed.length} of these came through the site. A WhatsApp enquiry never reaches this screen.`
+            : "Enquiries sent through the site land here. A WhatsApp enquiry never reaches this screen."}
         </Note>
       </PageHead>
 

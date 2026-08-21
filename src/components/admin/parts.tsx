@@ -149,8 +149,8 @@ export function Blank({ children }: { children?: React.ReactNode }) {
  * The aside that says what is real and what is standing in.
  *
  * Four screens had this box pasted byte for byte, at three different sizes,
- * which is how a prototype's honesty note quietly drifts out of date on one
- * screen and not another.
+ * which is how the same note quietly drifts out of date on one screen and not
+ * another.
  */
 export function Note({
   tone = "brass",
