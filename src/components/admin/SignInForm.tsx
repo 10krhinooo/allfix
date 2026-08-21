@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import type { SeededLogin } from "@/lib/admin/accounts"
+import { markDesk } from "@/lib/admin/hint"
 
 /**
  * The sign in form.
@@ -41,6 +42,11 @@ export function SignInForm({ logins, next }: { logins: SeededLogin[]; next: stri
         setBusy(false)
         return
       }
+
+      // The cookie is set, but no document is parsed on the way out of here, so
+      // the pre-paint script never runs and the storefront header would keep
+      // offering the door to somebody who has just walked through it.
+      markDesk(true)
 
       router.replace(next ?? body.to ?? "/admin")
       // The client cache can be holding an RSC payload for the console fetched

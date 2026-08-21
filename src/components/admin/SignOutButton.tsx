@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { markDesk } from "@/lib/admin/hint"
 
 /**
  * Signing out, from wherever somebody happens to be.
@@ -23,6 +24,7 @@ export function SignOutButton({ className }: { className?: string }) {
       onClick={async () => {
         setBusy(true)
         await fetch("/api/auth/logout", { method: "POST" })
+        markDesk(false)
         router.replace("/sign-in")
         router.refresh()
       }}

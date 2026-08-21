@@ -183,9 +183,10 @@ body {
  * The header's two states. Signed out is the default, so a visitor with no
  * JavaScript, and the static HTML a crawler receives, both get the door.
  */
+.when-signed-out { display: inline-flex; }
 .when-signed-in { display: none; }
-:root[data-desk="1"] .when-signed-in { display: inline-flex; }
 :root[data-desk="1"] .when-signed-out { display: none; }
+:root[data-desk="1"] .when-signed-in { display: inline-flex; }
 
 .logo-dark { display: none; }
 :root[data-theme="dark"] .logo-light { display: none; }
