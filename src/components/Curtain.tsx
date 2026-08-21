@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { createTimeline, stagger } from "animejs"
+import { SEEN, SWEEP, heroReveals, reducedMotion } from "@/lib/motion"
 
 /**
  * The motorised track that opens the hero.
@@ -18,7 +19,6 @@ import { createTimeline, stagger } from "animejs"
  * arrives, and what is left is simply the page. Nothing here is load bearing.
  */
 
-const SEEN = "allfix-curtain-seen"
 const RUNNERS = 12
 
 function Runners({ innerRef, side }: { innerRef: React.Ref<HTMLDivElement>; side: "left" | "right" }) {
@@ -52,25 +52,9 @@ export function Curtain() {
     if (!node || !rail.current || !motor.current || !left.current || !right.current) return
     if (!leftRunners.current || !rightRunners.current) return
 
-    // In development the reveal plays on every mount, so it can actually be
-    // looked at while it is being worked on.
-    //
-    // A reload counts as a fresh visit. The flag exists so that navigating back
-    // to the home page from elsewhere on the site does not replay the reveal
-    // every time, which is a different thing from refreshing: somebody who
-    // presses reload is asking to see the page again, and sessionStorage
-    // outlives a reload, so without this the curtain never opened twice in a
-    // tab.
-    const entry = performance.getEntriesByType("navigation")[0] as
-      | PerformanceNavigationTiming
-      | undefined
-    const reloaded = entry?.type === "reload"
-    const seen =
-      process.env.NODE_ENV === "production" &&
-      !reloaded &&
-      sessionStorage.getItem(SEEN) === "1"
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || seen) {
+    // The same question `PageCurtain` asks before it wipes into the home page,
+    // so the two can never both decide they own the arrival.
+    if (reducedMotion() || !heroReveals()) {
       node.style.display = "none"
       return
     }
@@ -93,11 +77,11 @@ export function Curtain() {
       .add(motor.current, { opacity: [0, 1], x: [-24, 0], duration: 320 }, 420)
       // A beat on the motor before anything moves: the pause between pressing
       // the button and the curtain going is the thing being demonstrated.
-      .add(left.current, { x: ["0%", "-101%"], duration: 1500, ease: "inOut(2.2)" }, 780)
-      .add(right.current, { x: ["0%", "101%"], duration: 1500, ease: "inOut(2.2)" }, 780)
+      .add(left.current, { x: ["0%", "-101%"], duration: 1500, ease: SWEEP }, 780)
+      .add(right.current, { x: ["0%", "101%"], duration: 1500, ease: SWEEP }, 780)
       .add(
         [leftRunners.current, rightRunners.current],
-        { scaleX: [1, 0.22], duration: 1500, ease: "inOut(2.2)" },
+        { scaleX: [1, 0.22], duration: 1500, ease: SWEEP },
         780,
       )
       .add(
