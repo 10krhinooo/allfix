@@ -38,6 +38,22 @@ export function Header() {
           >
             {SHOP.phone}
           </a>
+
+          {/*
+            A plain link, never a "signed in as" state. Working that out means
+            reading the session cookie, and this header is rendered on every
+            storefront page, so a single cookie read here would turn the whole
+            shop dynamic and give up the static rendering the catalogue pages
+            depend on. Who is signed in is the console's business, not the
+            shop's.
+          */}
+          <Link
+            href="/sign-in"
+            className="hidden rounded-sm border border-ink px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-paper md:inline-flex"
+          >
+            Sign in
+          </Link>
+
           <ThemeToggle />
           <MobileNav items={NAV} />
         </div>
