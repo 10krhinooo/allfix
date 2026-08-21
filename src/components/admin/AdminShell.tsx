@@ -1,11 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { capabilities, type Capabilities } from "@/lib/admin/roles"
 import type { Desk } from "@/lib/admin/session"
 import { DeskProvider } from "@/components/admin/identity"
 import { ConsoleSearch, type Findable } from "@/components/admin/ConsoleSearch"
+import { SignOutButton } from "@/components/admin/SignOutButton"
 
 /**
  * The console's chrome.
@@ -47,16 +48,7 @@ export function AdminShell({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const router = useRouter()
   const allowed = capabilities(desk.role)
-
-  async function signOut() {
-    await fetch("/api/auth/logout", { method: "POST" })
-    router.replace("/sign-in")
-    // The client cache still holds console payloads fetched while the cookie was
-    // live, so without this the browser can navigate straight back into them.
-    router.refresh()
-  }
 
   return (
     <DeskProvider desk={desk}>
@@ -82,9 +74,7 @@ export function AdminShell({
                 <span className="block font-mono text-xs text-slate">{desk.name}</span>
                 <span className="callout">{desk.role}</span>
               </span>
-              <button type="button" onClick={signOut} className="callout hover:text-ink">
-                Sign out
-              </button>
+              <SignOutButton className="callout hover:text-ink" />
               <Link href="/" className="callout hidden hover:text-ink sm:inline">
                 The shop
               </Link>

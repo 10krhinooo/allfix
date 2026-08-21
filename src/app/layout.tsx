@@ -57,6 +57,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {"try{var t=localStorage.getItem('allfix-theme');if(t==='dark')document.documentElement.dataset.theme='dark'}catch(e){}"}
         </Script>
         {/*
+          Which of the header's two controls to show, decided before the first
+          paint for the same reason the theme is: the alternative is a visitor
+          watching Sign in turn into Your account after hydration. The cookie
+          carries a boolean and nothing else, and the pages that matter are
+          guarded on the server regardless.
+        */}
+        <Script id="allfix-desk" strategy="beforeInteractive">
+          {"try{if(document.cookie.indexOf('allfix_desk=1')>-1)document.documentElement.dataset.desk='1'}catch(e){}"}
+        </Script>
+        {/*
           The hero curtain is drawn closed in the HTML so it is in place at
           first paint. Without JavaScript it could never open again, so it is
           never drawn at all.

@@ -40,18 +40,24 @@ export function Header() {
           </a>
 
           {/*
-            A plain link, never a "signed in as" state. Working that out means
-            reading the session cookie, and this header is rendered on every
-            storefront page, so a single cookie read here would turn the whole
-            shop dynamic and give up the static rendering the catalogue pages
-            depend on. Who is signed in is the console's business, not the
-            shop's.
+            Both controls are rendered and CSS picks one, driven by a boolean
+            cookie read before first paint. Deciding it on the server instead
+            would mean reading the session in a header that renders on every
+            page, which turns the whole shop dynamic and gives up the static
+            rendering the catalogue depends on. Where "your account" goes is the
+            server's business: /account redirects by role.
           */}
           <Link
             href="/sign-in"
-            className="hidden rounded-sm border border-ink px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-paper md:inline-flex"
+            className="when-signed-out hidden rounded-sm border border-ink px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-paper md:inline-flex"
           >
             Sign in
+          </Link>
+          <Link
+            href="/account"
+            className="when-signed-in hidden rounded-sm border border-ink px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-paper md:inline-flex"
+          >
+            Your account
           </Link>
 
           <ThemeToggle />

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { COOKIE, cookieOptions } from "@/lib/admin/session"
+import { COOKIE, HINT, cookieOptions, hintOptions } from "@/lib/admin/session"
 
 /**
  * Clearing the cookie, mirroring `POST /api/auth/logout`.
@@ -16,5 +16,6 @@ import { COOKIE, cookieOptions } from "@/lib/admin/session"
 export async function POST() {
   const response = new NextResponse(null, { status: 204 })
   response.cookies.set(COOKIE, "", cookieOptions(0))
+  response.cookies.set(HINT, "", hintOptions(0))
   return response
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { signInWith } from "@/lib/admin/accounts"
-import { COOKIE, cookieOptions, seal } from "@/lib/admin/session"
+import { COOKIE, HINT, cookieOptions, hintOptions, seal } from "@/lib/admin/session"
 import { landing } from "@/lib/admin/roles"
 
 /**
@@ -46,5 +46,6 @@ export async function POST(request: Request) {
     to: landing(result.person.role),
   })
   response.cookies.set(COOKIE, await seal(result.person), cookieOptions())
+  response.cookies.set(HINT, "1", hintOptions())
   return response
 }
