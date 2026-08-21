@@ -142,6 +142,14 @@ there is no "in stock" badge because stock is not tracked yet.
   "Profile" SVG strokes on scroll into view via `animate(svg.createDrawable(...), ...)`,
   with `stagger()` for sequencing. The markup itself is always fully drawn, so the animation
   is progressive enhancement, not a load-bearing part of the page.
+- **The two curtains.** `Curtain.tsx` is the home hero's motorised reveal (track, motor,
+  panels, runners bunching). `PageCurtain.tsx` is the wipe between shop routes, mounted from
+  `src/app/(shop)/template.tsx`: a template remounts on every navigation while a layout does
+  not, so mounting *is* the navigation and nothing watches the router. It never renders on a
+  fresh document, so no server-rendered page is ever hidden behind a script-only overlay.
+  Both read their gate from `src/lib/motion.ts` (`reducedMotion()`, `heroReveals()`), which
+  is the one place that decides which of the two owns an arrival. The console has no
+  template and gets no wipe.
 - **Theming**: CSS custom properties in `src/app/globals.css`, toggled via `data-theme` on
   `<html>` (opt-in dark mode only, never OS-driven; see the comment block there). The inline
   `<Script>` in `src/app/layout.tsx` applies the stored theme before first paint to avoid a
