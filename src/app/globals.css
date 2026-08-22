@@ -331,10 +331,27 @@ body {
 }
 
 /*
- * With no JavaScript the panels can never animate away, so they must never be
- * drawn. The hero underneath is complete on its own: the curtain is a flourish
- * on top of a page that is already finished. Paired with a `noscript` block in
- * the layout that switches this on.
+ * The hero's curtain is opt in, and the only thing that opts it in is the script
+ * in the document head.
+ *
+ * Hidden by default rather than shown by default, because every way this can go
+ * wrong ends with cloth nobody can move: no JavaScript, a script that never
+ * arrives, a reveal that has already been seen. The hero underneath is complete
+ * on its own, so the right failure is no curtain at all.
+ *
+ * Scoped to `.hero-curtain` and not to `.curtain`, which `PageCurtain` also
+ * carries. When the hero does not open, the page curtain is exactly what should
+ * be wiping instead, so a rule that caught both would take the arrival away
+ * from both.
+ */
+.hero-curtain { display: none; }
+:root[data-hero="1"] .hero-curtain { display: block; }
+
+/*
+ * Reduced motion is answered twice, here and in the head script, because they
+ * cover different things: the script keeps the hero out of the document, and
+ * this catches `PageCurtain`, which is mounted by a navigation rather than by
+ * the first paint.
  */
 @media (prefers-reduced-motion: reduce) {
   .curtain { display: none; }

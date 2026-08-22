@@ -60,6 +60,8 @@ export function Curtain() {
     }
 
     const timeline = createTimeline({
+      // Built now, played below. See the visibility check under the timeline.
+      autoplay: false,
       defaults: { ease: "inOutQuart" },
       onComplete: () => {
         // Marked here rather than on the way in. Strict Mode runs an effect
@@ -90,7 +92,27 @@ export function Curtain() {
         2000,
       )
 
+    /*
+     * Nothing plays to an empty room.
+     *
+     * A hidden tab is not painted and anime's engine does not tick while the
+     * document is hidden, so a reveal started now sits on its first frame for as
+     * long as the visitor is elsewhere and then snaps open the moment they
+     * arrive. Measured at twelve seconds in a background tab, still closed, and
+     * gone by the next frame after the tab was focused. So wait for somebody to
+     * be looking, which is the only condition under which this is worth playing.
+     */
+    const start = () => {
+      if (document.hidden) return
+      document.removeEventListener("visibilitychange", start)
+      timeline.play()
+    }
+
+    if (document.hidden) document.addEventListener("visibilitychange", start)
+    else timeline.play()
+
     return () => {
+      document.removeEventListener("visibilitychange", start)
       timeline.pause()
     }
   }, [])
@@ -101,7 +123,7 @@ export function Curtain() {
     <div
       ref={wrap}
       aria-hidden="true"
-      className="curtain pointer-events-none absolute inset-0 z-20 overflow-hidden"
+      className="curtain hero-curtain pointer-events-none absolute inset-0 z-20 overflow-hidden"
     >
       {/* The track, drawn as the white aluminium section the shop actually sells. */}
       <div

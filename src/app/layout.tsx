@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
-import Script from "next/script"
 import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google"
 import { SHOP, SITE } from "@/lib/format"
+import { HINT } from "@/lib/admin/hint"
+import { heroGateScript } from "@/lib/motion"
 import "./globals.css"
 
 /**
@@ -45,35 +46,47 @@ export const metadata: Metadata = {
   },
 }
 
+/*
+ * Three decisions that have to be made before the browser paints anything, so
+ * all three are plain inline scripts rather than `next/script`.
+ *
+ * `beforeInteractive` reads as though it means before the page is drawn. It does
+ * not. In the App Router it compiles to a push onto `self.__next_s`, which Next
+ * drains in `app-bootstrap` once the client bundle has arrived: before
+ * hydration, but long after the first paint. Every one of these exists to stop a
+ * flash, so queueing all three behind the bundle defeated all three, and the
+ * header shipped showing "Sign in" to people who were already signed in. A raw
+ * script in the head runs while the parser is still in the head, which is the
+ * whole requirement.
+ */
+const THEME =
+  "try{var t=localStorage.getItem('allfix-theme');if(t==='dark')document.documentElement.dataset.theme='dark'}catch(e){}"
+
+/*
+ * Which of the header's two controls to show. The cookie carries a boolean and
+ * nothing else, and every page that matters is guarded on the server anyway, so
+ * the worst a forged one can do is show somebody the wrong label.
+ */
+const DESK =
+  `try{if(/(^|;\\s*)${HINT}=1/.test(document.cookie))` +
+  `document.documentElement.dataset.desk='1'}catch(e){}`
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-KE" className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable}`}>
       <head>
+        {/* The stored theme, so a visitor who chose dark never sees light. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME }} />
+        {/* The door, so nobody signed in is offered the door. */}
+        <script dangerouslySetInnerHTML={{ __html: DESK }} />
         {/*
-          Applies the stored choice before the first paint. Without it a visitor
-          who chose dark gets a flash of light while React hydrates.
+          Whether the hero's curtain is going to open. It is drawn closed in the
+          HTML so it is in place at first paint, which means the decision not to
+          open it belongs here too: taken any later, a full screen of red is
+          painted and then pulled away, which is the flash rather than the
+          reveal. No script, no flag, no cloth.
         */}
-        <Script id="allfix-theme" strategy="beforeInteractive">
-          {"try{var t=localStorage.getItem('allfix-theme');if(t==='dark')document.documentElement.dataset.theme='dark'}catch(e){}"}
-        </Script>
-        {/*
-          Which of the header's two controls to show, decided before the first
-          paint for the same reason the theme is: the alternative is a visitor
-          watching Sign in turn into Your account after hydration. The cookie
-          carries a boolean and nothing else, and the pages that matter are
-          guarded on the server regardless.
-        */}
-        <Script id="allfix-desk" strategy="beforeInteractive">
-          {"try{if(document.cookie.indexOf('allfix_desk=1')>-1)document.documentElement.dataset.desk='1'}catch(e){}"}
-        </Script>
-        {/*
-          The hero curtain is drawn closed in the HTML so it is in place at
-          first paint. Without JavaScript it could never open again, so it is
-          never drawn at all.
-        */}
-        <noscript>
-          <style>{".curtain{display:none!important}"}</style>
-        </noscript>
+        <script dangerouslySetInnerHTML={{ __html: heroGateScript() }} />
       </head>
       {/*
         Deliberately bare. The chrome lives in the route groups: the storefront
