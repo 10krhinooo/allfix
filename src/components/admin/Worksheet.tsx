@@ -6,7 +6,16 @@ import type { DeskRow } from "@/lib/admin/rows"
 import { useAdmin, setPrice } from "@/lib/admin/store"
 import type { PriceEdit } from "@/lib/admin/store"
 import { currentPrice, isSellable, samePrice } from "@/lib/admin/pricing"
-import { PageHead, Figures, Figure, Note, Choices, Toolbar } from "@/components/admin/parts"
+import {
+  PageHead,
+  Stats,
+  Stat,
+  Card,
+  EmptyState,
+  Note,
+  Choices,
+  Toolbar,
+} from "@/components/admin/parts"
 import { PriceRow } from "@/components/admin/PriceRow"
 import { useDesk } from "@/components/admin/identity"
 
@@ -188,29 +197,27 @@ export function Worksheet({
         <Note>Every change is recorded against your name, with what it replaced.</Note>
       </PageHead>
 
-      <Figures>
-        <Figure
+      <Stats>
+        <Stat
+          label="Cannot be sold"
           value={unpriced}
-          label="cannot be sold"
-          tone={unpriced > 0 ? "warn" : "ink"}
-          note="No figure, so the shop can only take an enquiry."
+          accent={unpriced > 0}
+          hint="No figure, so the shop can only take an enquiry."
         />
-        <Figure
+        <Stat
+          label="No photograph"
           value={unshot}
-          label="have no photograph"
-          tone={unshot > 0 ? "warn" : "ink"}
-          note="Listed, but with a placeholder where the shot goes."
+          hint="Listed, but with a placeholder where the shot goes."
         />
-        <Figure value={ready} label="ready to sell" note="Priced and photographed." />
+        <Stat label="Ready to sell" value={ready} hint="Priced and photographed." />
         {/* A dash until localStorage has been read, so a zero on this tile always
             means zero rather than "not asked yet". */}
-        <Figure
+        <Stat
+          label="Changed here"
           value={state.ready ? changed : "\u2014"}
-          label="changed here"
-          tone="quiet"
-          note="Held in this browser."
+          hint="Held in this browser."
         />
-      </Figures>
+      </Stats>
 
       <Toolbar>
         <div className="flex flex-wrap items-center gap-2">
@@ -270,21 +277,24 @@ export function Worksheet({
       </Toolbar>
 
       {visible.length === 0 ? (
-        <p className="px-5 py-16 text-center text-sm text-slate sm:px-8">
-          Nothing matches. Widen the filters above.
-        </p>
+        <EmptyState
+          title="Nothing matches"
+          body="Widen the filters above, or clear the search, and the list comes back."
+        />
       ) : (
-        <ul className="bg-paper">
-          {visible.map((row) => (
-            <PriceRow
-              key={row.slug}
-              row={row}
-              value={currentPrice(row, state.prices)}
-              edited={Boolean(state.prices[row.slug])}
-              onSave={save}
-            />
-          ))}
-        </ul>
+        <Card padded={false} className="overflow-hidden">
+          <ul>
+            {visible.map((row) => (
+              <PriceRow
+                key={row.slug}
+                row={row}
+                value={currentPrice(row, state.prices)}
+                edited={Boolean(state.prices[row.slug])}
+                onSave={save}
+              />
+            ))}
+          </ul>
+        </Card>
       )}
     </>
   )

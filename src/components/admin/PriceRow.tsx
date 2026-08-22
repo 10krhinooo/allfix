@@ -75,8 +75,8 @@ export function PriceRow({
   }
 
   return (
-    <li className={`border-b border-rule ${edited ? "bg-brass-soft/40" : ""}`}>
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-2.5 sm:px-8">
+    <li className={`border-b border-rule last:border-b-0 ${edited ? "bg-brass-soft/40" : ""}`}>
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5 sm:px-5">
         <div className="min-w-0 flex-1">
           <button
             type="button"
@@ -128,13 +128,13 @@ export function PriceRow({
       </div>
 
       {problem && (
-        <p className="border-l-2 border-oxblood bg-oxblood/5 px-5 pb-2.5 pt-1 text-xs leading-relaxed text-oxblood sm:px-8">
+        <p className="border-l-2 border-oxblood bg-oxblood/5 px-4 pb-2.5 pt-1 text-xs leading-relaxed text-oxblood sm:px-5">
           {problem}
         </p>
       )}
 
       {!problem && !sellable && !open && (
-        <p className="px-5 pb-2.5 text-xs sm:px-8">
+        <p className="px-4 pb-2.5 text-xs sm:px-5">
           {value.priceNote ? (
             <span className="text-slate">
               Quoted in words: <span className="text-ink">{value.priceNote}</span>
@@ -146,7 +146,7 @@ export function PriceRow({
       )}
 
       {open && (
-        <div className="border-t border-dashed border-rule bg-panel px-5 py-4 sm:px-8">
+        <div className="border-t border-dashed border-rule bg-panel px-4 py-4 sm:px-5">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
               <span className="callout">How it is quoted, in words</span>

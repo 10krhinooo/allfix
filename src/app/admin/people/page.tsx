@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 import { PEOPLE, ROLE_NOTE } from "@/lib/admin/desk"
 import { readDesk } from "@/lib/admin/guard"
 import { capabilities } from "@/lib/admin/roles"
-import { PageHead, Figures, Note, Section } from "@/components/admin/parts"
+import { PageHead, Stats, Card, CardHeader, Pill, Note, Section, Table, Th, Td } from "@/components/admin/parts"
 
 export const metadata: Metadata = { title: "People" }
 
@@ -37,40 +37,49 @@ export default async function PeoplePage() {
         </Note>
       </PageHead>
 
-      <Figures>
+      <Stats>
         {roles.map((role) => (
-          <div key={role} className="px-5 py-5 sm:px-6">
-            <span className="callout">{role}</span>
-            <p className="mt-2 text-sm leading-relaxed text-slate">{ROLE_NOTE[role]}</p>
-            <p className="mt-2 font-mono text-xs text-mute">
-              {PEOPLE.filter((person) => person.role === role && person.active).length} active
+          <Card key={role}>
+            <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-mute">{role}</p>
+            <p className="mt-2 font-mono text-2xl leading-none text-ink">
+              {PEOPLE.filter((person) => person.role === role && person.active).length}
             </p>
-          </div>
+            <p className="mt-1.5 text-xs leading-relaxed text-slate">{ROLE_NOTE[role]}</p>
+          </Card>
         ))}
-      </Figures>
+      </Stats>
 
-      <ul className="bg-paper">
-        {PEOPLE.map((person) => (
-          <li
-            key={person.email}
-            className={`flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-rule px-5 py-3.5 sm:px-8 ${
-              person.active ? "" : "opacity-55"
-            }`}
-          >
-            <span className="min-w-0">
-              <span className="block text-sm font-medium text-ink">{person.name}</span>
-              <span className="mt-0.5 flex flex-wrap items-baseline gap-x-3">
-                <span className="font-mono text-[11px] text-mute">{person.email}</span>
-                <span className="text-xs text-slate">{person.post}</span>
-              </span>
-            </span>
-            <span className="flex items-baseline gap-4">
-              {!person.active && <span className="text-xs text-oxblood">suspended</span>}
-              <span className="callout">{person.role}</span>
-            </span>
-          </li>
-        ))}
-      </ul>
+      <Card className="mb-4">
+        <CardHeader title="Everybody with an account" hint="Suspended accounts stay listed." />
+        <Table>
+          <thead>
+            <tr>
+              <Th>Name</Th>
+              <Th>Post</Th>
+              <Th align="right">Role</Th>
+            </tr>
+          </thead>
+          <tbody>
+            {PEOPLE.map((person) => (
+              <tr key={person.email} className={person.active ? "" : "opacity-55"}>
+                <Td>
+                  <span className="block text-sm font-medium text-ink">{person.name}</span>
+                  <span className="mt-0.5 block font-mono text-[11px] text-mute">
+                    {person.email}
+                  </span>
+                </Td>
+                <Td className="text-xs text-slate">{person.post}</Td>
+                <Td align="right">
+                  <span className="inline-flex items-center gap-2">
+                    {!person.active && <Pill tone="todo">Suspended</Pill>}
+                    <Pill>{person.role}</Pill>
+                  </span>
+                </Td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Card>
 
       <Section title="What the shop enforces">
         <ul className="max-w-2xl space-y-3 text-sm leading-relaxed text-slate">

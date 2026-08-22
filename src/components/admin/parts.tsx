@@ -21,15 +21,13 @@ export function PageHead({
   children?: React.ReactNode
 }) {
   return (
-    <div className="drafting border-b border-rule px-5 py-7 sm:px-8">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight">{title}</h1>
-          {lead && <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate">{lead}</p>}
-        </div>
-        {children}
+    <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <h1 className="font-display text-2xl font-bold tracking-tight">{title}</h1>
+        {lead && <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-slate">{lead}</p>}
       </div>
-    </div>
+      {children}
+    </header>
   )
 }
 
@@ -118,13 +116,226 @@ export function Section({
   children: React.ReactNode
 }) {
   return (
-    <section className="px-5 py-8 sm:px-8">
-      <div className="flex items-baseline justify-between gap-4">
-        <h2 className="callout">{title}</h2>
-        {action}
-      </div>
-      <div className="mt-4">{children}</div>
+    <Card>
+      <CardHeader title={title} action={action} />
+      {children}
+    </Card>
+  )
+}
+
+/**
+ * The console's card.
+ *
+ * The worksheet used to be drawn as one continuous ruled sheet, hairlines edge
+ * to edge, which is honest to the drafting language but gives four unrelated
+ * things on a screen no separation at all: on a phone the price list ran
+ * straight into the enquiry queue with a single rule between them. A card is
+ * the same information with a boundary around it, which is what makes a screen
+ * scannable rather than continuous.
+ */
+export function Card({
+  children,
+  className = "",
+  padded = true,
+}: {
+  children: React.ReactNode
+  className?: string
+  padded?: boolean
+}) {
+  return (
+    <section
+      className={`rounded-2xl border border-rule bg-paper ${padded ? "p-5" : ""} ${className}`}
+    >
+      {children}
     </section>
+  )
+}
+
+export function CardHeader({
+  title,
+  hint,
+  action,
+}: {
+  title: string
+  hint?: string
+  action?: React.ReactNode
+}) {
+  return (
+    <div className="mb-4 flex items-start justify-between gap-4">
+      <div>
+        <h2 className="font-display text-[15px] font-semibold text-ink">{title}</h2>
+        {hint && <p className="mt-0.5 text-xs text-slate">{hint}</p>}
+      </div>
+      {action}
+    </div>
+  )
+}
+
+/**
+ * A strip of counts across the top of a screen.
+ *
+ * `auto-fit` and not a fixed four, because People shows three and Today shows
+ * four, and a fixed track leaves a card sized gap where the fourth would have
+ * been.
+ */
+export function Stats({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      className="mb-6 grid gap-4"
+      style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 14rem), 1fr))" }}
+    >
+      {children}
+    </div>
+  )
+}
+
+/**
+ * One count, on its own card.
+ *
+ * The label leads and the figure follows it, which is the opposite of the
+ * storefront's `Figure`. These are read one card at a time, looking for the
+ * one thing that needs doing, rather than scanned down a column of numerals,
+ * and a label that arrives after the number makes every card a small puzzle.
+ *
+ * `accent` is for the count that is the work. Exactly one card on a screen
+ * should carry it, or none.
+ */
+export function Stat({
+  label,
+  value,
+  hint,
+  accent,
+  href,
+}: {
+  label: string
+  value: number | string
+  hint?: string
+  accent?: boolean
+  href?: string
+}) {
+  const body = (
+    <>
+      <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-mute">{label}</p>
+      <p
+        className={`mt-2 font-mono text-2xl leading-none ${accent ? "text-oxblood" : "text-ink"}`}
+      >
+        {value}
+      </p>
+      {hint && <p className="mt-1.5 text-xs leading-relaxed text-slate">{hint}</p>}
+    </>
+  )
+
+  const skin = `rounded-2xl border p-5 ${
+    accent ? "border-oxblood/25 bg-oxblood/5" : "border-rule bg-paper"
+  }`
+
+  /*
+   * The whole card is the link when there is one. A "read more" underneath
+   * would be a second tab stop for the same destination, and on a touch screen
+   * the card is what gets tapped anyway.
+   */
+  if (href) {
+    return (
+      <Link href={href} className={`${skin} block transition-colors hover:border-ink`}>
+        {body}
+      </Link>
+    )
+  }
+  return <div className={skin}>{body}</div>
+}
+
+/**
+ * A table that can be read on a phone.
+ *
+ * The minimum width is the point: below it the columns are scrolled sideways
+ * rather than wrapped, because a price that has wrapped under its SKU is no
+ * longer in a column and cannot be compared with the price above it.
+ */
+export function Table({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="-mx-5 overflow-x-auto px-5">
+      <table className="w-full min-w-[34rem] text-left text-sm">{children}</table>
+    </div>
+  )
+}
+
+export function Th({
+  children,
+  align = "left",
+}: {
+  children: React.ReactNode
+  align?: "left" | "right"
+}) {
+  return (
+    <th
+      scope="col"
+      className={`border-b border-rule py-2.5 pr-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-mute ${
+        align === "right" ? "text-right" : ""
+      }`}
+    >
+      {children}
+    </th>
+  )
+}
+
+export function Td({
+  children,
+  align = "left",
+  className = "",
+}: {
+  children: React.ReactNode
+  align?: "left" | "right"
+  className?: string
+}) {
+  return (
+    <td
+      className={`border-b border-rule py-3 pr-4 align-middle ${
+        align === "right" ? "text-right" : ""
+      } ${className}`}
+    >
+      {children}
+    </td>
+  )
+}
+
+/**
+ * A state, as a word rather than a colour.
+ *
+ * The palette here is two colours and a grey, so a pill cannot carry meaning by
+ * hue the way a five colour console does, and it should not try: the word is
+ * the label and the tone only says how loudly to read it. Oxblood is something
+ * to do, brass is waiting on somebody else, quiet is settled.
+ */
+export function Pill({
+  tone = "quiet",
+  children,
+}: {
+  tone?: "todo" | "waiting" | "quiet"
+  children: React.ReactNode
+}) {
+  const skin =
+    tone === "todo"
+      ? "border-oxblood/30 bg-oxblood/5 text-oxblood"
+      : tone === "waiting"
+        ? "border-brass/40 bg-brass-soft text-brass"
+        : "border-rule bg-panel text-slate"
+
+  return (
+    <span
+      className={`inline-flex shrink-0 items-center whitespace-nowrap rounded-full border px-2.5 py-1 text-[11px] font-semibold ${skin}`}
+    >
+      {children}
+    </span>
+  )
+}
+
+/** Nothing to show, said in the console's terms rather than the shop's. */
+export function EmptyState({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="rounded-2xl border border-dashed border-rule py-14 text-center">
+      <h3 className="font-display text-base font-semibold">{title}</h3>
+      <p className="mx-auto mt-2 max-w-sm px-6 text-sm leading-relaxed text-slate">{body}</p>
+    </div>
   )
 }
 
@@ -186,17 +397,15 @@ export function Choices<T extends string>({
   onChange: (next: T) => void
 }) {
   return (
-    <fieldset className="flex flex-wrap items-center gap-2">
+    <fieldset className="flex gap-1 overflow-x-auto rounded-full bg-panel p-1">
       <legend className="sr-only">{label}</legend>
       {options.map((option) => {
         const active = value === option.value
         return (
           <label
             key={option.value}
-            className={`cursor-pointer rounded-sm border px-3 py-1.5 text-xs transition-colors ${
-              active
-                ? "border-ink bg-ink text-paper"
-                : "border-rule text-slate hover:border-ink hover:text-ink"
+            className={`shrink-0 cursor-pointer whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors ${
+              active ? "bg-paper text-ink shadow-sm" : "text-slate hover:text-ink"
             }`}
           >
             <input
@@ -216,14 +425,18 @@ export function Choices<T extends string>({
 /**
  * The bar that sticks under the console header.
  *
- * The height comes from `--desk-header` in globals.css rather than a repeated
+ * The offset comes from `--desk-header` in globals.css rather than a repeated
  * magic number, because the two used to be set independently and adjusting the
  * header's padding left the toolbar floating over the content it was meant to
  * sit below.
+ *
+ * It bleeds to the edges of the padded page and pads itself back, so the
+ * hairline underneath runs the full width when the bar sticks. A bar that stops
+ * short of the edges reads as a card that has come loose.
  */
 export function Toolbar({ children }: { children: React.ReactNode }) {
   return (
-    <div className="sticky top-[var(--desk-header)] z-30 border-b border-rule bg-paper px-5 py-3 sm:px-8">
+    <div className="sticky top-[var(--desk-header)] z-20 -mx-4 mb-6 border-b border-rule bg-panel/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
       {children}
     </div>
   )

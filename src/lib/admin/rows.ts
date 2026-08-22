@@ -96,6 +96,32 @@ export function deskComponents(rows: DeskRow[]) {
     .map((component) => ({ slug: component.slug, name: component.name }))
 }
 
+/**
+ * What the chrome needs to count, and nothing more.
+ *
+ * The rail carries the number outstanding on each screen, and that number has
+ * to be worked out the same way the screen itself works it out, through
+ * `currentPrice`, or the badge and the page disagree. So the chrome gets the
+ * four fields that decision reads rather than the whole worksheet: 154 rows of
+ * names, groups and image paths have no business in the layout's payload when
+ * three of the fields decide everything.
+ */
+export interface BadgeRow {
+  slug: string
+  priceKes: number | null
+  priceBasis: PriceBasis
+  priceNote: string | null
+}
+
+export function badgeRows(rows: DeskRow[]): BadgeRow[] {
+  return rows.map((row) => ({
+    slug: row.slug,
+    priceKes: row.priceKes,
+    priceBasis: row.priceBasis,
+    priceNote: row.priceNote,
+  }))
+}
+
 /** The rail systems and rod finishes, as one list, because the worksheet mixes them. */
 export function deskGroups(rows: DeskRow[]) {
   return [...new Set(rows.map((row) => row.group))].sort()

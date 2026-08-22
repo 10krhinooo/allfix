@@ -72,7 +72,7 @@
    * both stick underneath it, and both used to hardcode the same magic value,
    * so changing the header's padding silently broke them.
    */
-  --desk-header: 3.25rem;
+  --desk-header: 4rem;
 }
 
 /*

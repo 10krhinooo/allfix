@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { AdminShell } from "@/components/admin/AdminShell"
 import type { Findable } from "@/components/admin/ConsoleSearch"
 import { requireConsole } from "@/lib/admin/guard"
-import { deskRows } from "@/lib/admin/rows"
+import { badgeRows, deskRows } from "@/lib/admin/rows"
 import { ENQUIRIES } from "@/lib/admin/desk"
 
 /**
@@ -32,8 +32,10 @@ export const metadata: Metadata = {
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const desk = await requireConsole()
 
+  const rows = deskRows()
+
   const findable: Findable[] = [
-    ...deskRows().map((row) => ({
+    ...rows.map((row) => ({
       ref: row.ref,
       name: row.name,
       href: `/admin/parts?q=${encodeURIComponent(row.ref)}`,
@@ -48,7 +50,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   ]
 
   return (
-    <AdminShell desk={desk} findable={findable}>
+    <AdminShell desk={desk} findable={findable} badges={badgeRows(rows)}>
       {children}
     </AdminShell>
   )
