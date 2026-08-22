@@ -4,6 +4,7 @@ import { SEEDED_LOGINS } from "@/lib/admin/accounts"
 import { readDesk } from "@/lib/admin/guard"
 import { landing, safeNext } from "@/lib/admin/roles"
 import { SignInForm } from "@/components/admin/SignInForm"
+import { AuthScene } from "@/components/admin/AuthScene"
 
 /**
  * Kept out of search results for the same reason the console is: a staff screen
@@ -24,6 +25,10 @@ export const metadata: Metadata = {
  *
  * The chrome belongs to neither side: a door is not a shopfront and not a
  * counter, so it sits outside both route groups and carries no header or footer.
+ * What it gets instead is `AuthScene`, a rail with the cloth gathered at both
+ * walls. Being outside `(shop)` also keeps `PageCurtain` off it, which matters
+ * here more than anywhere: a transition curtain drawing across a screen that is
+ * already curtains is the same cloth twice at two different scales.
  */
 export default async function SignInPage({
   searchParams,
@@ -38,25 +43,8 @@ export default async function SignInPage({
   if (desk) redirect(landing(desk.role, next))
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="stage flex flex-col justify-between p-8 sm:p-12">
-        <span className="font-display text-lg font-bold tracking-tight">AllFix By Kipekee</span>
-        <div>
-          <p className="callout">Counter console</p>
-          <p className="display-lg mt-3 max-w-[14ch] font-display font-bold tracking-tight">
-            The back of the shop.
-          </p>
-          <p className="mt-4 max-w-sm leading-relaxed text-stage-mute">
-            Prices, the parts still waiting on a photograph, and whoever has called in
-            today. Everything a customer never sees.
-          </p>
-        </div>
-        <p className="font-mono text-xs text-stage-mute">Njugu Lane, Nairobi CBD</p>
-      </div>
-
-      <div className="flex items-center justify-center bg-paper p-8 sm:p-12">
-        <SignInForm logins={SEEDED_LOGINS} next={safeNext(next)} />
-      </div>
-    </div>
+    <AuthScene>
+      <SignInForm logins={SEEDED_LOGINS} next={safeNext(next)} />
+    </AuthScene>
   )
 }

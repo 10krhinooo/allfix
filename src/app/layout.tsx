@@ -73,7 +73,17 @@ const DESK =
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-KE" className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable}`}>
+    // The three scripts below write `data-theme`, `data-desk` and `data-hero`
+    // onto this element before React ever sees it, which is the whole point of
+    // them. React compares what it rendered on the server with what is in the
+    // document and warns about attributes it did not put there, so it is told
+    // not to. This suppresses one level, the attributes of `<html>` itself, and
+    // nothing inside it.
+    <html
+      lang="en-KE"
+      suppressHydrationWarning
+      className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable}`}
+    >
       <head>
         {/* The stored theme, so a visitor who chose dark never sees light. */}
         <script dangerouslySetInnerHTML={{ __html: THEME }} />

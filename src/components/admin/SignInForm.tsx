@@ -4,14 +4,21 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import type { SeededLogin } from "@/lib/admin/accounts"
 import { markDesk } from "@/lib/admin/hint"
+import { AuthCard, AuthField, AuthFooter, AuthSubmit, Notice, PasswordField } from "@/components/admin/AuthUI"
+import { SHOP } from "@/lib/format"
 
 /**
  * The sign in form.
  *
- * The account list below it is a development affordance and is compiled out of a
- * production build, the same way `Curtain` gates its reveal. Seeded accounts are
- * how this is worked on and shown; a deployed shop hands them out through the
- * People screen instead, and a sign in page that lists them would be a hole.
+ * One door for everybody. Nothing here asks whether somebody is staff: the
+ * answer comes back with a role and the redirect follows it, which is what lets
+ * there be one screen rather than a counter one and a trade one that slowly
+ * drift apart.
+ *
+ * The account list below it is a development affordance and is compiled out of
+ * a production build. Seeded accounts are how this is worked on and shown; a
+ * deployed shop hands them out through the People screen instead, and a sign in
+ * page that lists them would be a hole.
  *
  * The list is passed in from the server component rather than imported here, so
  * the credential module never reaches the browser bundle even in development.
@@ -59,71 +66,58 @@ export function SignInForm({ logins, next }: { logins: SeededLogin[]; next: stri
   }
 
   return (
-    <div className="w-full max-w-sm">
-      <h1 className="font-display text-2xl font-bold tracking-tight">Sign in</h1>
-
-      <form onSubmit={submit} className="mt-6">
-        <label className="block">
-          <span className="callout">Email</span>
-          <input
-            type="email"
-            required
-            autoComplete="username"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            className="mt-1.5 w-full rounded-sm border border-rule bg-paper px-3 py-2 text-sm outline-none focus:border-ink"
-          />
-        </label>
-
-        <label className="mt-4 block">
-          <span className="callout">Password</span>
-          <input
-            id="password"
-            type="password"
-            required
-            autoComplete="current-password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            className="mt-1.5 w-full rounded-sm border border-rule bg-paper px-3 py-2 text-sm outline-none focus:border-ink"
-          />
-        </label>
-
-        {problem && (
-          <p role="alert" className="mt-4 border-l-2 border-oxblood bg-oxblood/5 px-3 py-2 text-sm leading-relaxed text-ink">
-            {problem}
-          </p>
-        )}
-
-        <button
-          type="submit"
+    <AuthCard
+      title="Sign in"
+      intro="The counter console, and trade accounts. Everything a customer never sees."
+    >
+      <form onSubmit={submit} className="mt-6 flex flex-col gap-4">
+        <AuthField
+          label="Email"
+          type="email"
+          required
+          autoFocus
+          autoComplete="username"
           disabled={busy}
-          className="mt-6 w-full rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep disabled:cursor-not-allowed disabled:opacity-55"
-        >
-          {busy ? "Signing in" : "Sign in"}
-        </button>
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder="you@allfix.co.ke"
+        />
+
+        <PasswordField
+          label="Password"
+          required
+          autoComplete="current-password"
+          disabled={busy}
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+        />
+
+        {problem && <Notice>{problem}</Notice>}
+
+        <AuthSubmit busy={busy} busyLabel="Signing in">
+          Sign in
+        </AuthSubmit>
       </form>
 
       {process.env.NODE_ENV !== "production" && logins.length > 0 && (
-        <>
-          <h2 className="callout mt-10">Seeded accounts, development only</h2>
+        <div data-field className="mt-8 border-t border-rule pt-6">
+          <h2 className="callout">Seeded accounts, development only</h2>
           <p className="mt-2 text-xs leading-relaxed text-slate">
-            Pick one to fill the address in. Any password opens it unless
-            <code className="mx-1 font-mono">ALLFIX_SEED_PASSWORD</code>
-            is set, in which case use that.
+            Pick one to fill the address in. There is no shared password: any password opens a
+            seeded account unless <code className="font-mono">ALLFIX_SEED_PASSWORD</code> is set.
           </p>
-          <ul className="mt-3 border-t border-rule">
+          <ul className="mt-3">
             {logins.map((login) => (
-              <li key={login.email} className="border-b border-rule">
+              <li key={login.email} className="border-b border-rule last:border-b-0">
+                {/* The address only. There is no seeded password to fill in,
+                    which is the point: nothing here is a credential. */}
                 <button
                   type="button"
-                  // The address only. There is no seeded password to fill in,
-                  // which is the point: nothing here is a credential.
                   onClick={() => {
                     setEmail(login.email)
                     setProblem(null)
-                    document.getElementById("password")?.focus()
                   }}
-                  className="flex w-full items-baseline justify-between gap-3 py-2.5 text-left transition-colors hover:bg-brass-soft"
+                  className="flex w-full items-baseline justify-between gap-3 rounded-lg px-2 py-2.5 text-left transition-colors hover:bg-brass-soft"
                 >
                   <span className="min-w-0">
                     <span className="block font-mono text-[11px] text-mute">{login.email}</span>
@@ -134,8 +128,17 @@ export function SignInForm({ logins, next }: { logins: SeededLogin[]; next: stri
               </li>
             ))}
           </ul>
-        </>
+        </div>
       )}
-    </div>
+
+      <AuthFooter>
+        Accounts are granted at the counter, never claimed here. If you should have one and do
+        not, call the shop on{" "}
+        <a href={`tel:${SHOP.phoneIntl}`} className="font-mono text-ink hover:underline">
+          {SHOP.phone}
+        </a>
+        .
+      </AuthFooter>
+    </AuthCard>
   )
 }
