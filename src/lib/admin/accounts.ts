@@ -9,14 +9,23 @@ import { SHOP } from "@/lib/format"
  * `allfix-backend` implements, refusal messages included, so the screens above
  * cannot tell which side answered.
  *
- * The seeded passwords are plaintext because they are seeds, not secrets. They
- * exist so the console can be worked on and shown, they are compiled out of the
- * sign in page in a production build, and a deployed shop replaces them by
- * granting real accounts.
+ * There is no password in this file. There used to be one shared plaintext seed,
+ * and while it was a seed rather than a secret, a checked in string that a
+ * scanner reads as a credential costs more to explain every time than it saves.
+ * So the seeded door has no password to leak: set `ALLFIX_SEED_PASSWORD` and it
+ * is required, leave it unset and any non-empty password opens a seeded account.
+ *
+ * That loses nothing worth keeping. The refusals this screen exists to
+ * demonstrate are decided by role and not by password: a suspended account, a
+ * shopper with no console, an address nobody has registered. All three still
+ * refuse, and they are the half of the model worth exercising.
  */
 
-/** One password across the seeded accounts, so the development list stays usable. */
-const SEED_PASSWORD = "allfix"
+/**
+ * Unset in development, so the seeded list stays usable on a bare clone. Set it
+ * anywhere the console is shown to somebody who should not be able to walk in.
+ */
+const SEED_PASSWORD = process.env.ALLFIX_SEED_PASSWORD ?? ""
 
 /**
  * Refused for a wrong password and for an address nobody has registered, both.
@@ -67,7 +76,11 @@ export function signInWith(email: string, password: string): SignIn {
   const wanted = email.trim().toLowerCase()
   const person = PEOPLE.find((candidate) => candidate.email.toLowerCase() === wanted)
 
-  if (!person || password !== SEED_PASSWORD) {
+  // An empty password is refused whether or not one is configured, so the field
+  // is never a formality: the backend's own contract rejects a blank one too.
+  const allowed = SEED_PASSWORD ? password === SEED_PASSWORD : password.length > 0
+
+  if (!person || !allowed) {
     return { ok: false, status: 401, message: REFUSED }
   }
 

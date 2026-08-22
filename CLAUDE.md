@@ -90,6 +90,12 @@ change to one function. The session is an HttpOnly SameSite=Lax cookie carrying 
 payload (`src/lib/admin/session.ts`), which stops a role being edited in devtools but is
 explicitly **not** a revocable session: that needs the backend's token table.
 
+**There is no password in the source.** `ALLFIX_SEED_PASSWORD` is honoured when set, and
+when it is not, any non-empty password opens a seeded account. Do not reintroduce a shared
+literal: a checked in credential fails the repository's secret scan, and the refusals worth
+demonstrating (suspended, shopper, unregistered address) are decided by role anyway.
+`ALLFIX_SESSION_SECRET` signs the cookie and must be set wherever the console is real.
+
 Roles are `ADMIN | STAFF | TRADE | CUSTOMER`, and `src/lib/admin/roles.ts` is the single
 answer to what each may do. The split follows `ROLE_NOTE` in `desk.ts` rather than one
 invented for the demo: staff price parts because that is counter work, and only admin sees

@@ -78,6 +78,7 @@ export function SignInForm({ logins, next }: { logins: SeededLogin[]; next: stri
         <label className="mt-4 block">
           <span className="callout">Password</span>
           <input
+            id="password"
             type="password"
             required
             autoComplete="current-password"
@@ -105,15 +106,22 @@ export function SignInForm({ logins, next }: { logins: SeededLogin[]; next: stri
       {process.env.NODE_ENV !== "production" && logins.length > 0 && (
         <>
           <h2 className="callout mt-10">Seeded accounts, development only</h2>
+          <p className="mt-2 text-xs leading-relaxed text-slate">
+            Pick one to fill the address in. Any password opens it unless
+            <code className="mx-1 font-mono">ALLFIX_SEED_PASSWORD</code>
+            is set, in which case use that.
+          </p>
           <ul className="mt-3 border-t border-rule">
             {logins.map((login) => (
               <li key={login.email} className="border-b border-rule">
                 <button
                   type="button"
+                  // The address only. There is no seeded password to fill in,
+                  // which is the point: nothing here is a credential.
                   onClick={() => {
                     setEmail(login.email)
-                    setPassword("allfix")
                     setProblem(null)
+                    document.getElementById("password")?.focus()
                   }}
                   className="flex w-full items-baseline justify-between gap-3 py-2.5 text-left transition-colors hover:bg-brass-soft"
                 >
