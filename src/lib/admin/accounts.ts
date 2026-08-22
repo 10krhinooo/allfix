@@ -12,13 +12,21 @@ import { SHOP } from "@/lib/format"
  * There is no password in this file. There used to be one shared plaintext seed,
  * and while it was a seed rather than a secret, a checked in string that a
  * scanner reads as a credential costs more to explain every time than it saves.
- * So the seeded door has no password to leak: set `ALLFIX_SEED_PASSWORD` and it
- * is required, leave it unset and any non-empty password opens a seeded account.
  *
- * That loses nothing worth keeping. The refusals this screen exists to
- * demonstrate are decided by role and not by password: a suspended account, a
- * shopper with no console, an address nobody has registered. All three still
- * refuse, and they are the half of the model worth exercising.
+ * So the seeded door has no password to leak, and does not pretend to have one.
+ * With `ALLFIX_SEED_PASSWORD` set it is required and checked. With it unset the
+ * password is not checked at all, and the sign in sheet says so and stops making
+ * the field compulsory, because a field that is asked for and never checked
+ * teaches people to type anything into it, which is worse than not asking.
+ *
+ * That loses nothing worth demonstrating. The refusals this screen exists for
+ * are decided by role and not by password: a suspended account, a shopper with
+ * no console, an address nobody has registered. All three still refuse, and they
+ * are the half of the model worth exercising.
+ *
+ * The trade off is real and belongs in the open: an unset variable means anybody
+ * who knows a seeded address can walk into the console on that deployment. Set
+ * it on anything reachable from the internet.
  */
 
 /**
@@ -26,6 +34,12 @@ import { SHOP } from "@/lib/format"
  * anywhere the console is shown to somebody who should not be able to walk in.
  */
 const SEED_PASSWORD = process.env.ALLFIX_SEED_PASSWORD ?? ""
+
+/**
+ * Whether the door checks a password at all, for the sheet to say out loud.
+ * Server side only: it reports that a password exists, never what it is.
+ */
+export const SEEDED_DOOR_IS_LOCKED = SEED_PASSWORD.length > 0
 
 /**
  * Refused for a wrong password and for an address nobody has registered, both.
@@ -76,9 +90,9 @@ export function signInWith(email: string, password: string): SignIn {
   const wanted = email.trim().toLowerCase()
   const person = PEOPLE.find((candidate) => candidate.email.toLowerCase() === wanted)
 
-  // An empty password is refused whether or not one is configured, so the field
-  // is never a formality: the backend's own contract rejects a blank one too.
-  const allowed = SEED_PASSWORD ? password === SEED_PASSWORD : password.length > 0
+  // Checked only when there is something to check against. Unset, the door is
+  // open by configuration rather than by accident, which is what the sheet says.
+  const allowed = SEED_PASSWORD ? password === SEED_PASSWORD : true
 
   if (!person || !allowed) {
     return { ok: false, status: 401, message: REFUSED }
