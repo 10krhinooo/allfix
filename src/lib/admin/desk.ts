@@ -1,5 +1,5 @@
 /**
- * Invented work, so the console can be shown doing its job.
+ * Seed data for the counter's screens.
  *
  * None of this is real. There is no orders table and no enquiries table yet:
  * the storefront's quote, survey and trade forms all compose a WhatsApp message

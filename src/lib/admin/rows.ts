@@ -1,4 +1,6 @@
 import { products, systems, ranges, componentsInOrder, imageFor, skusOf } from "@/lib/catalogue"
+import { ENQUIRIES, type Enquiry } from "@/lib/admin/desk"
+import type { FiledEnquiry } from "@/lib/admin/store"
 import type { Family, PriceBasis } from "@/lib/catalogue"
 
 /**
@@ -94,7 +96,73 @@ export function deskComponents(rows: DeskRow[]) {
     .map((component) => ({ slug: component.slug, name: component.name }))
 }
 
+/**
+ * What the chrome needs to count, and nothing more.
+ *
+ * The rail carries the number outstanding on each screen, and that number has
+ * to be worked out the same way the screen itself works it out, through
+ * `currentPrice`, or the badge and the page disagree. So the chrome gets the
+ * four fields that decision reads rather than the whole worksheet: 154 rows of
+ * names, groups and image paths have no business in the layout's payload when
+ * three of the fields decide everything.
+ */
+export interface BadgeRow {
+  slug: string
+  priceKes: number | null
+  priceBasis: PriceBasis
+  priceNote: string | null
+}
+
+export function badgeRows(rows: DeskRow[]): BadgeRow[] {
+  return rows.map((row) => ({
+    slug: row.slug,
+    priceKes: row.priceKes,
+    priceBasis: row.priceBasis,
+    priceNote: row.priceNote,
+  }))
+}
+
 /** The rail systems and rod finishes, as one list, because the worksheet mixes them. */
 export function deskGroups(rows: DeskRow[]) {
   return [...new Set(rows.map((row) => row.group))].sort()
+}
+
+/**
+ * The queue, as one list.
+ *
+ * Two screens read enquiries: Today shows the newest few, and the queue shows
+ * all of them. Both had to merge what came through the site into what was
+ * seeded, and both did it separately, building objects of slightly different
+ * shapes. That is a disagreement waiting to happen: the two screens could count
+ * the same enquiry differently, and nothing would flag it. One merge, one shape.
+ *
+ * Filed enquiries come first because they are the newest and the ones nobody
+ * has looked at yet.
+ */
+export interface DeskEnquiry extends Enquiry {
+  /** Present only on the ones sent through the site, which carry a reference. */
+  reference?: string
+  /** When it arrived, for the filed ones. Seeded rows use `hoursAgo` instead. */
+  at?: number
+}
+
+export function deskEnquiries(inbox: FiledEnquiry[]): DeskEnquiry[] {
+  const filed: DeskEnquiry[] = inbox.map((entry) => ({
+    id: entry.id,
+    kind: entry.kind,
+    name: entry.name,
+    phone: entry.phone,
+    area: entry.area.trim() || "Not given",
+    // The clock time it arrived rather than how long ago, which would mean
+    // reading the clock during render. It is also the better answer on a
+    // counter screen: "14:32, 3 Aug" is what you repeat down a phone, and it
+    // does not quietly go stale while the tab sits open all afternoon.
+    hoursAgo: 0,
+    at: entry.at,
+    summary: entry.summary,
+    detail: entry.detail,
+    system: entry.system ?? null,
+    reference: entry.reference,
+  }))
+  return [...filed, ...ENQUIRIES]
 }

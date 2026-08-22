@@ -66,6 +66,13 @@
    * this from a 5rem row, a 2rem counter strip and the two rules between them.
    */
   --header-h: calc(5rem + 2rem + 2px);
+
+  /*
+   * The console header's height. The sidebar and the parts worksheet toolbar
+   * both stick underneath it, and both used to hardcode the same magic value,
+   * so changing the header's padding silently broke them.
+   */
+  --desk-header: 4rem;
 }
 
 /*
@@ -145,6 +152,14 @@ body {
   background-size: 28px 28px;
 }
 
+/*
+ * A strip that scrolls sideways on a phone should not also draw a bar across
+ * the page. The content running past the edge is the affordance, and a scrollbar
+ * under the counter line on every page reads as a layout that has broken.
+ */
+.no-bar { scrollbar-width: none; }
+.no-bar::-webkit-scrollbar { display: none; }
+
 /* An eyebrow label, in the voice of a drawing callout. */
 .callout {
   font-family: var(--font-mono);
@@ -172,6 +187,15 @@ body {
  * Logo theming. Handled here rather than in React so the right mark is present
  * on the first paint, with no swap after hydration.
  */
+/*
+ * The header's two states. Signed out is the default, so a visitor with no
+ * JavaScript, and the static HTML a crawler receives, both get the door.
+ */
+.when-signed-out { display: inline-flex; }
+.when-signed-in { display: none; }
+:root[data-desk="1"] .when-signed-out { display: none; }
+:root[data-desk="1"] .when-signed-in { display: inline-flex; }
+
 .logo-dark { display: none; }
 :root[data-theme="dark"] .logo-light { display: none; }
 :root[data-theme="dark"] .logo-dark { display: block; }
@@ -315,10 +339,27 @@ body {
 }
 
 /*
- * With no JavaScript the panels can never animate away, so they must never be
- * drawn. The hero underneath is complete on its own: the curtain is a flourish
- * on top of a page that is already finished. Paired with a `noscript` block in
- * the layout that switches this on.
+ * The hero's curtain is opt in, and the only thing that opts it in is the script
+ * in the document head.
+ *
+ * Hidden by default rather than shown by default, because every way this can go
+ * wrong ends with cloth nobody can move: no JavaScript, a script that never
+ * arrives, a reveal that has already been seen. The hero underneath is complete
+ * on its own, so the right failure is no curtain at all.
+ *
+ * Scoped to `.hero-curtain` and not to `.curtain`, which `PageCurtain` also
+ * carries. When the hero does not open, the page curtain is exactly what should
+ * be wiping instead, so a rule that caught both would take the arrival away
+ * from both.
+ */
+.hero-curtain { display: none; }
+:root[data-hero="1"] .hero-curtain { display: block; }
+
+/*
+ * Reduced motion is answered twice, here and in the head script, because they
+ * cover different things: the script keeps the hero out of the document, and
+ * this catches `PageCurtain`, which is mounted by a navigation rather than by
+ * the first paint.
  */
 @media (prefers-reduced-motion: reduce) {
   .curtain { display: none; }

@@ -3,16 +3,18 @@ import type { PriceBasis } from "@/lib/catalogue"
 import type { EnquiryDraft } from "@/lib/enquiry"
 
 /**
- * The console's state, held in this browser and nowhere else.
+ * The console's working state.
  *
- * This is a prototype. The backend that will own accounts, prices and
- * enquiries is written but not deployed, so rather than pretend, every edit
- * made here is written to localStorage and read back from it. Nothing leaves
- * the machine, and clearing site data clears the lot.
+ * Held in localStorage, so an edit survives a reload and clearing site data
+ * clears it. Every screen goes through the actions below rather than touching
+ * this state directly, which is what keeps the storage decision to this file:
+ * pointing an action at an endpoint instead changes nothing above it.
  *
- * That is a deliberate stand-in, not a design: `src/lib/admin/api.ts` is the
- * one place the swap has to happen, and every screen already goes through the
- * actions below rather than touching this state directly.
+ * What this store deliberately does not hold is who is using it. Identity lives
+ * in a signed HttpOnly cookie (`src/lib/admin/session.ts`), because anything
+ * kept here is editable from devtools, and a price log is only worth reading if
+ * its attribution cannot be typed in by hand. That is why `setPrice` is given
+ * the name rather than looking it up.
  *
  * The shape follows what the backend already enforces, so the two cannot
  * disagree about what a price is. In particular a price is null or a real
@@ -50,8 +52,16 @@ export interface FiledEnquiry extends EnquiryDraft {
 }
 
 export interface AdminState {
-  /** The member of staff at the counter. A name, not a session: see the sign in page. */
-  who: string | null
+  /**
+   * Whether localStorage has been read yet.
+   *
+   * The server snapshot and the first client paint are both the empty state, so
+   * without this a screen cannot tell "nothing has been filed" from "the browser
+   * has not been asked yet" and confidently renders a zero that is about to
+   * change. It is not persisted: it is only ever true in a browser that has run
+   * `hydrate`.
+   */
+  ready: boolean
   /** Price edits, keyed by product slug. Absent means the catalogue's own figure stands. */
   prices: Record<string, PriceEdit>
   log: PriceLog[]
@@ -71,7 +81,7 @@ export interface AdminState {
  * browser that has never been used. React compares snapshots by identity, so a
  * fresh object here would re-render on every check.
  */
-const EMPTY: AdminState = { who: null, prices: {}, log: [], enquiries: {}, inbox: [] }
+const EMPTY: AdminState = { ready: false, prices: {}, log: [], enquiries: {}, inbox: [] }
 
 let state: AdminState = EMPTY
 let hydrated = false
@@ -86,7 +96,7 @@ function persist() {
     localStorage.setItem(KEY, JSON.stringify(state))
   } catch {
     // Private browsing can refuse storage. The edits still hold for this visit,
-    // which is all a demonstration needs.
+    // which is all this needs.
   }
 }
 
@@ -101,20 +111,23 @@ function hydrate() {
   hydrated = true
   try {
     const raw = localStorage.getItem(KEY)
-    if (!raw) return
-    const stored = JSON.parse(raw) as Partial<AdminState>
+    const stored = raw ? (JSON.parse(raw) as Partial<AdminState>) : {}
     state = {
-      who: stored.who ?? null,
+      ready: true,
       prices: stored.prices ?? {},
       log: stored.log ?? [],
       enquiries: stored.enquiries ?? {},
       inbox: stored.inbox ?? [],
     }
-    emit()
   } catch {
     // A stored shape from an older build is not worth crashing the console
     // over. Starting clean is the right failure.
+    state = { ...EMPTY, ready: true }
   }
+  // Every path marks the read as done, including the empty one. A browser with
+  // nothing stored has still been asked, and a screen waiting on `ready` would
+  // otherwise wait for ever on exactly the case it exists to describe.
+  emit()
 }
 
 function subscribe(listener: () => void) {
@@ -141,14 +154,6 @@ export function useAdmin() {
 
 // ------------------------------------------------------------------- actions
 
-export function signIn(who: string) {
-  set({ ...state, who })
-}
-
-export function signOut() {
-  set({ ...state, who: null })
-}
-
 /**
  * Records a price change and what it replaced.
  *
@@ -162,13 +167,14 @@ export function setPrice(
   from: PriceEdit,
   to: PriceEdit,
   reason: string | null,
+  by: string,
 ) {
   const entry: PriceLog = {
     at: Date.now(),
     slug: row.slug,
     name: row.name,
     ref: row.ref,
-    by: state.who ?? "Unknown",
+    by,
     from,
     to,
     reason,
@@ -205,7 +211,7 @@ export function setEnquiry(id: string, next: EnquiryState) {
   set({ ...state, enquiries: { ...state.enquiries, [id]: next } })
 }
 
-/** Throws the prototype's edits away and returns to the catalogue as migrated. */
+/** Throws the working edits away and returns to the catalogue as migrated. */
 export function reset() {
-  set({ ...EMPTY, who: state.who })
+  set(EMPTY)
 }

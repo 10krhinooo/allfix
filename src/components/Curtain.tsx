@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { createTimeline, stagger } from "animejs"
+import { SEEN, SWEEP, heroReveals, reducedMotion } from "@/lib/motion"
 
 /**
  * The motorised track that opens the hero.
@@ -18,7 +19,6 @@ import { createTimeline, stagger } from "animejs"
  * arrives, and what is left is simply the page. Nothing here is load bearing.
  */
 
-const SEEN = "allfix-curtain-seen"
 const RUNNERS = 12
 
 function Runners({ innerRef, side }: { innerRef: React.Ref<HTMLDivElement>; side: "left" | "right" }) {
@@ -52,16 +52,16 @@ export function Curtain() {
     if (!node || !rail.current || !motor.current || !left.current || !right.current) return
     if (!leftRunners.current || !rightRunners.current) return
 
-    // In development the reveal plays on every mount, so it can actually be
-    // looked at while it is being worked on.
-    const seen = process.env.NODE_ENV === "production" && sessionStorage.getItem(SEEN) === "1"
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || seen) {
+    // The same question `PageCurtain` asks before it wipes into the home page,
+    // so the two can never both decide they own the arrival.
+    if (reducedMotion() || !heroReveals()) {
       node.style.display = "none"
       return
     }
 
     const timeline = createTimeline({
+      // Built now, played below. See the visibility check under the timeline.
+      autoplay: false,
       defaults: { ease: "inOutQuart" },
       onComplete: () => {
         // Marked here rather than on the way in. Strict Mode runs an effect
@@ -79,11 +79,11 @@ export function Curtain() {
       .add(motor.current, { opacity: [0, 1], x: [-24, 0], duration: 320 }, 420)
       // A beat on the motor before anything moves: the pause between pressing
       // the button and the curtain going is the thing being demonstrated.
-      .add(left.current, { x: ["0%", "-101%"], duration: 1500, ease: "inOut(2.2)" }, 780)
-      .add(right.current, { x: ["0%", "101%"], duration: 1500, ease: "inOut(2.2)" }, 780)
+      .add(left.current, { x: ["0%", "-101%"], duration: 1500, ease: SWEEP }, 780)
+      .add(right.current, { x: ["0%", "101%"], duration: 1500, ease: SWEEP }, 780)
       .add(
         [leftRunners.current, rightRunners.current],
-        { scaleX: [1, 0.22], duration: 1500, ease: "inOut(2.2)" },
+        { scaleX: [1, 0.22], duration: 1500, ease: SWEEP },
         780,
       )
       .add(
@@ -92,7 +92,27 @@ export function Curtain() {
         2000,
       )
 
+    /*
+     * Nothing plays to an empty room.
+     *
+     * A hidden tab is not painted and anime's engine does not tick while the
+     * document is hidden, so a reveal started now sits on its first frame for as
+     * long as the visitor is elsewhere and then snaps open the moment they
+     * arrive. Measured at twelve seconds in a background tab, still closed, and
+     * gone by the next frame after the tab was focused. So wait for somebody to
+     * be looking, which is the only condition under which this is worth playing.
+     */
+    const start = () => {
+      if (document.hidden) return
+      document.removeEventListener("visibilitychange", start)
+      timeline.play()
+    }
+
+    if (document.hidden) document.addEventListener("visibilitychange", start)
+    else timeline.play()
+
     return () => {
+      document.removeEventListener("visibilitychange", start)
       timeline.pause()
     }
   }, [])
@@ -103,7 +123,7 @@ export function Curtain() {
     <div
       ref={wrap}
       aria-hidden="true"
-      className="curtain pointer-events-none absolute inset-0 z-20 overflow-hidden"
+      className="curtain hero-curtain pointer-events-none absolute inset-0 z-20 overflow-hidden"
     >
       {/* The track, drawn as the white aluminium section the shop actually sells. */}
       <div

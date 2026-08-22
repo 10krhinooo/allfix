@@ -60,6 +60,21 @@ export function MobileNav({ items }: { items: { href: string; label: string }[] 
                 {item.label}
               </Link>
             ))}
+            {/* Every destination in the header is here, the door included. */}
+            <Link
+              href="/sign-in"
+              onClick={() => setOpen(false)}
+              className="when-signed-out border-b border-rule py-3.5 text-base text-ink"
+            >
+              Sign in
+            </Link>
+            <Link
+              href="/account"
+              onClick={() => setOpen(false)}
+              className="when-signed-in border-b border-rule py-3.5 text-base text-ink"
+            >
+              Your account
+            </Link>
             <a href={`tel:${SHOP.phoneIntl}`} className="py-3.5 font-mono text-base text-oxblood">
               {SHOP.phone}
             </a>

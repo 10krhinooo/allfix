@@ -75,6 +75,37 @@ public/products/  optimised product photography, one file per SKU
 tools/migrate/    WooCommerce to catalogue.json migration, plus its Python tests
 ```
 
+## The console, and its door
+
+`/admin` is staff only and gated in two places. `src/proxy.ts` turns a signed out request
+away before a route renders, and `requireConsole()` in `src/lib/admin/guard.ts` checks again
+on the server. Both, not either: the Next 16 proxy documentation is explicit that Server
+Functions are not separate routes in the matcher chain, so a matcher typo can silently drop
+coverage. The proxy is for the redirect, the guard is authoritative.
+
+Sign in is at `/sign-in`, against the demo table in `src/lib/admin/accounts.ts`. That file is
+the seam: it is written to the contract `allfix-backend` already implements on
+`feature/authentication`, refusal messages included, so pointing it at the real service is a
+change to one function. The session is an HttpOnly SameSite=Lax cookie carrying a signed
+payload (`src/lib/admin/session.ts`), which stops a role being edited in devtools but is
+explicitly **not** a revocable session: that needs the backend's token table.
+
+**There is no password in the source.** `ALLFIX_SEED_PASSWORD` is honoured when set, and
+when it is not, any non-empty password opens a seeded account. Do not reintroduce a shared
+literal: a checked in credential fails the repository's secret scan, and the refusals worth
+demonstrating (suspended, shopper, unregistered address) are decided by role anyway.
+`ALLFIX_SESSION_SECRET` signs the cookie and must be set wherever the console is real.
+
+Roles are `ADMIN | STAFF | TRADE | CUSTOMER`, and `src/lib/admin/roles.ts` is the single
+answer to what each may do. The split follows `ROLE_NOTE` in `desk.ts` rather than one
+invented for the demo: staff price parts because that is counter work, and only admin sees
+People. Trade has no console at all and lands on `/trade/account`.
+
+Four console screens, not five: prices and the shot list were two lenses on one part and are
+now one worksheet at `/admin/parts`, filtered by what is missing. The old paths redirect.
+`src/components/admin/parts.tsx` holds the console's own primitives; reach for those rather
+than the storefront's, which assume a page that is selling something.
+
 Built: `/`, `/systems`, `/systems/[slug]`, `/shop`, `/product/[slug]`, plus the
 layout/header/footer chrome. **Still missing, and linked from the header and footer:**
 `/build`, `/services`, `/trade`, `/privacy`, `/terms`. Those nav links 404 today. Routes are
@@ -117,6 +148,14 @@ there is no "in stock" badge because stock is not tracked yet.
   "Profile" SVG strokes on scroll into view via `animate(svg.createDrawable(...), ...)`,
   with `stagger()` for sequencing. The markup itself is always fully drawn, so the animation
   is progressive enhancement, not a load-bearing part of the page.
+- **The two curtains.** `Curtain.tsx` is the home hero's motorised reveal (track, motor,
+  panels, runners bunching). `PageCurtain.tsx` is the wipe between shop routes, mounted from
+  `src/app/(shop)/template.tsx`: a template remounts on every navigation while a layout does
+  not, so mounting *is* the navigation and nothing watches the router. It never renders on a
+  fresh document, so no server-rendered page is ever hidden behind a script-only overlay.
+  Both read their gate from `src/lib/motion.ts` (`reducedMotion()`, `heroReveals()`), which
+  is the one place that decides which of the two owns an arrival. The console has no
+  template and gets no wipe.
 - **Theming**: CSS custom properties in `src/app/globals.css`, toggled via `data-theme` on
   `<html>` (opt-in dark mode only, never OS-driven; see the comment block there). The inline
   `<Script>` in `src/app/layout.tsx` applies the stored theme before first paint to avoid a
@@ -151,6 +190,8 @@ python3 tools/migrate/migrate.py --prices data/price-list.csv   # per-SKU overri
 ## Conventions
 
 - No semicolons, `interface` over `type` for object shapes (see `catalogue.ts`).
+- **Never add a `middleware.ts`.** Next 16 renamed the convention to `proxy.ts`, and having
+  both files present is a hard build error. The gate lives in `src/proxy.ts`.
 - `@/*` path alias resolves to `src/*` (`tsconfig.json`).
 - Comments in this codebase explain *why*, not *what*. Follow that pattern; don't add
   comments describing obvious code.

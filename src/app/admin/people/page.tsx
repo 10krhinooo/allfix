@@ -1,21 +1,28 @@
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 import { PEOPLE, ROLE_NOTE } from "@/lib/admin/desk"
-import { PageHead } from "@/components/admin/parts"
+import { readDesk } from "@/lib/admin/guard"
+import { capabilities } from "@/lib/admin/roles"
+import { PageHead, Stats, Card, CardHeader, Pill, Note, Section, Table, Th, Td } from "@/components/admin/parts"
 
 export const metadata: Metadata = { title: "People" }
 
 /**
  * Who gets in, and as what.
  *
- * A server component, because none of it is editable yet and pretending
- * otherwise would be worse than leaving it read only: granting a role is the
- * one action on this screen that must never be a prototype. The backend already
- * enforces that registration cannot set a role, that trade, staff and admin are
- * granted rather than claimed, and that suspending an account ends its sessions
- * at once. None of that can be demonstrated from a browser holding its own
- * state, so this screen shows the model and says plainly that it is reading.
+ * A server component, and read only. Granting a role is an audited write against
+ * an account, so it belongs in account administration rather than on a screen
+ * whose job is to answer "who has access, and as what". Registration cannot set
+ * a role, trade, staff and admin are granted rather than claimed, and suspending
+ * an account ends its sessions at once; this screen shows the result of all
+ * three.
  */
-export default function PeoplePage() {
+export default async function PeoplePage() {
+  // Admin only, checked here as well as in the proxy. `notFound` rather than a
+  // redirect: somebody who guesses the URL should not learn the screen exists.
+  const desk = await readDesk()
+  if (!desk || !capabilities(desk.role).people) notFound()
+
   const roles = ["ADMIN", "STAFF", "TRADE", "CUSTOMER"] as const
 
   return (
@@ -24,53 +31,58 @@ export default function PeoplePage() {
         title="People"
         lead="Roles are granted, never claimed. Every account starts as a customer, and staff, trade and admin are given by somebody who already has them."
       >
-        <p className="max-w-xs border-l-2 border-brass bg-brass-soft px-3 py-2 text-xs leading-relaxed">
-          Read only. Granting a role is the one thing on this console that will not be
-          prototyped: it waits for the real backend.
-        </p>
+        <Note>
+          Read only here. A role is granted from account administration, where the change is
+          audited against whoever made it.
+        </Note>
       </PageHead>
 
-      <div
-        className="flush grid border-b border-rule bg-paper"
-        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 15rem), 1fr))" }}
-      >
+      <Stats>
         {roles.map((role) => (
-          <div key={role} className="px-5 py-5 sm:px-6">
-            <span className="callout">{role}</span>
-            <p className="mt-2 text-sm leading-relaxed text-slate">{ROLE_NOTE[role]}</p>
-            <p className="mt-2 font-mono text-xs text-mute">
-              {PEOPLE.filter((person) => person.role === role && person.active).length} active
+          <Card key={role}>
+            <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-mute">{role}</p>
+            <p className="mt-2 font-mono text-2xl leading-none text-ink">
+              {PEOPLE.filter((person) => person.role === role && person.active).length}
             </p>
-          </div>
+            <p className="mt-1.5 text-xs leading-relaxed text-slate">{ROLE_NOTE[role]}</p>
+          </Card>
         ))}
-      </div>
+      </Stats>
 
-      <ul className="bg-paper">
-        {PEOPLE.map((person) => (
-          <li
-            key={person.email}
-            className={`flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-rule px-5 py-3.5 sm:px-8 ${
-              person.active ? "" : "opacity-55"
-            }`}
-          >
-            <span className="min-w-0">
-              <span className="block text-sm font-medium text-ink">{person.name}</span>
-              <span className="mt-0.5 flex flex-wrap items-baseline gap-x-3">
-                <span className="font-mono text-[11px] text-mute">{person.email}</span>
-                <span className="text-xs text-slate">{person.post}</span>
-              </span>
-            </span>
-            <span className="flex items-baseline gap-4">
-              {!person.active && <span className="text-xs text-oxblood">suspended</span>}
-              <span className="callout">{person.role}</span>
-            </span>
-          </li>
-        ))}
-      </ul>
+      <Card className="mb-4">
+        <CardHeader title="Everybody with an account" hint="Suspended accounts stay listed." />
+        <Table>
+          <thead>
+            <tr>
+              <Th>Name</Th>
+              <Th>Post</Th>
+              <Th align="right">Role</Th>
+            </tr>
+          </thead>
+          <tbody>
+            {PEOPLE.map((person) => (
+              <tr key={person.email} className={person.active ? "" : "opacity-55"}>
+                <Td>
+                  <span className="block text-sm font-medium text-ink">{person.name}</span>
+                  <span className="mt-0.5 block font-mono text-[11px] text-mute">
+                    {person.email}
+                  </span>
+                </Td>
+                <Td className="text-xs text-slate">{person.post}</Td>
+                <Td align="right">
+                  <span className="inline-flex items-center gap-2">
+                    {!person.active && <Pill tone="todo">Suspended</Pill>}
+                    <Pill>{person.role}</Pill>
+                  </span>
+                </Td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </Card>
 
-      <div className="px-5 py-8 sm:px-8">
-        <h2 className="callout">What the backend already enforces</h2>
-        <ul className="mt-4 max-w-2xl space-y-3 text-sm leading-relaxed text-slate">
+      <Section title="What the shop enforces">
+        <ul className="max-w-2xl space-y-3 text-sm leading-relaxed text-slate">
           <li>
             A wrong password and an address nobody has registered give the same answer, byte for
             byte, so this list cannot be read a name at a time by guessing.
@@ -85,7 +97,7 @@ export default function PeoplePage() {
           </li>
           <li>Passwords are stored only as a BCrypt hash, and session tokens only as a SHA-256.</li>
         </ul>
-      </div>
+      </Section>
     </>
   )
 }
