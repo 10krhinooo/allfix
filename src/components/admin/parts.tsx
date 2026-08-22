@@ -143,8 +143,13 @@ export function Card({
   padded?: boolean
 }) {
   return (
+    /*
+     * `min-w-0` because a grid item defaults to `min-width: auto`, so a card
+     * holding a table with a minimum width stretched its whole track instead of
+     * letting the table scroll inside it, and took the page sideways on a phone.
+     */
     <section
-      className={`rounded-2xl border border-rule bg-paper ${padded ? "p-5" : ""} ${className}`}
+      className={`min-w-0 rounded-2xl border border-rule bg-paper ${padded ? "p-5" : ""} ${className}`}
     >
       {children}
     </section>
@@ -396,29 +401,45 @@ export function Choices<T extends string>({
   value: T
   onChange: (next: T) => void
 }) {
+  /*
+   * The scroller is the wrapper, not the fieldset. A fieldset carries a UA
+   * `min-inline-size: min-content`, so `overflow-x-auto` on it did nothing: it
+   * grew to its content and took the whole worksheet sideways with it on a
+   * phone. The wrapper scrolls and the fieldset keeps its natural width, which
+   * is what `w-max` says out loud.
+   *
+   * `relative` is load bearing and not styling. The radios are `sr-only`, which
+   * is `position: absolute`, and an absolutely positioned box is only clipped by
+   * an ancestor that sits between it and its containing block. Without this the
+   * containing block was the sticky toolbar above, the hidden radios kept their
+   * static offsets out at 600px, and the page scrolled sideways to reach inputs
+   * nobody can see.
+   */
   return (
-    <fieldset className="flex gap-1 overflow-x-auto rounded-full bg-panel p-1">
-      <legend className="sr-only">{label}</legend>
-      {options.map((option) => {
-        const active = value === option.value
-        return (
-          <label
-            key={option.value}
-            className={`shrink-0 cursor-pointer whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors ${
-              active ? "bg-paper text-ink shadow-sm" : "text-slate hover:text-ink"
-            }`}
-          >
-            <input
-              type="radio"
-              className="sr-only"
-              checked={active}
-              onChange={() => onChange(option.value)}
-            />
-            {option.label}
-          </label>
-        )
-      })}
-    </fieldset>
+    <div className="no-bar relative min-w-0 max-w-full overflow-x-auto">
+      <fieldset className="flex w-max gap-1 rounded-full bg-panel p-1">
+        <legend className="sr-only">{label}</legend>
+        {options.map((option) => {
+          const active = value === option.value
+          return (
+            <label
+              key={option.value}
+              className={`shrink-0 cursor-pointer whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors ${
+                active ? "bg-paper text-ink shadow-sm" : "text-slate hover:text-ink"
+              }`}
+            >
+              <input
+                type="radio"
+                className="sr-only"
+                checked={active}
+                onChange={() => onChange(option.value)}
+              />
+              {option.label}
+            </label>
+          )
+        })}
+      </fieldset>
+    </div>
   )
 }
 

@@ -152,6 +152,14 @@ body {
   background-size: 28px 28px;
 }
 
+/*
+ * A strip that scrolls sideways on a phone should not also draw a bar across
+ * the page. The content running past the edge is the affordance, and a scrollbar
+ * under the counter line on every page reads as a layout that has broken.
+ */
+.no-bar { scrollbar-width: none; }
+.no-bar::-webkit-scrollbar { display: none; }
+
 /* An eyebrow label, in the voice of a drawing callout. */
 .callout {
   font-family: var(--font-mono);

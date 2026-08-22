@@ -13,7 +13,17 @@ import { markDesk } from "@/lib/admin/hint"
  * live, and the browser can navigate straight back into a screen it should no
  * longer have.
  */
-export function SignOutButton({ className }: { className?: string }) {
+export function SignOutButton({
+  className,
+  icon,
+}: {
+  className?: string
+  /**
+   * The rail is 240px wide and the name has to fit in it, so there the control
+   * is a door rather than the words. Everywhere else there is room to say it.
+   */
+  icon?: boolean
+}) {
   const router = useRouter()
   const [busy, setBusy] = useState(false)
 
@@ -21,6 +31,8 @@ export function SignOutButton({ className }: { className?: string }) {
     <button
       type="button"
       disabled={busy}
+      aria-label={icon ? "Sign out" : undefined}
+      title={icon ? "Sign out" : undefined}
       onClick={async () => {
         setBusy(true)
         await fetch("/api/auth/logout", { method: "POST" })
@@ -30,7 +42,24 @@ export function SignOutButton({ className }: { className?: string }) {
       }}
       className={className}
     >
-      {busy ? "Signing out" : "Sign out"}
+      {icon ? (
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          className={`h-[18px] w-[18px] ${busy ? "opacity-40" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+        </svg>
+      ) : busy ? (
+        "Signing out"
+      ) : (
+        "Sign out"
+      )}
     </button>
   )
 }

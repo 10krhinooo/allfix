@@ -74,7 +74,7 @@ export function Header() {
 
       {/* The counter is the business. Say where it is on every page. */}
       <div className="border-t border-rule bg-panel">
-        <div className="shell flex h-8 items-center gap-4 overflow-x-auto">
+        <div className="no-bar shell flex h-8 items-center gap-4 overflow-x-auto">
           <span className="callout whitespace-nowrap">
             Counter sales · {SHOP.street}, {SHOP.area}
           </span>

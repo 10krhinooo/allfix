@@ -220,10 +220,13 @@ export function Worksheet({
       </Stats>
 
       <Toolbar>
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Stacked on a phone and in one row from `sm`. Side by side at every
+            width, the segmented filter and four controls beside it left the
+            search box two characters wide. */}
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           <Choices label="Which parts to show" options={SHOWS} value={show} onChange={setShow} />
 
-          <div className="ml-auto flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 sm:ml-auto">
             {show === "unshot" && (
               <button
                 type="button"
@@ -238,13 +241,13 @@ export function Worksheet({
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Name or SKU"
               aria-label="Search by name or SKU"
-              className="w-44 rounded-sm border border-rule bg-paper px-3 py-1.5 text-sm outline-none focus:border-ink"
+              className="w-full min-w-0 flex-1 rounded-sm border border-rule bg-paper px-3 py-1.5 text-sm outline-none focus:border-ink sm:w-44 sm:flex-none"
             />
             <select
               value={group}
               onChange={(event) => setGroup(event.target.value)}
               aria-label="Rail system or rod finish"
-              className="rounded-sm border border-rule bg-paper px-2 py-1.5 text-sm outline-none focus:border-ink"
+              className="min-w-0 flex-1 rounded-sm border border-rule bg-paper px-2 py-1.5 text-sm outline-none focus:border-ink sm:flex-none"
             >
               <option value="">Every system</option>
               {groups.map((name) => (
@@ -257,7 +260,7 @@ export function Worksheet({
               value={component}
               onChange={(event) => setComponent(event.target.value)}
               aria-label="Part type"
-              className="rounded-sm border border-rule bg-paper px-2 py-1.5 text-sm outline-none focus:border-ink"
+              className="min-w-0 flex-1 rounded-sm border border-rule bg-paper px-2 py-1.5 text-sm outline-none focus:border-ink sm:flex-none"
             >
               <option value="">Every part</option>
               {components.map((part) => (
