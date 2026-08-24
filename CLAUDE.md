@@ -93,24 +93,48 @@ explicitly **not** a revocable session: that needs the backend's token table.
 **There is no password in the source.** `ALLFIX_SEED_PASSWORD` is honoured when set, and
 when it is not, any non-empty password opens a seeded account. Do not reintroduce a shared
 literal: a checked in credential fails the repository's secret scan, and the refusals worth
-demonstrating (suspended, shopper, unregistered address) are decided by role anyway.
+demonstrating (suspended, unregistered address) are decided by role anyway.
 `ALLFIX_SESSION_SECRET` signs the cookie and must be set wherever the console is real.
 
 Roles are `ADMIN | STAFF | TRADE | CUSTOMER`, and `src/lib/admin/roles.ts` is the single
 answer to what each may do. The split follows `ROLE_NOTE` in `desk.ts` rather than one
 invented for the demo: staff price parts because that is counter work, and only admin sees
-People. Trade has no console at all and lands on `/trade/account`.
+People. Trade has no console at all and lands on `/trade/account`, and a customer lands on
+`/account`. `landing()` and `owns()` are the one place that decides which desk a role
+belongs to; `HOME` there had no `CUSTOMER` entry until phase 3, which fell through to the
+trade desk and was invisible only because the door refused customers outright.
+
+**Three desks, one shell.** `/admin`, `/trade/account` and `/account` are the same furniture
+with different things on it (`ConsoleShell` plus the rail), and the proxy gates all three.
+A shopper's account area is at `/account`: overview, orders, saved rails, addresses,
+receipts, details. Orders and receipts are seeded in `src/lib/account.ts` because the order
+pipeline is phase 4. Addresses and saved rails are records the backend owns
+(`customer_address`, `saved_rail` on `feature/account-book`), kept in `localStorage` via
+`src/lib/account-book.ts` until that service is deployed.
+
+**The way in, and back in.** `/auth/register`, `/auth/forgot`, `/auth/reset` and
+`/auth/verify` sit on the same drawing sheet as `/sign-in` (`src/components/auth/Sheet.tsx`).
+`src/lib/admin/registration.ts` is their seam, the sibling of `accounts.ts`: with
+`ALLFIX_API_URL` set it calls Quarkus server to server, and without it it says plainly that
+no account was created rather than accepting a registration and dropping it.
+`src/lib/password.ts` is the strength meter. It **mirrors** the backend's `PasswordPolicy`
+and deliberately does not share code with it: the meter is a courtesy shown as somebody
+types, the server is the control. The wording is copied so both read identically, so change
+them together.
 
 Four console screens, not five: prices and the shot list were two lenses on one part and are
 now one worksheet at `/admin/parts`, filtered by what is missing. The old paths redirect.
 `src/components/admin/parts.tsx` holds the console's own primitives; reach for those rather
 than the storefront's, which assume a page that is selling something.
 
-Built: `/`, `/systems`, `/systems/[slug]`, `/shop`, `/product/[slug]`, plus the
-layout/header/footer chrome. **Still missing, and linked from the header and footer:**
-`/build`, `/services`, `/trade`, `/privacy`, `/terms`. Those nav links 404 today. Routes are
-being filled in incrementally; check what actually has a `page.tsx` before assuming a page
-exists, and do not add a call to action that points at a route which does not.
+Every route the header and footer link to is now built: `/`, `/systems`, `/systems/[slug]`,
+`/shop`, `/product/[slug]`, `/build`, `/services`, `/services/[slug]`, `/book`, `/trade`,
+`/privacy`, `/terms`, plus `/sign-in`, `/auth/*`, `/admin/*`, `/trade/account/*` and
+`/account/*`. This section previously said the last five 404ed, which stopped being true
+without the note being updated. The rule it existed for still holds: check what actually has
+a `page.tsx` before assuming a page exists, and do not add a call to action that points at a
+route which does not. `/build` reading only `?system=` and ignoring the rest of a saved
+window was exactly that bug in miniature.
 
 `/shop` is a faceted browser. The server (`src/app/shop/page.tsx`) builds a compact projection
 of the catalogue (`shopData()` in `src/lib/shop.ts`, so the 200 KB of specs and copy never

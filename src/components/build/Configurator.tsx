@@ -5,8 +5,8 @@ import { whatsapp } from "@/lib/format"
 import { SendList } from "@/components/build/SendList"
 import {
   billOfMaterials,
+  bomDetail,
   bomMessage,
-  bomSummary,
   defaultInput,
   WIDTH_MAX,
   WIDTH_MIN,
@@ -16,8 +16,14 @@ import {
   BRACKETS_MAX,
   DEFAULT_RUNNERS_PER_M,
   DEFAULT_BRACKETS_PER_M,
+  cleanQuantity,
+  withOverrides,
+  QTY_MAX,
+  type BomInput,
   type BuildSystem,
   type Mount,
+  type QuantityOverrides,
+  type Role,
 } from "@/lib/configurator"
 
 /**
@@ -33,19 +39,51 @@ import {
 export function Configurator({
   systems,
   initialSlug,
+  initialInput,
 }: {
   systems: BuildSystem[]
   /** The system named by `?system=`, already resolved on the server. */
   initialSlug: string
+  /**
+   * The window the URL asked for, resolved on the server the same way. A saved
+   * rail reopens on its own measurement rather than on the defaults.
+   */
+  initialInput?: BomInput
 }) {
   const [slug, setSlug] = useState(initialSlug || systems[0]?.slug || "")
-  const [input, setInput] = useState(defaultInput)
+  const [input, setInput] = useState<BomInput>(initialInput ?? defaultInput)
+  const [overrides, setOverrides] = useState<QuantityOverrides>({})
 
   const system = useMemo(
     () => systems.find((candidate) => candidate.slug === slug) ?? systems[0],
     [systems, slug],
   )
-  const bom = useMemo(() => billOfMaterials(system, input), [system, input])
+  // Two steps on purpose. The rule runs first and keeps running, then the
+  // customer's own quantities go over the top, so changing the width still
+  // moves every line they have not spoken for.
+  const calculated = useMemo(() => billOfMaterials(system, input), [system, input])
+  const bom = useMemo(() => withOverrides(calculated, overrides), [calculated, overrides])
+  const changed = bom.lines.some((line) => line.overridden)
+
+  function setQuantity(role: Role, value: string, unit: string) {
+    // An empty field is somebody midway through typing, not a zero. Clearing it
+    // and having it snap to 0 is the reason number inputs feel hostile.
+    if (value.trim() === "") {
+      setOverrides((was) => ({ ...was, [role]: 0 }))
+      return
+    }
+    const parsed = Number(value)
+    if (!Number.isFinite(parsed)) return
+    setOverrides((was) => ({ ...was, [role]: cleanQuantity(parsed, unit) }))
+  }
+
+  function resetQuantity(role: Role) {
+    setOverrides((was) => {
+      const next = { ...was }
+      delete next[role]
+      return next
+    })
+  }
 
   const draws: { value: number; label: string }[] = [
     { value: 1, label: "Single draw" },
@@ -234,18 +272,63 @@ export function Configurator({
               key={item.role}
               className="flex items-start justify-between gap-4 border-b border-rule px-6 py-4"
             >
-              <div>
+              <div className="min-w-0">
                 <p className="font-medium text-ink">{item.label}</p>
                 <p className="mt-0.5 text-sm text-slate">{item.note}</p>
                 {item.sku && <p className="mt-0.5 font-mono text-[11px] text-mute">{item.sku}</p>}
+                {item.overridden && (
+                  <p className="mt-1 font-mono text-[11px] text-brass">
+                    Yours. We worked out {item.auto}
+                    {item.unit && ` ${item.unit}`}.{" "}
+                    <button
+                      type="button"
+                      onClick={() => resetQuantity(item.role)}
+                      className="underline underline-offset-2 hover:text-ink"
+                    >
+                      Put it back
+                    </button>
+                  </p>
+                )}
               </div>
-              <p className="shrink-0 font-mono text-lg text-ink">
-                {item.qty}
-                {item.unit && <span className="text-sm text-slate"> {item.unit}</span>}
-              </p>
+
+              {/* The quantity is a field, not a figure. The rule is a starting
+                  point and the person holding the tape measure knows things it
+                  does not: a heavy lined curtain wanting an extra bracket, or a
+                  box of runners already in the cupboard. */}
+              <label className="flex shrink-0 items-baseline gap-2">
+                <span className="sr-only">{item.label} quantity</span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  max={QTY_MAX}
+                  step={item.unit === "m" ? 0.1 : 1}
+                  value={item.qty}
+                  onChange={(event) => setQuantity(item.role, event.target.value, item.unit)}
+                  className={`w-20 border-b bg-transparent py-1 text-right font-mono text-lg outline-none transition-colors focus:border-ink ${
+                    item.overridden ? "border-brass text-brass" : "border-rule text-ink"
+                  }`}
+                />
+                {item.unit && <span className="text-sm text-slate">{item.unit}</span>}
+              </label>
             </li>
           ))}
         </ul>
+
+        {changed && (
+          <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-rule bg-brass-soft px-6 py-3">
+            <p className="text-sm text-slate">
+              Some quantities are yours rather than ours. We will quote what is on the list.
+            </p>
+            <button
+              type="button"
+              onClick={() => setOverrides({})}
+              className="callout hover:text-ink"
+            >
+              Reset all
+            </button>
+          </div>
+        )}
 
         <div className="space-y-4 px-6 py-6">
           <p className="text-sm leading-relaxed text-slate">
@@ -255,7 +338,7 @@ export function Configurator({
           </p>
           <SendList
             summary={`I have worked out a parts list for a ${system.shortName} rail.`}
-            detail={bomSummary(system, input)}
+            detail={bomDetail(system, input, bom)}
             system={system.slug}
             whatsappText={whatsapp(bomMessage(system, input, bom))}
           />

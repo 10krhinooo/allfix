@@ -40,8 +40,15 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(landing(desk.role), request.url))
   }
 
-  if (pathname.startsWith("/trade/account") && allowed.console) {
-    return NextResponse.redirect(new URL("/admin", request.url))
+  if (pathname.startsWith("/trade/account") && desk.role !== "TRADE") {
+    return NextResponse.redirect(new URL(landing(desk.role), request.url))
+  }
+
+  // The shopper's own area, and only the shopper's. Staff and trade both have a
+  // desk of their own, and landing them here instead would be a third place to
+  // keep in step with the other two.
+  if (pathname.startsWith("/account") && desk.role !== "CUSTOMER") {
+    return NextResponse.redirect(new URL(landing(desk.role), request.url))
   }
 
   return NextResponse.next()
@@ -53,5 +60,12 @@ export default async function proxy(request: NextRequest) {
  * its own front page is not worth the saved line.
  */
 export const config: ProxyConfig = {
-  matcher: ["/admin", "/admin/:path*", "/trade/account", "/trade/account/:path*"],
+  matcher: [
+    "/admin",
+    "/admin/:path*",
+    "/trade/account",
+    "/trade/account/:path*",
+    "/account",
+    "/account/:path*",
+  ],
 }

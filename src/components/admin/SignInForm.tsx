@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import type { SeededLogin } from "@/lib/admin/accounts"
 import { markDesk } from "@/lib/admin/hint"
 
 /**
@@ -16,13 +15,14 @@ import { markDesk } from "@/lib/admin/hint"
  *
  * One door for everybody. Nothing here asks whether somebody is staff: the
  * answer comes back carrying a role and the redirect follows it, which is what
- * lets there be one screen rather than a counter one and a trade one that
- * slowly drift apart.
+ * lets there be one screen rather than a counter one, a trade one and a shopper
+ * one that slowly drift apart.
  *
- * The account list is a development affordance and is compiled out of a
- * production build. The list is passed in from the server component rather than
- * imported here, so the credential module never reaches the browser bundle even
- * in development.
+ * The sheet used to print the seeded addresses underneath in development, back
+ * when there was no password to go with them and the only way in was to know one
+ * already. There is a password now, so the list was a set of half credentials on
+ * screen for no reason. The addresses live in `.env.local` next to the password
+ * they open, which is the one place somebody looking for them should have to go.
  */
 
 /** A ruled line to write on, which is what a field is on a drawing. */
@@ -51,11 +51,9 @@ const RULE =
   "outline-none transition-colors placeholder:text-mute focus:border-ink disabled:opacity-55"
 
 export function SignInForm({
-  logins,
   next,
   secured,
 }: {
-  logins: SeededLogin[]
   next: string | null
   /**
    * Whether a password is configured at all. When none is, the field stays on
@@ -96,12 +94,14 @@ export function SignInForm({
       // offering the door to somebody who has just walked through it.
       markDesk(true)
 
-      router.replace(next ?? body.to ?? "/admin")
+      // The fallback is the least privileged desk, not the console: this is
+      // one door for four roles now, and guessing high would bounce.
+      router.replace(next ?? body.to ?? "/account")
       // The client cache can be holding an RSC payload for the console fetched
       // before the cookie existed, which lands the browser back on the redirect.
       router.refresh()
     } catch {
-      setProblem("The console could not be reached. Check your connection and try again.")
+      setProblem("The shop could not be reached. Check your connection and try again.")
       setBusy(false)
     }
   }
@@ -123,7 +123,14 @@ export function SignInForm({
           />
         </Field>
 
-        <Field label="Password" note={secured ? undefined : "not set on this build"}>
+        <Field
+          label="Password"
+          // Gated the way the seeded list below is. A note about how this
+          // deployment is configured is a development affordance, and a
+          // launched storefront should not be explaining its own setup to a
+          // customer. `secured` still decides whether the field is required.
+          note={!secured && process.env.NODE_ENV !== "production" ? "not checked on this build" : undefined}
+        >
           <span className="relative block">
             <input
               type={showing && !busy ? "text" : "password"}
@@ -132,7 +139,7 @@ export function SignInForm({
               disabled={busy}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder={secured ? "" : "leave it blank"}
+              placeholder=""
               className={`${RULE} pr-14`}
             />
             <button
@@ -164,38 +171,6 @@ export function SignInForm({
         </button>
       </form>
 
-      {process.env.NODE_ENV !== "production" && logins.length > 0 && (
-        <div className="mt-8 border-t border-rule pt-5">
-          <h2 className="callout">Seeded accounts, development only</h2>
-          <p className="mt-2 text-xs leading-relaxed text-slate">
-            {secured
-              ? "Pick one to fill the address in, then use the password this build was given."
-              : "Pick one and sign in. No password is set on this build, so the field can stay empty."}
-          </p>
-          <ul className="mt-3 border-t border-rule">
-            {logins.map((login) => (
-              <li key={login.email} className="border-b border-rule">
-                {/* The address only. There is no seeded password to fill in,
-                    which is the point: nothing here is a credential. */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail(login.email)
-                    setProblem(null)
-                  }}
-                  className="flex w-full items-baseline justify-between gap-3 py-2.5 text-left transition-colors hover:bg-brass-soft"
-                >
-                  <span className="min-w-0">
-                    <span className="block font-mono text-[11px] text-mute">{login.email}</span>
-                    <span className="mt-0.5 block text-xs text-slate">{login.note}</span>
-                  </span>
-                  <span className="callout shrink-0">{login.role}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </>
   )
 }
