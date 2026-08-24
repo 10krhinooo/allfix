@@ -108,28 +108,30 @@ export function RegisterForm() {
         />
       </Field>
 
-      <Field label="Password">
-        <span className="relative block">
-          <input
-            type={showing && !busy ? "text" : "password"}
-            required
-            autoComplete="new-password"
-            maxLength={200}
-            disabled={busy}
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            className={`${RULE} pr-14`}
-            aria-describedby="password-meter"
-          />
+      <Field
+        label="Password"
+        trailing={
           <button
             type="button"
             onClick={() => setShowing((was) => !was)}
             disabled={busy}
-            className="absolute bottom-2 right-0 font-mono text-[11px] uppercase tracking-[0.14em] text-mute transition-colors hover:text-ink disabled:opacity-0"
+            className="absolute top-8 right-0 font-mono text-[11px] uppercase tracking-[0.14em] text-mute transition-colors hover:text-ink disabled:opacity-0"
           >
             {showing && !busy ? "Hide" : "Show"}
           </button>
-        </span>
+        }
+      >
+        <input
+          type={showing && !busy ? "text" : "password"}
+          required
+          autoComplete="new-password"
+          maxLength={200}
+          disabled={busy}
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          className={`${RULE} pr-14`}
+          aria-describedby="password-meter"
+        />
         <span id="password-meter" className="block">
           <PasswordMeter password={password} email={email} name={name} />
         </span>

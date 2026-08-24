@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { markDesk } from "@/lib/admin/hint"
+import { RULE, Field } from "@/components/auth/Sheet"
 
 /**
  * The door.
@@ -24,31 +25,6 @@ import { markDesk } from "@/lib/admin/hint"
  * screen for no reason. The addresses live in `.env.local` next to the password
  * they open, which is the one place somebody looking for them should have to go.
  */
-
-/** A ruled line to write on, which is what a field is on a drawing. */
-function Field({
-  label,
-  note,
-  children,
-}: {
-  label: string
-  note?: React.ReactNode
-  children: React.ReactNode
-}) {
-  return (
-    <label className="block">
-      <span className="flex items-baseline justify-between gap-3">
-        <span className="callout">{label}</span>
-        {note && <span className="font-mono text-[11px] text-mute">{note}</span>}
-      </span>
-      {children}
-    </label>
-  )
-}
-
-const RULE =
-  "mt-1 w-full border-0 border-b border-rule bg-transparent px-0 py-2 text-sm text-ink " +
-  "outline-none transition-colors placeholder:text-mute focus:border-ink disabled:opacity-55"
 
 export function SignInForm({
   next,
@@ -125,14 +101,23 @@ export function SignInForm({
 
         <Field
           label="Password"
+          trailing={
+            <button
+              type="button"
+              onClick={() => setShowing((was) => !was)}
+              disabled={busy}
+              className="absolute bottom-2 right-0 font-mono text-[11px] uppercase tracking-[0.14em] text-mute transition-colors hover:text-ink disabled:opacity-0"
+            >
+              {showing && !busy ? "Hide" : "Show"}
+            </button>
+          }
           // Gated the way the seeded list below is. A note about how this
           // deployment is configured is a development affordance, and a
           // launched storefront should not be explaining its own setup to a
           // customer. `secured` still decides whether the field is required.
           note={!secured && process.env.NODE_ENV !== "production" ? "not checked on this build" : undefined}
         >
-          <span className="relative block">
-            <input
+          <input
               type={showing && !busy ? "text" : "password"}
               required={secured}
               autoComplete="current-password"
@@ -142,15 +127,6 @@ export function SignInForm({
               placeholder=""
               className={`${RULE} pr-14`}
             />
-            <button
-              type="button"
-              onClick={() => setShowing((was) => !was)}
-              disabled={busy}
-              className="absolute bottom-2 right-0 font-mono text-[11px] uppercase tracking-[0.14em] text-mute transition-colors hover:text-ink disabled:opacity-0"
-            >
-              {showing && !busy ? "Hide" : "Show"}
-            </button>
-          </span>
         </Field>
 
         {problem && (

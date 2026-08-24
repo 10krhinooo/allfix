@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Logo } from "@/components/Logo"
 import { MobileNav } from "@/components/MobileNav"
+import { BasketLink } from "@/components/cart/BasketLink"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { SHOP } from "@/lib/format"
 
@@ -31,13 +32,17 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-3">
           <a
             href={`tel:${SHOP.phoneIntl}`}
             className="hidden font-mono text-sm text-ink sm:block"
           >
             {SHOP.phone}
           </a>
+
+          {/* Renders nothing while the basket is empty, so the header is not
+              carrying a permanent reminder of a thing not done. */}
+          <BasketLink className="text-ink" />
 
           {/*
             Both controls are rendered and CSS picks one, driven by a boolean

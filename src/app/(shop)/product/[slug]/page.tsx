@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { AddToCart } from "@/components/cart/AddToCart"
 import { Breadcrumbs, Button, JsonLd, WhatsAppIcon } from "@/components/ui"
 import { ProductCard } from "@/components/ProductCard"
 import {
@@ -184,10 +185,19 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
           )}
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button href={order} variant="whatsapp">
-              <WhatsAppIcon />
-              {line.buyable ? "Order on WhatsApp" : "Ask for a price"}
+          {/* A part priced on request gets no basket button, because the order
+              endpoint refuses to check one out. Offering it here would be a
+              button whose only outcome is a refusal three screens later. */}
+          {line.buyable && product.sku && (
+            <div className="mt-8">
+              <AddToCart sku={product.sku} />
+            </div>
+          )}
+
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Button href={order} variant={line.buyable ? "secondary" : "whatsapp"}>
+              {!line.buyable && <WhatsAppIcon />}
+              {line.buyable ? "Or ask on WhatsApp" : "Ask for a price"}
             </Button>
             <Button href={`tel:${SHOP.phoneIntl}`} variant="secondary">
               Call {SHOP.phone}

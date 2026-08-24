@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 import { redirect } from "next/navigation"
 import { readDesk } from "@/lib/admin/guard"
 import { price, hours, whatsapp } from "@/lib/format"
@@ -46,13 +47,19 @@ export default async function DocumentsPage() {
                 <Th>Order</Th>
                 <Th>Issued</Th>
                 <Th align="right">Total</Th>
+                <Th align="right">Document</Th>
               </tr>
             </thead>
             <tbody>
               {documents.map((document) => (
                 <tr key={document.reference}>
                   <Td>
-                    <span className="font-mono text-sm text-ink">{document.reference}</span>
+                    <Link
+                      href={`/account/documents/${document.reference}`}
+                      className="font-mono text-sm text-ink hover:text-oxblood"
+                    >
+                      {document.reference}
+                    </Link>
                   </Td>
                   <Td>
                     <Pill tone={document.kind === "receipt" ? "quiet" : "waiting"}>
@@ -68,6 +75,14 @@ export default async function DocumentsPage() {
                   <Td align="right">
                     <span className="font-mono text-sm text-ink">{price(document.totalKes)}</span>
                   </Td>
+                  <Td align="right">
+                    <Link
+                      href={`/account/documents/${document.reference}`}
+                      className="callout text-oxblood hover:text-oxblood-deep"
+                    >
+                      Open
+                    </Link>
+                  </Td>
                 </tr>
               ))}
             </tbody>
@@ -75,14 +90,15 @@ export default async function DocumentsPage() {
 
           <div className="mt-6">
             <Note>
-              Need a copy for your records?{" "}
+              Open one to read it in full, print it, or save it as a PDF. Something not right on
+              it?{" "}
               <a
-                href={whatsapp("Hello AllFix, could you send me a copy of this document:")}
+                href={whatsapp("Hello AllFix, could you check this document for me:")}
                 className="text-oxblood underline-offset-4 hover:underline"
               >
                 Ask the counter
-              </a>{" "}
-              and we will send it over.
+              </a>
+              .
             </Note>
           </div>
         </>

@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 import { animate, svg, stagger } from "animejs"
 import { Logo } from "@/components/Logo"
@@ -25,9 +26,13 @@ import { reducedMotion } from "@/lib/motion"
  * account list runs long: the section ended up marooned halfway down a very
  * tall black column with the caption somewhere below the fold.
  *
- * Everything here is decoration and is marked `aria-hidden`. The form is the
- * page; this is the wall behind it. It is hidden entirely below `lg`, because a
- * phone has no width to spare for a wall and the sheet needs all of it.
+ * The drawing and its sheet counter are decoration and are marked `aria-hidden`.
+ * The panel as a whole is not, because the logo on it is a real link back to the
+ * shop: a focusable control inside a hidden subtree is reachable by keyboard and
+ * invisible to a screen reader, which is worse than either.
+ *
+ * Hidden entirely below `lg`. A phone has no width to spare for a wall, and the
+ * sheet carries its own logo and its own way back.
  */
 
 /** Ordered so the cycle opens on the flagship and the widths visibly change. */
@@ -102,7 +107,6 @@ export function AuthStage({ line }: { line: string }) {
 
   return (
     <aside
-      aria-hidden="true"
       className="stage relative hidden overflow-hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:justify-between"
     >
       {/* The brass rule the curtain runs off, the same one the home hero leaves
@@ -110,15 +114,27 @@ export function AuthStage({ line }: { line: string }) {
       <div className="absolute inset-x-0 top-0 h-px bg-stage-brass/40" />
 
       <div className="px-12 pt-14">
-        {/* Pinned to the lifted variant: this ground is black in both themes,
-            and the oxblood wordmark disappears on it. */}
-        <Logo height={40} on="dark" alt="" />
+        {/* The way back to the shop, and a real link: somebody who arrived on a
+            bookmark and wanted the storefront should not have to find the small
+            one on the sheet. Pinned to the lifted variant, because this ground
+            is black in both themes and the oxblood wordmark disappears on it. */}
+        <Link
+          href="/"
+          title="Back to the shop"
+          className="inline-block transition-opacity hover:opacity-70"
+        >
+          <Logo height={40} on="dark" alt="AllFix By Kipekee, back to the shop" />
+        </Link>
         <p className="mt-7 max-w-[22ch] font-display text-3xl font-semibold leading-tight text-stage-ink">
           {line}
         </p>
       </div>
 
-      <div ref={host} className="relative flex flex-1 items-center justify-center px-12">
+      <div
+        ref={host}
+        aria-hidden="true"
+        className="relative flex flex-1 items-center justify-center px-12"
+      >
         <div key={slug} className="flex flex-col items-center">
           <div data-live className="text-stage-brass">
             <Profile system={slug} size={440} className="h-auto w-full max-w-[26rem]" />
@@ -130,7 +146,7 @@ export function AuthStage({ line }: { line: string }) {
 
       </div>
 
-      <div className="px-12 pb-12">
+      <div aria-hidden="true" className="px-12 pb-12">
         {/* The set, marked so somebody can see how many there are and which one
             is up, the way a drawing sheet is numbered. In flow with the caption
             rather than floated over the drawing, which put it on the text. */}
