@@ -47,6 +47,19 @@ export interface BuildSystem {
   /** Stock length a track is sold in, in metres. Longer runs need a joint. */
   stockLengthM: number
   parts: Partial<Record<Role, BuildPart>>
+  /**
+   * The bracket for each mount, which is a different part and a different SKU.
+   *
+   * A rail fixed to the ceiling and the same rail fixed to the wall do not take
+   * the same bracket, and the shop stocks both: `#20 Single Ceiling Bracket` and
+   * `#20 Single Wall Bracket`. The list used to name one bracket whatever the
+   * mount was set to, changing only the sentence underneath, which is the kind
+   * of wrong that is only found at the counter with the wrong box open.
+   *
+   * A system may have only one. `#15 bendable` and `KS` are ceiling only on the
+   * shelf, so choosing wall on those falls back rather than showing nothing.
+   */
+  brackets: Partial<Record<Mount, BuildPart>>
 }
 
 export type Mount = "ceiling" | "wall"
@@ -144,6 +157,37 @@ export function configuratorSystems(): BuildSystem[] {
         return part ? { sku: part.sku ?? part.slug, name: part.name } : undefined
       }
 
+      /*
+       * Brackets are chosen by what they are called, because that is where the
+       * catalogue records the difference: the component is "bracket" on all of
+       * them and the mount and the gang are in the name.
+       *
+       * "Single" is preferred over "Double" on everything except the double
+       * rail, which is the system a double bracket is actually for. Without
+       * that rule the #20 resolved to `#20 Double Ceiling Bracket`, because it
+       * happens to sort first, and the configurator was quietly speccing a two
+       * track bracket for a one track rail.
+       */
+      const brackets = parts.filter((candidate) => candidate.component === "bracket")
+      const wantsDouble = system.slug === "double-rail"
+      const bracketFor = (mount: Mount): BuildPart | undefined => {
+        const named = brackets.filter((candidate) => {
+          const name = candidate.name.toLowerCase()
+          return mount === "wall" ? name.includes("wall") : name.includes("ceiling")
+        })
+        // A bracket naming neither mount suits either, so it stands in for both.
+        const neutral = brackets.filter((candidate) => {
+          const name = candidate.name.toLowerCase()
+          return !name.includes("wall") && !name.includes("ceiling")
+        })
+        const pool = named.length > 0 ? named : neutral.length > 0 ? neutral : brackets
+        const gang = pool.filter((candidate) =>
+          candidate.name.toLowerCase().includes(wantsDouble ? "double" : "single"),
+        )
+        const chosen = (gang.length > 0 ? gang : pool)[0]
+        return chosen ? { sku: chosen.sku ?? chosen.slug, name: chosen.name } : undefined
+      }
+
       return {
         slug: system.slug,
         name: system.name,
@@ -152,6 +196,7 @@ export function configuratorSystems(): BuildSystem[] {
           ["motor", "drive-unit", "belt"].includes(part.component),
         ),
         stockLengthM: system.stockLengthM,
+        brackets: { ceiling: bracketFor("ceiling"), wall: bracketFor("wall") },
         parts: {
           track: pick("track"),
           bracket: pick("bracket"),
@@ -217,8 +262,8 @@ export function billOfMaterials(system: BuildSystem, input: BomInput): Bom {
   const centreOpen = panels >= 2
   const lines: BomLine[] = []
 
-  const line = (role: Role, qty: number, unit: string, note: string) => {
-    const part = system.parts[role]
+  const line = (role: Role, qty: number, unit: string, note: string, override?: BuildPart) => {
+    const part = override ?? system.parts[role]
     lines.push({
       role,
       label: part?.name ?? ROLE_LABEL[role],
@@ -239,11 +284,20 @@ export function billOfMaterials(system: BuildSystem, input: BomInput): Bom {
     input.mount === "ceiling" ? "Cut to length, top fixed" : "Cut to length, face fixed",
   )
 
+  // The bracket follows the mount, so switching from ceiling to wall changes the
+  // part and its SKU rather than only the sentence under it.
+  const bracket = system.brackets[input.mount] ?? system.parts.bracket
+  const onlyOneMount =
+    !system.brackets[input.mount] ||
+    system.brackets.ceiling?.sku === system.brackets.wall?.sku
   line(
     "bracket",
     Math.max(MIN_BRACKETS, Math.ceil(width * bracketsPerM)),
     "",
-    `${bracketsPerM} per metre, at least ${MIN_BRACKETS}. ${input.mount === "ceiling" ? "Ceiling" : "Wall"} brackets`,
+    onlyOneMount
+      ? `${bracketsPerM} per metre, at least ${MIN_BRACKETS}. This system takes one bracket for both mounts`
+      : `${bracketsPerM} per metre, at least ${MIN_BRACKETS}. ${input.mount === "ceiling" ? "Ceiling" : "Wall"} fixed`,
+    bracket,
   )
 
   const joints = Math.max(0, Math.ceil(width / system.stockLengthM) - 1)
