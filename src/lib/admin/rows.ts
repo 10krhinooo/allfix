@@ -152,6 +152,7 @@ export function deskEnquiries(inbox: FiledEnquiry[]): DeskEnquiry[] {
     kind: entry.kind,
     name: entry.name,
     phone: entry.phone,
+    email: entry.email.trim() || null,
     area: entry.area.trim() || "Not given",
     // The clock time it arrived rather than how long ago, which would mean
     // reading the clock during render. It is also the better answer on a

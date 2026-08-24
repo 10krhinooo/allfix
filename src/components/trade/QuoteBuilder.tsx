@@ -94,6 +94,10 @@ export function QuoteBuilder({ parts, account }: { parts: Pickable[]; account: s
       // The counter already holds the account's number, and asking a signed in
       // customer to type it again is how a form gets abandoned.
       phone: "On the trade account",
+      // Both blank for the same reason the phone reads as it does: the counter
+      // already holds the account's details, and asking a signed in customer to
+      // type them again is how a form gets abandoned.
+      email: "",
       area: "Trade",
       summary: `Quote wanted on ${lines.length} ${lines.length === 1 ? "line" : "lines"}`,
       detail: `Trade quote requested from the account area.\n\n${written}`,

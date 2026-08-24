@@ -22,6 +22,17 @@ export interface EnquiryDraft {
   kind: EnquiryKind
   name: string
   phone: string
+  /**
+   * Where the confirmation goes, when there is somewhere to send it.
+   *
+   * Optional, and staying optional. The phone number is what the counter works
+   * an enquiry from, and insisting on an address as well would cost the shop
+   * the enquiries from people who do not use one. What it buys is the reference
+   * in writing: the number is read out once on a confirmation screen, and
+   * somebody who wrote it on the back of something has lost it by the time they
+   * ring.
+   */
+  email: string
   area: string
   /** The one line the counter reads first. */
   summary: string
@@ -65,7 +76,7 @@ export async function sendEnquiry(draft: EnquiryDraft): Promise<SendResult> {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(draft),
+        body: JSON.stringify({ ...draft, email: draft.email.trim() || null }),
       })
       if (!response.ok) {
         const body = await response.json().catch(() => null)
@@ -103,6 +114,13 @@ function problemWith(draft: EnquiryDraft): string | null {
   if (!draft.name.trim()) return "We need a name to put on it."
   const digits = draft.phone.replace(/\D/g, "")
   if (digits.length < 9) return "We need a phone number we can call you back on."
+  // Checked only when one was given, and checked loosely. The server has the
+  // real rule; this is here so an obvious slip is caught beside the field
+  // rather than coming back as a refusal from somewhere else.
+  const email = draft.email.trim()
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return "That email address does not look right. Check it, or leave it blank and we will call you instead."
+  }
   return null
 }
 
