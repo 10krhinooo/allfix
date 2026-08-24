@@ -81,6 +81,7 @@ export function Enquiries() {
                     <h2 className="font-display text-lg font-semibold tracking-tight">{enquiry.name}</h2>
                     <p className="mt-1 flex flex-wrap items-baseline gap-x-3 font-mono text-[11px] text-mute">
                       <span>{enquiry.phone}</span>
+                      {enquiry.email && <span>{enquiry.email}</span>}
                       <span>{enquiry.area}</span>
                       <span>{"at" in enquiry ? arrived((enquiry as { at: number }).at) : hours(enquiry.hoursAgo)}</span>
                       {/* The seeded ones carry a readable id. A filed one's is a
@@ -111,17 +112,35 @@ export function Enquiries() {
                     onChange={(next) => setEnquiry(enquiry.id, next)}
                   />
 
-                  <a
-                    href={whatsapp(
-                      `Hello ${enquiry.name.split(" ")[0]}, this is ${SHOP.name} on Njugu Lane about your enquiry.`,
+                  <span className="ml-auto flex flex-wrap items-center gap-2">
+                    {/* Only where they gave one. A reply in writing is worth
+                        having when the answer is a figure or a date, because it
+                        is the version the customer still has next week. */}
+                    {enquiry.email && (
+                      <a
+                        href={`mailto:${enquiry.email}?subject=${encodeURIComponent(
+                          "reference" in enquiry
+                            ? `${SHOP.name}, your enquiry ${(enquiry as { reference: string }).reference}`
+                            : `${SHOP.name}, your enquiry`,
+                        )}`}
+                        className="rounded-sm border border-rule px-4 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-brass-soft"
+                      >
+                        Reply by email
+                        <span className="sr-only"> to {enquiry.name}</span>
+                      </a>
                     )}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="ml-auto rounded-sm bg-[#1f8f4e] px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[#187a41]"
-                  >
-                    Reply on WhatsApp
-                    <span className="sr-only"> to {enquiry.name}</span>
-                  </a>
+                    <a
+                      href={whatsapp(
+                        `Hello ${enquiry.name.split(" ")[0]}, this is ${SHOP.name} on Njugu Lane about your enquiry.`,
+                      )}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-sm bg-[#1f8f4e] px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[#187a41]"
+                    >
+                      Reply on WhatsApp
+                      <span className="sr-only"> to {enquiry.name}</span>
+                    </a>
+                  </span>
                 </div>
               </Card>
             </li>

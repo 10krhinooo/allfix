@@ -27,6 +27,12 @@ export interface Enquiry {
   detail: string
   /** The rail or rod the enquiry is about, where the customer knew. */
   system: string | null
+  /**
+   * An address, where one was given. The seeded rows have none, which is not an
+   * oversight: they came in over WhatsApp and the phone, which is exactly the
+   * case the queue has to read well.
+   */
+  email?: string | null
 }
 
 export const KIND_LABEL: Record<EnquiryKind, string> = {

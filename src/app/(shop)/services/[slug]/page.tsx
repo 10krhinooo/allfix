@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 import { Breadcrumbs, JsonLd, WhatsAppIcon } from "@/components/ui"
 import { SHOP } from "@/lib/format"
 import { getService, serviceEnquiry, services } from "@/lib/services"
+import { ServiceEnquiry } from "@/components/services/ServiceEnquiry"
 
 export function generateStaticParams() {
   return services.map((service) => ({ slug: service.slug }))
@@ -107,6 +108,25 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
               <a href={`tel:${SHOP.phoneIntl}`} className="font-mono text-sm text-oxblood hover:underline">
                 or call {SHOP.phone}
               </a>
+            </div>
+
+            {/* The record, as opposed to the conversation. WhatsApp above is one
+                tap and is how most of this trade reaches the shop, but an
+                enquiry sent that way exists in one phone's chat history:
+                whoever is at the counter cannot pick it up and nothing counts
+                it. This reaches the same people and leaves a reference. */}
+            <div className="mt-14 border-t border-rule pt-10">
+              <h2 className="font-display text-lg font-semibold tracking-tight">
+                Or write it down and we will call you
+              </h2>
+              <p className="mt-2 max-w-xl leading-relaxed text-slate">
+                This reaches the same people as the chat, and leaves the counter a record with a
+                reference on it, so anybody in the shop can pick it up rather than only whoever
+                has the phone.
+              </p>
+              <div className="mt-6">
+                <ServiceEnquiry service={service} />
+              </div>
             </div>
           </div>
 

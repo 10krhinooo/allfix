@@ -6,6 +6,7 @@
  * actually walks a customer through: talk first, measure, build, fit.
  */
 import { whatsapp } from "@/lib/format"
+import type { EnquiryKind } from "@/lib/enquiry"
 
 export interface Service {
   slug: string
@@ -22,6 +23,16 @@ export interface Service {
   includes: string[]
   /** The WhatsApp deep-link enquiry, pre-filled for this service. */
   message: string
+  /**
+   * Which queue an enquiry about this lands in.
+   *
+   * Not decoration: the kind is what decides who picks it up. Motorisation and
+   * a consultation both need somebody to go out and look before anybody can
+   * say a number, so they are surveys. Fitting and curtaining can be quoted
+   * from what the customer tells us, so they are quotes. Absent means quote,
+   * which is the ordinary case.
+   */
+  enquiryKind?: EnquiryKind
   /**
    * Where the primary action goes when it is not WhatsApp: assembly sends a
    * customer to the configurator, motorisation to the flagship range. Absent
@@ -105,6 +116,7 @@ export const services: Service[] = [
   },
   {
     slug: "motorisation",
+    enquiryKind: "survey",
     title: "Motorisation",
     lead: "Curtains that open on their own.",
     body:
@@ -130,6 +142,7 @@ export const services: Service[] = [
   },
   {
     slug: "consultation",
+    enquiryKind: "survey",
     title: "Consultation",
     lead: "Fabric, colour and hardware, worked out with you.",
     body:

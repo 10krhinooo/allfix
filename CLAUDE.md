@@ -165,6 +165,17 @@ there is no "in stock" badge because stock is not tracked yet.
 - **Not everything is photographed.** Only the parts that came off the old site have images.
   `imageFor()` returns `null` for the rest, which carry `imageName` (the shot they are
   waiting for); callers must render a placeholder rather than a broken image.
+- **`src/lib/enquiry.ts`**: the enquiry seam, and the one place both ways of reaching the
+  shop are composed. `sendEnquiry()` files an enquiry (into `admin/store.ts` today,
+  `POST /api/enquiries` once `NEXT_PUBLIC_API_URL` is set) and `enquiryMessage()` writes the
+  same draft out for a chat window. Every form goes through
+  `src/components/enquiry/EnquiryForm.tsx`, which owns the contact fields, both send paths
+  and the confirmation panel; a page passes the `summary` and `detail` it composes plus any
+  fields particular to it as children. `/book` and `/services/[slug]` are the two, and
+  `SendList` (configurator) and `QuoteBuilder` (trade) call `sendEnquiry` directly.
+  The phone number is required and the email is not: the counter rings people back, and an
+  address only decides whether the reference also arrives in writing. `enquiryKind` on a
+  service decides which queue it lands in, because the kind is what decides who picks it up.
 - **`src/lib/format.ts`**: `price()`/`priceOrAsk()` money formatting, the `SHOP` constant
   (address/phone), and `whatsapp()` for wa.me deep links.
 - **Animation**: anime.js (`animejs` v4) is the animation library, used sparingly and gated

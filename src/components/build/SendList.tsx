@@ -28,11 +28,12 @@ export function SendList({
   const [open, setOpen] = useState(false)
   const [name, setName] = useState("")
   const [phone, setPhone] = useState("")
+  const [email, setEmail] = useState("")
   const [sending, setSending] = useState(false)
   const [problem, setProblem] = useState<string | null>(null)
   const [reference, setReference] = useState<string | null>(null)
 
-  const draft: EnquiryDraft = { kind: "parts", name, phone, area: "", summary, detail, system }
+  const draft: EnquiryDraft = { kind: "parts", name, phone, email, area: "", summary, detail, system }
 
   async function send() {
     setProblem(null)
@@ -53,6 +54,7 @@ export function SendList({
         <p className="mt-2 text-sm leading-relaxed text-slate">
           The counter has your list. Somebody will call {phone.trim()} to confirm the price, the
           cut lengths and what is in stock.
+          {email.trim() && ` We have sent the reference to ${email.trim()} as well.`}
         </p>
       </div>
     )
@@ -101,6 +103,18 @@ export function SendList({
               />
             </label>
           </div>
+
+          <label className="mt-3 block">
+            <span className="callout">Email, if you use one</span>
+            <input
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              type="email"
+              autoComplete="email"
+              placeholder="Optional, and we send the reference to it"
+              className="mt-1.5 w-full border border-rule bg-paper px-3 py-2 text-sm text-ink focus:outline-none"
+            />
+          </label>
 
           {problem && (
             <p role="alert" className="mt-3 text-sm text-oxblood">
