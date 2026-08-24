@@ -101,6 +101,26 @@ test.describe("the account", () => {
     await expect(page.getByText("Site office")).toBeVisible()
   })
 
+  test("your details can be edited, and say nothing about roles or sessions", async ({ page }) => {
+    await page.goto("/account/profile")
+    // A customer has one thing their role lets them do, which is shop. A table
+    // of permissions they do not have is a building they will never be in.
+    await expect(page.getByText("What this role may do")).toHaveCount(0)
+    await expect(page.getByText("This session")).toHaveCount(0)
+
+    await page.getByRole("button", { name: "Edit" }).click()
+    await page.getByLabel("Name").fill("Peter O. Ochieng")
+    await page.getByRole("button", { name: "Save" }).click()
+    await expect(page.getByText("Peter O. Ochieng")).toBeVisible()
+  })
+
+  test("the email is shown but not editable, because it is the identity", async ({ page }) => {
+    await page.goto("/account/profile")
+    await page.getByRole("button", { name: "Edit" }).click()
+    await expect(page.getByLabel("Name")).toBeVisible()
+    await expect(page.getByLabel("Email")).toHaveCount(0)
+  })
+
   test("a saved rail reopens on its own measurement, not the defaults", async ({ page }) => {
     await page.goto("/account/rails")
     await page.getByRole("link", { name: /Open in the configurator/ }).first().click()

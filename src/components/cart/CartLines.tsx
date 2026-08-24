@@ -2,7 +2,8 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useCart, setQuantity, removeFromCart, MAX_QUANTITY } from "@/lib/cart"
+import { useState } from "react"
+import { useCart, setQuantity, removeFromCart, clearCart, MAX_QUANTITY } from "@/lib/cart"
 import { buyable, type BasketPart } from "@/lib/basket"
 import { price } from "@/lib/format"
 import { Empty } from "@/components/ui"
@@ -28,6 +29,9 @@ export function CartLines({
   children?: React.ReactNode
 }) {
   const cart = useCart()
+  // Confirmed rather than immediate. Emptying a basket somebody spent ten
+  // minutes filling is not something to do on a mis-tap, and there is no undo.
+  const [confirming, setConfirming] = useState(false)
 
   if (cart.lines.length === 0) {
     return (
@@ -152,7 +156,40 @@ export function CartLines({
         </p>
       )}
 
-      <div className="mt-8 flex flex-wrap gap-3">{children}</div>
+      <div className="mt-8 flex flex-wrap items-center gap-3">
+        {children}
+
+        {confirming ? (
+          <span className="flex flex-wrap items-center gap-3 text-sm text-ink">
+            Empty the whole basket?
+            <button
+              type="button"
+              onClick={() => {
+                clearCart()
+                setConfirming(false)
+              }}
+              className="callout text-oxblood hover:text-oxblood-deep"
+            >
+              Yes, empty it
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirming(false)}
+              className="callout hover:text-ink"
+            >
+              Keep it
+            </button>
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setConfirming(true)}
+            className="ml-auto callout hover:text-oxblood"
+          >
+            Empty the basket
+          </button>
+        )}
+      </div>
     </>
   )
 }

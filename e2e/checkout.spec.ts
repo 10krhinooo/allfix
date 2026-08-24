@@ -117,6 +117,34 @@ test.describe("buying something", () => {
     await expect(page.getByLabel("Qty")).toHaveValue("2")
   })
 
+  test("the basket can be emptied, but not by a mis-tap", async ({ page }) => {
+    await addToBasket(page, RUNNERS)
+    await page.goto("/cart")
+
+    // No undo, so it asks first.
+    await page.getByRole("button", { name: "Empty the basket" }).click()
+    await page.getByRole("button", { name: "Keep it" }).click()
+    await expect(page.getByLabel("Qty")).toBeVisible()
+
+    await page.getByRole("button", { name: "Empty the basket" }).click()
+    await page.getByRole("button", { name: "Yes, empty it" }).click()
+    await expect(page.getByText("Your basket is empty")).toBeVisible()
+  })
+
+  test("a rail configured on /build can be saved to the account", async ({ page }) => {
+    // The other half of /account/rails, which could list a saved window and
+    // reopen it, and had no way at all to create one.
+    await signIn(page, WHO.customer)
+    await page.goto("/build?system=20&width=3.6")
+    await page.getByRole("button", { name: "Save this rail" }).click()
+    await page.getByLabel("What is this window called?").fill("Kitchen window")
+    await page.getByRole("button", { name: "Save", exact: true }).click()
+
+    await expect(page.getByText(/Saved as/)).toBeVisible()
+    await page.goto("/account/rails")
+    await expect(page.getByText("Kitchen window")).toBeVisible()
+  })
+
   test("quantities survive a reload, because a basket is worth keeping", async ({ page }) => {
     await addToBasket(page, RUNNERS)
     await page.goto("/cart")

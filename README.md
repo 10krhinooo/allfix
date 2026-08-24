@@ -65,15 +65,79 @@ npm run lint     # eslint
 | `/services`, `/services/[slug]` | Installation, assembly, curtaining, motorisation, consultation |
 | `/book` | Measure-up and site-survey booking |
 | `/trade` | The wholesale proposition and account application |
+| `/cart`, `/checkout` | The basket, and buying with or without an account |
 | `/privacy`, `/terms` | Legal pages |
-| `/sign-in` | The staff and trade door, see below |
-| `/admin` | The counter console, staff only |
+| `/sign-in`, `/auth/*` | The door, registration, and the password reset |
+| `/account/*` | A shopper's orders, saved rails, addresses, documents and details |
+| `/trade/account/*` | The trade desk: orders, quotes, details |
+| `/admin/*` | The counter console, staff only |
 
 A price resolves to a real figure, to the client's pricing rule in words, or to "price on
 request", and never to "KES 0", the bug that left the old store unable to sell. The
 configurator computes quantities only and hands the finished list to WhatsApp for a quote,
 because a priced bill of materials belongs on the backend that resolves it against the
 caller's account tier.
+
+## Buying something
+
+The basket lives in the browser, because a basket is not worth an account and asking somebody
+to sign in before they can put a bracket in one loses the sale. Quantities are set on the
+product page, where the customer is already working out that a four metre run at ten runners
+to the metre needs forty.
+
+Checkout does not require an account either. A guest gives a name and a phone, the two things
+the shop cannot deliver without, and keeps the reference; they find the order again with that
+reference and the same phone number. Signing in is offered rather than demanded, because it
+genuinely helps: a saved address to pick from, and the order kept on the account.
+
+**No price ever leaves the browser.** A basket names SKUs and quantities, and there is no
+price field on the request or on the API behind it. What a line costs is resolved server side
+from the catalogue and the caller's tier, and the total shown after ordering is the one that
+came back. An unpriced part cannot be checked out at all: "price on request" is a real state
+in this catalogue and it means ask the counter, not sell at zero.
+
+Three ways to settle, and they are the three the shop actually trades on: M-Pesa now, a
+proforma for a trade account paying by transfer, and paying at the counter on collection. The
+last two need no payment provider, so an order can be placed whatever M-Pesa is doing.
+
+## Documents
+
+The shop issues four, and they differ in three ways and no more: what they are called,
+whether the money on them is paid or owed, and whether they carry money at all.
+
+| Sheet | Money | Issued when |
+| --- | --- | --- |
+| Receipt | Paid | The money has arrived |
+| Tax invoice | Due | It has not |
+| Proforma | Due | Asked for before paying |
+| Delivery note | None | Something is being delivered |
+
+So the differences are data and there is one template. Four templates drift, and the first
+thing to go is the address block; an invoice wearing a receipt's footer is worse than no
+invoice. Each carries the logo and the full trading details, which a web page can leave to
+its header and a document cannot: it gets printed, filed and handed to an accountant, and by
+then nobody can click anything to find out who issued it.
+
+A delivery note carries no money at all, and that is the entire reason it exists. It travels
+with the goods, and the rider, the gateman and whoever signs for it have no business seeing
+what the customer paid. It gets somewhere to sign instead of a total.
+
+Saving one is `window.print()`. The browser is already a typesetter with a PDF writer in it,
+so the customer gets a real PDF they named themselves, on any platform, with nothing to
+download and trust.
+
+## Tests
+
+```bash
+npm run test:e2e     # Playwright, desktop and a phone, against a production build
+```
+
+The interesting parts of this storefront cannot be checked any other way: a session is an
+HttpOnly cookie no script can plant, a basket is in localStorage the server never sees, and
+the three desks are told apart by a redirect that only happens in a browser. The suite covers
+every public page, the facets, the price rules, the sitemap and the nine legacy redirects,
+both consoles with their role gates, the auth screens, the account area with its documents,
+the configurator, and the buy flow with and without an account.
 
 ## The console, and its door
 

@@ -1,4 +1,5 @@
-import { price, hours, SHOP } from "@/lib/format"
+import Image from "next/image"
+import { price, hours, COMPANY } from "@/lib/format"
 import { lineTotal } from "@/lib/account"
 import { SHEETS, type Sheet } from "@/lib/documents"
 import { PrintButton } from "@/components/account/PrintButton"
@@ -14,6 +15,11 @@ import { PrintButton } from "@/components/account/PrintButton"
  * screen, and somebody printing a dark one empties a cartridge to no purpose.
  * The `print:` rules drop the chrome and the button, so what comes out of the
  * printer, or out of "save as PDF", is the sheet and nothing else.
+ *
+ * It carries the logo and the full trading details, which a web page can leave
+ * to its header and this cannot. A document leaves the site: it is printed,
+ * filed, attached to an expense claim, handed to an accountant, and by then
+ * nobody can click anything to find out who issued it.
  */
 export function DocumentSheet({
   sheet,
@@ -40,12 +46,26 @@ export function DocumentSheet({
       <article className="mx-auto max-w-2xl border border-rule bg-white p-8 text-neutral-900 sm:p-12 print:border-0 print:p-0">
         <header className="flex flex-wrap items-start justify-between gap-6 border-b border-neutral-300 pb-6">
           <div>
-            <p className="font-display text-xl font-bold tracking-tight">{SHOP.name}</p>
-            <p className="mt-2 text-sm leading-relaxed text-neutral-600">
-              {SHOP.street}, {SHOP.area}
-              <br />
-              {SHOP.phone}
-            </p>
+            {/* The light variant, always. This sheet is white in both themes and
+                on paper, so the theme-driven swap would put the lifted wordmark
+                on white and wash it out. */}
+            <Image
+              src="/brand/allfix-logo.png"
+              alt={COMPANY.legalName}
+              width={168}
+              height={48}
+              className="h-12 w-auto"
+            />
+            <address className="mt-3 text-sm not-italic leading-relaxed text-neutral-600">
+              {COMPANY.addressLines.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
+              <span className="block">{COMPANY.phone}</span>
+              <span className="block">{COMPANY.email}</span>
+              <span className="block">{COMPANY.site}</span>
+            </address>
           </div>
           <div className="text-right">
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-neutral-500">
@@ -150,6 +170,12 @@ export function DocumentSheet({
 
         <footer className="mt-10 border-t border-neutral-300 pt-6 text-sm leading-relaxed text-neutral-600">
           <p>{spec.footer}</p>
+          {/* Repeated at the foot, because a sheet gets read from the bottom as
+              often as the top, and a second page has no header on it. */}
+          <p className="mt-4 font-mono text-xs text-neutral-500">
+            {COMPANY.legalName} · {COMPANY.addressLines.join(" · ")} · {COMPANY.phone} ·{" "}
+            {COMPANY.email}
+          </p>
         </footer>
       </article>
     </>

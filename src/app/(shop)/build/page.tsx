@@ -3,6 +3,8 @@ import Link from "next/link"
 import { Configurator } from "@/components/build/Configurator"
 import { Breadcrumbs } from "@/components/ui"
 import { configuratorSystems, inputFromParams } from "@/lib/configurator"
+import { readDesk } from "@/lib/admin/guard"
+import { addressesFor, railsFor } from "@/lib/account"
 import { whatsapp } from "@/lib/format"
 
 export const metadata: Metadata = {
@@ -31,6 +33,14 @@ export default async function Build({
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   const systems = configuratorSystems()
+
+  // Read so a saved window can be added to the book this browser already holds.
+  // Handing the save an empty seed would mark the whole book seeded and empty,
+  // taking the addresses with it, so the real one has to come from here.
+  const desk = await readDesk()
+  const seed = desk
+    ? { addresses: addressesFor(desk.email), rails: railsFor(desk.email) }
+    : { addresses: [], rails: [] }
 
   // Every system page links here as `/build?system=<slug>`. That parameter used
   // to go nowhere: the configurator always opened on the first system in the
@@ -61,7 +71,13 @@ export default async function Build({
       </p>
 
       <div className="mt-10">
-        <Configurator systems={systems} initialSlug={initialSlug} initialInput={initialInput} />
+        <Configurator
+          systems={systems}
+          initialSlug={initialSlug}
+          initialInput={initialInput}
+          seed={seed}
+          signedIn={Boolean(desk)}
+        />
       </div>
 
       <p className="mt-8 text-sm text-slate">

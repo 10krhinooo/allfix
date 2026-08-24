@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react"
 import { whatsapp } from "@/lib/format"
 import { SendList } from "@/components/build/SendList"
+import { SaveRail } from "@/components/build/SaveRail"
+import type { Seed } from "@/lib/account-book"
 import {
   billOfMaterials,
   bomDetail,
@@ -40,6 +42,8 @@ export function Configurator({
   systems,
   initialSlug,
   initialInput,
+  seed,
+  signedIn,
 }: {
   systems: BuildSystem[]
   /** The system named by `?system=`, already resolved on the server. */
@@ -49,6 +53,9 @@ export function Configurator({
    * rail reopens on its own measurement rather than on the defaults.
    */
   initialInput?: BomInput
+  /** The account book this browser already holds, so a save does not replace it. */
+  seed: Seed
+  signedIn: boolean
 }) {
   const [slug, setSlug] = useState(initialSlug || systems[0]?.slug || "")
   const [input, setInput] = useState<BomInput>(initialInput ?? defaultInput)
@@ -342,6 +349,21 @@ export function Configurator({
             system={system.slug}
             whatsappText={whatsapp(bomMessage(system, input, bom))}
           />
+
+          {/* The other half of `/account/rails`, which could show a saved window
+              and reopen it and had no way to create one. */}
+          <div className="border-t border-rule pt-4">
+            <SaveRail
+              seed={seed}
+              signedIn={signedIn}
+              system={system.slug}
+              widthM={input.widthM}
+              panels={input.panels}
+              mount={input.mount}
+              runnersPerM={input.runnersPerM}
+              bracketsPerM={input.bracketsPerM}
+            />
+          </div>
         </div>
       </div>
     </div>
