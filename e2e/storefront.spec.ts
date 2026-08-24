@@ -97,6 +97,29 @@ test.describe("browsing by what you already own", () => {
   })
 })
 
+test.describe("the curtain", () => {
+  test("does not wipe between two shop pages", async ({ page }) => {
+    // A curtain between a product and the part list it belongs to is a
+    // performance in the way of the next page.
+    await page.goto("/shop")
+
+    // A card links to the same product twice: the photo, and the title with a
+    // stretched pseudo-element over the whole tile. The stretched one is what a
+    // person actually hits, so it is what the test hits.
+    const href = await page.locator("a[href^='/product/']").first().getAttribute("href")
+    await page.locator(`a[href="${href}"]`).last().click()
+
+    await expect(page).toHaveURL(/\/product\//)
+    await expect(page.locator(".curtain-leaf")).toHaveCount(0)
+  })
+
+  test("is still the front page's own arrival", async ({ page }) => {
+    const response = await page.goto("/")
+    expect(response?.status()).toBe(200)
+    await expect(page.locator("h1")).toBeVisible()
+  })
+})
+
 test.describe("what search engines and old links see", () => {
   test("the sitemap and robots are served", async ({ page }) => {
     for (const path of ["/sitemap.xml", "/robots.txt"]) {

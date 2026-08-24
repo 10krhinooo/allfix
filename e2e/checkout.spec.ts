@@ -95,6 +95,28 @@ test.describe("buying something", () => {
     await expect(page.getByText("Your basket is empty")).toBeVisible()
   })
 
+  test("the quantity is set on the product page, not only in the basket", async ({ page }) => {
+    // Somebody reading that a runner takes ten to the metre works out that a
+    // four metre run needs forty right there. Making them add one and change it
+    // on another screen is asking for the same job twice.
+    await page.goto(`/product/${RUNNERS}`)
+    await page.getByLabel("How many").fill("40")
+    await page.getByRole("button", { name: "Add to basket" }).click()
+
+    await expect(page.getByRole("link", { name: /Basket, 1 part/ })).toBeVisible()
+    await page.goto("/cart")
+    await expect(page.getByLabel("Qty")).toHaveValue("40")
+  })
+
+  test("the stepper keeps working on the line already in the basket", async ({ page }) => {
+    await addToBasket(page, RUNNERS)
+    await page.getByRole("button", { name: "One more" }).click()
+    await expect(page.getByLabel("Quantity in your basket")).toHaveValue("2")
+
+    await page.goto("/cart")
+    await expect(page.getByLabel("Qty")).toHaveValue("2")
+  })
+
   test("quantities survive a reload, because a basket is worth keeping", async ({ page }) => {
     await addToBasket(page, RUNNERS)
     await page.goto("/cart")

@@ -111,6 +111,22 @@ export interface SavedRail {
 const ORDERS: Record<string, CustomerOrder[]> = {
   "p.ochieng@gmail.com": [
     {
+      // Placed and not yet paid, going to an address. The one order on the seed
+      // that carries a tax invoice rather than a receipt, so all four documents
+      // are reachable from the account without inventing a state to reach them.
+      reference: "AF-2262",
+      stage: "packing",
+      hoursAgo: 3,
+      settlement: "counter",
+      deliveredTo: "Home",
+      note: "Cut the track to 3.4 m. Ring before the rider sets off.",
+      lines: [
+        { ref: "RL#20_001", name: "#20 Track", quantity: 4, basis: "each", unitKes: 2000 },
+        { ref: "RL#20_006", name: "#20 Single Wall Bracket", quantity: 8, basis: "each", unitKes: 100 },
+        { ref: "RL#20_005", name: "#20 Stoppers", quantity: 8, basis: "each", unitKes: 20 },
+      ],
+    },
+    {
       reference: "AF-2211",
       stage: "dispatched",
       hoursAgo: 19,
