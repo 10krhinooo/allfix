@@ -77,6 +77,13 @@ export interface BomLine {
   /** The matched part name, or the generic role when the system has no match. */
   label: string
   qty: number
+  /**
+   * What the counter's rule worked out, kept even when `qty` has been changed
+   * by hand. Showing the number somebody overrode is the difference between a
+   * quantity they chose and a quantity they think the site chose.
+   */
+  auto: number
+  overridden: boolean
   /** "" for a counted part, "m" for track and belt sold by the metre. */
   unit: string
   note: string
@@ -216,6 +223,8 @@ export function billOfMaterials(system: BuildSystem, input: BomInput): Bom {
       role,
       label: part?.name ?? ROLE_LABEL[role],
       qty,
+      auto: qty,
+      overridden: false,
       unit,
       note,
       sku: part?.sku,
@@ -273,19 +282,114 @@ export function bomSummary(system: BuildSystem, input: BomInput) {
   return `${system.name} rail, ${round1(width)} m ${draw}, ${input.mount} mount`
 }
 
-/** The WhatsApp quote text: the summary, then the list, ready to send. */
-export function bomMessage(system: BuildSystem, input: BomInput, bom: Bom) {
+/**
+ * The window and the parts under it, as text.
+ *
+ * Both ways of sending a list use this, so the counter reads the same thing
+ * whether it arrived over WhatsApp or through the site form. The site form used
+ * to send the summary line alone, which was thin when every quantity came off
+ * the rule and is wrong now that a customer can set them: the one number they
+ * changed by hand was the number that did not arrive.
+ *
+ * A quantity the customer set is marked as theirs. The counter needs to know
+ * which figures to sanity check against the run and which were asked for.
+ */
+export function bomDetail(system: BuildSystem, input: BomInput, bom: Bom) {
   const items = bom.lines
     .map((item) => {
       const quantity = item.unit ? `${item.qty} ${item.unit}` : `${item.qty}`
       const sku = item.sku ? ` (${item.sku})` : ""
-      return `- ${item.label}${sku}: ${quantity}`
+      const theirs = item.overridden ? ` [asked for, we worked out ${item.auto}]` : ""
+      return `- ${item.label}${sku}: ${quantity}${theirs}`
     })
     .join("\n")
 
+  return `${bomSummary(system, input)}\n\n${items}`
+}
+
+/** The WhatsApp quote text: the summary, then the list, ready to send. */
+export function bomMessage(system: BuildSystem, input: BomInput, bom: Bom) {
   return (
     `Hello ${SHOP.name}, please quote this rail:\n` +
-    `${bomSummary(system, input)}\n\n${items}\n\n` +
+    `${bomDetail(system, input, bom)}\n\n` +
     "Can you confirm the price, cut lengths and stock?"
   )
+}
+
+/**
+ * A window read back off the query string.
+ *
+ * `/build?system=` has always selected a rail. A saved rail needs the rest of
+ * the measurement too, because a saved window that reopens at the defaults is
+ * not saved: the customer would have to type it again, which is the thing
+ * saving it was for.
+ *
+ * Every value is clamped to the same bounds the configurator enforces, and
+ * anything unparseable falls back to the default rather than erroring, so a
+ * hand-edited or truncated link opens on a usable form instead of a stack
+ * trace. That matches how `?system=` already treats a slug it does not know.
+ */
+export function inputFromParams(params: Record<string, string | string[] | undefined>): BomInput {
+  const base = defaultInput()
+  const one = (key: string): string | undefined => {
+    const value = params[key]
+    return Array.isArray(value) ? value[0] : value
+  }
+  const num = (key: string, fallback: number, low: number, high: number): number => {
+    const parsed = Number(one(key))
+    return Number.isFinite(parsed) ? clamp(parsed, low, high) : fallback
+  }
+
+  const mount = one("mount")
+  return {
+    widthM: num("width", base.widthM, WIDTH_MIN, WIDTH_MAX),
+    panels: Math.round(num("panels", base.panels, 1, PANELS_MAX)),
+    mount: mount === "wall" || mount === "ceiling" ? mount : base.mount,
+    runnersPerM: num("runners", base.runnersPerM, RUNNERS_MIN, RUNNERS_MAX),
+    bracketsPerM: num("brackets", base.bracketsPerM, BRACKETS_MIN, BRACKETS_MAX),
+  }
+}
+
+/**
+ * Quantities the customer set by hand, keyed by the role they belong to.
+ *
+ * A role rather than a SKU, because the override has to survive the thing it is
+ * most likely to be used alongside: changing the window. Somebody who knows
+ * this run needs six brackets rather than five means six brackets, and if the
+ * key were the matched part they would lose that the moment they switched
+ * system and the bracket resolved to a different SKU.
+ */
+export type QuantityOverrides = Partial<Record<Role, number>>
+
+export const QTY_MAX = 999
+
+/**
+ * Rounded the way the line is sold: whole parts, or a tenth of a metre for the
+ * things cut off a roll. Zero is allowed and is a real answer, not an empty
+ * one: "I already have the brackets, leave them off the list".
+ */
+export function cleanQuantity(value: number, unit: string): number {
+  if (!Number.isFinite(value)) return 0
+  const bounded = clamp(value, 0, QTY_MAX)
+  return unit === "m" ? round1(bounded) : Math.round(bounded)
+}
+
+/**
+ * The bill with the customer's own quantities laid over it.
+ *
+ * The rule keeps running underneath: change the width and every line that was
+ * not overridden moves with it, while the ones that were stay where they were
+ * put. That is the whole point of doing this as a layer rather than by making
+ * the list editable and forgetting where the numbers came from.
+ */
+export function withOverrides(bom: Bom, overrides: QuantityOverrides): Bom {
+  return {
+    ...bom,
+    lines: bom.lines.map((line) => {
+      const wanted = overrides[line.role]
+      if (wanted === undefined) return line
+      const qty = cleanQuantity(wanted, line.unit)
+      return qty === line.auto ? line : { ...line, qty, overridden: true }
+    }),
+  }
 }
