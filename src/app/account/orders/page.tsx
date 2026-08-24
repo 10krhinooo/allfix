@@ -3,6 +3,8 @@ import { redirect } from "next/navigation"
 import { readDesk } from "@/lib/admin/guard"
 import { whatsapp } from "@/lib/format"
 import { ordersFor, isOpen, SETTLEMENT } from "@/lib/account"
+import { sheetsFor, SHEETS } from "@/lib/documents"
+import Link from "next/link"
 import { PageHead, EmptyState } from "@/components/admin/parts"
 import { OrderCard } from "@/components/orders/OrderCard"
 
@@ -46,18 +48,38 @@ export default async function OrdersPage() {
                 key={order.reference}
                 order={order}
                 meta={
-                  <div className="mt-4 flex flex-wrap items-baseline justify-between gap-4">
-                    <p className="font-mono text-xs text-slate">
-                      {SETTLEMENT[order.settlement]}
-                      {order.deliveredTo ? ` · ${order.deliveredTo}` : " · collected"}
-                    </p>
-                    {!isOpen(order) && order.stage !== "cancelled" && (
-                      <a
-                        href={again}
-                        className="callout text-oxblood transition-colors hover:text-oxblood-deep"
-                      >
-                        Order these again
-                      </a>
+                  <div className="mt-4 space-y-3">
+                    <div className="flex flex-wrap items-baseline justify-between gap-4">
+                      <p className="font-mono text-xs text-slate">
+                        {SETTLEMENT[order.settlement]}
+                        {order.deliveredTo ? ` · ${order.deliveredTo}` : " · collected"}
+                      </p>
+                      {!isOpen(order) && order.stage !== "cancelled" && (
+                        <a
+                          href={again}
+                          className="callout text-oxblood transition-colors hover:text-oxblood-deep"
+                        >
+                          Order these again
+                        </a>
+                      )}
+                    </div>
+
+                    {/* Only what this order can actually produce. A receipt for
+                        an order still being packed would be the shop issuing one
+                        for a payment it has not had. */}
+                    {sheetsFor(order).length > 0 && (
+                      <p className="flex flex-wrap items-baseline gap-4 border-t border-rule pt-3">
+                        <span className="callout">Documents</span>
+                        {sheetsFor(order).map((kind) => (
+                          <Link
+                            key={kind}
+                            href={`/account/orders/${order.reference}/${kind}`}
+                            className="callout text-oxblood transition-colors hover:text-oxblood-deep"
+                          >
+                            {SHEETS[kind].title}
+                          </Link>
+                        ))}
+                      </p>
                     )}
                   </div>
                 }

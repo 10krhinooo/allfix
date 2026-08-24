@@ -47,6 +47,41 @@ test.describe("the account", () => {
     await expect(page.getByText(/not a demand for payment/i)).toBeVisible()
   })
 
+  test("an order offers the documents it can actually produce", async ({ page }) => {
+    await page.goto("/account/orders")
+
+    // AF-2160 was collected and paid at the counter, so it has a receipt and no
+    // delivery note: nobody delivered it.
+    await expect(page.locator('a[href="/account/orders/AF-2160/receipt"]')).toBeVisible()
+    await expect(page.locator('a[href="/account/orders/AF-2160/delivery-note"]')).toHaveCount(0)
+
+    // AF-2211 is on its way to an address and paid, so it has both.
+    await expect(page.locator('a[href="/account/orders/AF-2211/receipt"]')).toBeVisible()
+    await expect(page.locator('a[href="/account/orders/AF-2211/delivery-note"]')).toBeVisible()
+
+    // AF-2098 was cancelled and refunded. There is nothing to document.
+    await expect(page.locator('a[href^="/account/orders/AF-2098/"]')).toHaveCount(0)
+  })
+
+  test("a delivery note carries no money at all", async ({ page }) => {
+    // It travels with the goods. The rider and whoever signs for it have no
+    // business seeing what the customer paid.
+    await page.goto("/account/orders/AF-2211/delivery-note")
+    await expect(page.getByText("Delivery note")).toBeVisible()
+    await expect(page.getByText("#20 Runners")).toBeVisible()
+    await expect(page.getByText("Received by")).toBeVisible()
+    await expect(page.getByText(/^KES/)).toHaveCount(0)
+  })
+
+  test("a document an order cannot produce is not found", async ({ page }) => {
+    // AF-2211 is still on its way and paid by M-Pesa, so no invoice is owed.
+    const response = await page.goto("/account/orders/AF-2211/invoice")
+    expect(response?.status()).toBe(404)
+
+    const madeUp = await page.goto("/account/orders/AF-2211/not-a-document")
+    expect(madeUp?.status()).toBe(404)
+  })
+
   test("somebody else's document is not found", async ({ page }) => {
     // Not forbidden: a 403 would confirm the document exists.
     const response = await page.goto("/account/documents/RC-9999")
