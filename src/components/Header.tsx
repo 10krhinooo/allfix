@@ -40,10 +40,6 @@ export function Header() {
             {SHOP.phone}
           </a>
 
-          {/* Renders nothing while the basket is empty, so the header is not
-              carrying a permanent reminder of a thing not done. */}
-          <BasketLink className="text-ink" />
-
           {/*
             Both controls are rendered and CSS picks one, driven by a boolean
             cookie read before first paint. Deciding it on the server instead
@@ -71,6 +67,13 @@ export function Header() {
               Your account
             </Link>
           </span>
+
+          {/* Beside the account control and before the theme toggle: the two
+              things somebody reaches for mid task are the basket and the way
+              into their account, so they sit together and at the same size. It
+              is outside the `md:` wrapper above, because a basket matters most
+              on a phone. */}
+          <BasketLink className="text-ink" />
 
           <ThemeToggle />
           <MobileNav items={NAV} />

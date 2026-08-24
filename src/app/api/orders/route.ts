@@ -16,13 +16,11 @@ const SETTLEMENTS: Settlement[] = ["MPESA", "PROFORMA", "COUNTER"]
  * quantities and the money is worked out from the catalogue.
  */
 export async function POST(request: Request) {
+  // No sign in required. Somebody who has found the part, checked it fits their
+  // rail and put it in a basket has done the hard part; asking them to invent a
+  // password before they can pay is where they leave. A session, when there is
+  // one, still decides who the order belongs to.
   const desk = await readDesk()
-  if (!desk) {
-    return NextResponse.json(
-      { message: "Sign in to place an order, and it will be saved to your account." },
-      { status: 401 },
-    )
-  }
 
   let body: {
     lines?: unknown
@@ -30,6 +28,7 @@ export async function POST(request: Request) {
     deliverTo?: unknown
     deliverPhone?: unknown
     note?: unknown
+    guest?: unknown
   }
   try {
     body = await request.json()
@@ -56,12 +55,33 @@ export async function POST(request: Request) {
   const text = (value: unknown): string | null =>
     typeof value === "string" && value.trim() ? value.trim().slice(0, 2000) : null
 
+  const asked = body.guest as { name?: unknown; phone?: unknown; email?: unknown } | undefined
+  const guest =
+    desk || !asked
+      ? null
+      : {
+          name: text(asked.name) ?? "",
+          phone: text(asked.phone) ?? "",
+          email: text(asked.email),
+        }
+
+  if (!desk && (!guest?.name || !guest.phone)) {
+    return NextResponse.json(
+      {
+        message:
+          "We need a name and a phone number to deliver this and to call you about it.",
+      },
+      { status: 400 },
+    )
+  }
+
   const result = await placeOrder({
     lines,
     settlement,
     deliverTo: text(body.deliverTo),
-    deliverPhone: text(body.deliverPhone),
+    deliverPhone: text(body.deliverPhone) ?? guest?.phone ?? null,
     note: text(body.note),
+    guest,
   })
 
   if (!result.ok) {

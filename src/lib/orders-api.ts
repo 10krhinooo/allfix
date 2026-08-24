@@ -28,12 +28,24 @@ export interface PlaceLine {
 
 export type Settlement = "MPESA" | "PROFORMA" | "COUNTER"
 
+export interface Guest {
+  name: string
+  phone: string
+  email?: string | null
+}
+
 export interface PlaceRequest {
   lines: PlaceLine[]
   settlement: Settlement
   deliverTo?: string | null
   deliverPhone?: string | null
   note?: string | null
+  /**
+   * Who to deliver to, when there is no account behind the order. Read only
+   * when the caller is signed out: an account already says who it is, and
+   * honouring this for a signed in caller would let a request choose its owner.
+   */
+  guest?: Guest | null
 }
 
 export interface PlacedLine {

@@ -12,14 +12,14 @@ import { signIn, addToBasket, WHO } from "./helpers"
 const RUNNERS = "20-runners"
 
 test.describe("buying something", () => {
-  test("the basket is reachable only once there is something in it", async ({ page }) => {
+  test("the basket is always in the header, and counts what is in it", async ({ page }) => {
     await page.goto("/")
-    // An empty basket in the header would be a permanent reminder of a thing
-    // not done, so there is deliberately nothing there yet.
-    await expect(page.getByRole("link", { name: /^Basket,/ })).toHaveCount(0)
+    // Always there. A basket that appears only once something is in it is one a
+    // first time visitor never learns the shop has.
+    await expect(page.getByRole("link", { name: "Basket, empty" })).toBeVisible()
 
     await addToBasket(page, RUNNERS)
-    await expect(page.getByRole("link", { name: /^Basket,/ })).toBeVisible()
+    await expect(page.getByRole("link", { name: /Basket, 1 part/ })).toBeVisible()
   })
 
   test("a part goes from the product page to the basket to checkout", async ({ page }) => {
@@ -33,11 +33,40 @@ test.describe("buying something", () => {
 
     await page.getByRole("link", { name: "Go to checkout" }).click()
 
-    // Not signed in, so the door, and it must come back here afterwards.
-    await expect(page).toHaveURL(/\/sign-in\?next=%2Fcheckout$/)
+    // Straight through. Nobody is asked to invent a password to buy a bracket.
+    await expect(page).toHaveURL(/\/checkout$/)
+    await expect(page.getByRole("heading", { name: "Checkout" })).toBeVisible()
   })
 
-  test("signing in at checkout returns to checkout and not to the account", async ({ page }) => {
+  test("somebody without an account can buy", async ({ page }) => {
+    await addToBasket(page, RUNNERS)
+    await page.goto("/checkout")
+
+    await page.getByRole("radio", { name: /Pay on collection/ }).click()
+    await page.getByLabel("Your name").fill("Grace Mutiso")
+    await page.getByLabel("Phone for this order").fill("0726 903 447")
+    await page.getByRole("button", { name: "Place the order" }).click()
+
+    await expect(page.getByText(/^Order AF-/)).toBeVisible()
+    // No account to find it on, so the reference is what they keep.
+    await expect(page.getByText(/Keep that reference/)).toBeVisible()
+  })
+
+  test("a guest is asked for the two things the counter cannot do without", async ({ page }) => {
+    await addToBasket(page, RUNNERS)
+    await page.goto("/checkout")
+    await expect(page.getByLabel("Your name")).toBeVisible()
+    await expect(page.getByLabel("Phone for this order")).toHaveAttribute("required", "")
+  })
+
+  test("signing in offers a saved address instead of typing one", async ({ page }) => {
+    await addToBasket(page, RUNNERS)
+    await signIn(page, WHO.customer, "/checkout")
+    await expect(page.getByLabel("Your name")).toHaveCount(0)
+    await expect(page.getByRole("radio", { name: /Home/ })).toBeVisible()
+  })
+
+  test("signing in from checkout comes back to checkout", async ({ page }) => {
     await addToBasket(page, RUNNERS)
     await signIn(page, WHO.customer, "/checkout")
     await expect(page).toHaveURL(/\/checkout$/)

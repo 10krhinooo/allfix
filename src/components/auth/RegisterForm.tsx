@@ -132,10 +132,16 @@ export function RegisterForm() {
           className={`${RULE} pr-14`}
           aria-describedby="password-meter"
         />
-        <span id="password-meter" className="block">
-          <PasswordMeter password={password} email={email} name={name} />
-        </span>
       </Field>
+
+      {/* Outside the field, not inside it. A wrapping label takes its accessible
+          name from every piece of text within, so a meter in there renamed the
+          input on each keystroke. It is the field's description, which is what
+          `aria-describedby` above says, and a description is announced after the
+          name rather than becoming it. */}
+      <div id="password-meter">
+        <PasswordMeter password={password} email={email} name={name} />
+      </div>
 
       {problem && <Problem>{problem}</Problem>}
 

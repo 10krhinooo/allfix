@@ -87,9 +87,14 @@ export function ResetForm({ token }: { token: string }) {
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           className={`${RULE} pr-14`}
+          aria-describedby="password-meter"
         />
-        <PasswordMeter password={password} />
       </Field>
+
+      {/* Outside the field for the same reason the register sheet's is. */}
+      <div id="password-meter">
+        <PasswordMeter password={password} />
+      </div>
 
       {problem && <Problem>{problem}</Problem>}
 

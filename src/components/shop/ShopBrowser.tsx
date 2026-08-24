@@ -109,6 +109,7 @@ export function ShopBrowser({ data }: { data: ShopData }) {
       <Group title="Type">
         <Radio
           label="Everything"
+          group="family"
           count={data.items.length}
           checked={!query.family}
           onChange={() => patch({ family: null, systems: [], ranges: [] })}
@@ -117,6 +118,7 @@ export function ShopBrowser({ data }: { data: ShopData }) {
           <Radio
             key={f.slug}
             label={f.label}
+            group="family"
             count={f.count}
             checked={query.family === f.slug}
             onChange={() =>
@@ -177,6 +179,7 @@ export function ShopBrowser({ data }: { data: ShopData }) {
           <Radio
             key={b.id}
             label={b.label}
+            group="price"
             checked={query.price === b.id}
             onChange={() => patch({ price: query.price === b.id ? null : b.id })}
           />
@@ -416,6 +419,7 @@ function Row({
   count,
   swatch,
   round,
+  group,
 }: {
   checked: boolean
   onChange: () => void
@@ -423,6 +427,8 @@ function Row({
   count?: number
   swatch?: string
   round: boolean
+  /** Names the radio group, so the browser knows which choices are exclusive. */
+  group?: string
 }) {
   return (
     <label className="flex cursor-pointer items-center gap-2.5 text-sm">
@@ -446,7 +452,20 @@ function Row({
           style={{ background: swatch }}
         />
       )}
-      <input type="checkbox" checked={checked} onChange={onChange} className="sr-only" />
+      {/*
+        The real control, visually hidden behind the marker above. Its type
+        follows the shape: a round marker is a single choice and announced as a
+        radio, a square one is a multi select and announced as a checkbox. They
+        used to all be checkboxes, so the type family picker read as "Rails,
+        checkbox" beside "Rods, checkbox" in a group where only one can be on.
+      */}
+      <input
+        type={round ? "radio" : "checkbox"}
+        name={round ? group : undefined}
+        checked={checked}
+        onChange={onChange}
+        className="sr-only"
+      />
       <span className={`flex-1 ${checked ? "text-ink" : "text-slate"}`}>{label}</span>
       {count !== undefined && <span className="font-mono text-xs text-mute">{count}</span>}
     </label>

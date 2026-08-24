@@ -39,11 +39,18 @@ export function Checkout({
   catalogue,
   addresses,
   trade,
+  signedIn,
 }: {
   catalogue: Record<string, BasketPart>
   addresses: Address[]
   /** A trade account may ask for a proforma. A shopper pays now or at the counter. */
   trade: boolean
+  /**
+   * Whether there is an account behind this. A guest types their own details
+   * and gets the reference to keep; somebody signed in picks a saved address
+   * and finds the order on their account afterwards.
+   */
+  signedIn: boolean
 }) {
   const router = useRouter()
   const cart = useCart()
@@ -53,6 +60,10 @@ export function Checkout({
   )
   const [phone, setPhone] = useState("")
   const [note, setNote] = useState("")
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [street, setStreet] = useState("")
+  const [area, setArea] = useState("")
   const [problems, setProblems] = useState<string[]>([])
   const [busy, setBusy] = useState(false)
   const [placed, setPlaced] = useState<Placed | null>(null)
@@ -70,6 +81,7 @@ export function Checkout({
     setProblems([])
 
     const chosen = addresses.find((one) => one.id === addressId)
+    const collecting = addressId === "collect"
     try {
       const response = await fetch("/api/orders", {
         method: "POST",
@@ -81,9 +93,14 @@ export function Checkout({
           deliverTo: chosen
             ? `${chosen.recipient}, ${chosen.line}, ${chosen.area}, ${chosen.town}` +
               (chosen.directions ? ` (${chosen.directions})` : "")
-            : null,
+            : collecting || !street
+              ? null
+              : `${name}, ${street}, ${area}`,
           deliverPhone: chosen?.phone ?? phone,
           note,
+          // Ignored by the server when there is a session, which is why it is
+          // safe to send either way.
+          guest: signedIn ? null : { name, phone, email },
         }),
       })
       const body = (await response.json()) as Placed & { message?: string; problems?: string[] }
@@ -121,12 +138,19 @@ export function Checkout({
         <p className="mt-5 font-mono text-lg text-ink">{price(placed.totalKes)}</p>
         <p className="mt-1 text-sm text-slate">Before delivery, which we confirm.</p>
 
+        {!signedIn && (
+          <p className="mt-5 border-l-2 border-brass bg-brass-soft px-3 py-2 text-sm leading-relaxed text-ink">
+            Keep that reference. It and your phone number are how we find this order, and it is
+            what to quote if you call. Opening an account keeps it for you.
+          </p>
+        )}
+
         <div className="mt-7 flex flex-wrap gap-3">
           <Link
-            href="/account/orders"
+            href={signedIn ? "/account/orders" : "/auth/register"}
             className="bg-oxblood px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
           >
-            See it on your account
+            {signedIn ? "See it on your account" : "Open an account"}
           </Link>
           <Link
             href="/shop"
@@ -242,18 +266,85 @@ export function Checkout({
               </span>
             </label>
           </div>
-          <p className="mt-3 text-sm text-slate">
-            <Link href="/account/addresses" className="text-oxblood underline-offset-4 hover:underline">
-              Manage your addresses
-            </Link>
-          </p>
+          {signedIn && (
+            <p className="mt-3 text-sm text-slate">
+              <Link
+                href="/account/addresses"
+                className="text-oxblood underline-offset-4 hover:underline"
+              >
+                Manage your addresses
+              </Link>
+            </p>
+          )}
         </fieldset>
+
+        {/* A guest types the details a signed in customer picks from a saved
+            book. Only the two the shop cannot do without are required: a name
+            to hand it to and a number to call. */}
+        {!signedIn && (
+          <fieldset className="mt-8">
+            <legend className="callout">Who we are delivering to</legend>
+            <div className="mt-3 grid gap-5 sm:grid-cols-2">
+              <label className="block">
+                <span className="callout">Your name</span>
+                <input
+                  required
+                  maxLength={160}
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  className={RULE}
+                  disabled={busy}
+                />
+              </label>
+              <label className="block">
+                <span className="callout">Email</span>
+                <input
+                  type="email"
+                  maxLength={320}
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="For the receipt. Optional."
+                  className={RULE}
+                  disabled={busy}
+                />
+              </label>
+              {addressId !== "collect" && (
+                <>
+                  <label className="block">
+                    <span className="callout">Street or building</span>
+                    <input
+                      maxLength={200}
+                      value={street}
+                      onChange={(event) => setStreet(event.target.value)}
+                      className={RULE}
+                      disabled={busy}
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="callout">Estate or area</span>
+                    <input
+                      maxLength={120}
+                      value={area}
+                      onChange={(event) => setArea(event.target.value)}
+                      className={RULE}
+                      disabled={busy}
+                    />
+                  </label>
+                </>
+              )}
+            </div>
+          </fieldset>
+        )}
 
         <div className="mt-8 grid gap-5 sm:grid-cols-2">
           <label className="block">
             <span className="callout">Phone for this order</span>
             <input
               type="tel"
+              // The one thing the counter cannot confirm an order without, so a
+              // guest has to give it. A signed in customer already has one on
+              // the address they picked.
+              required={!signedIn}
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
               placeholder="07xx xxx xxx"

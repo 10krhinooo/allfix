@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { redirect } from "next/navigation"
 import { readDesk } from "@/lib/admin/guard"
 import { basketCatalogue } from "@/lib/basket"
 import { addressesFor } from "@/lib/account"
@@ -13,16 +12,18 @@ export const metadata: Metadata = {
 }
 
 /**
- * Checkout.
+ * Checkout, with or without an account.
  *
- * Signing in is required here and not at the basket, which is the whole reason
- * the basket lives in the browser: somebody can fill one without an account and
- * is only asked who they are at the point where the shop needs to know where to
- * send it. `next` carries them back afterwards.
+ * No sign in required, which is the whole reason the basket lives in the
+ * browser: somebody who has found the part, checked it fits their rail and put
+ * it in a basket has already done the hard part, and inventing a password is
+ * where they leave. The counter has never asked a walk-in to register either.
+ *
+ * Signing in is offered rather than demanded, because it genuinely helps: a
+ * saved address to pick from, and the order kept somewhere they can find it.
  */
 export default async function CheckoutPage() {
   const desk = await readDesk()
-  if (!desk) redirect("/sign-in?next=%2Fcheckout")
 
   return (
     <div className="shell max-w-5xl py-12">
@@ -31,18 +32,32 @@ export default async function CheckoutPage() {
       />
 
       <h1 className="display-lg mt-5 font-display font-bold tracking-tight">Checkout</h1>
-      <p className="mt-3 max-w-xl leading-relaxed text-slate">
-        Signed in as {desk.name}.{" "}
-        <Link href="/account" className="text-oxblood underline-offset-4 hover:underline">
-          Your account
-        </Link>
-      </p>
+      {desk ? (
+        <p className="mt-3 max-w-xl leading-relaxed text-slate">
+          Signed in as {desk.name}.{" "}
+          <Link href="/account" className="text-oxblood underline-offset-4 hover:underline">
+            Your account
+          </Link>
+        </p>
+      ) : (
+        <p className="mt-3 max-w-xl leading-relaxed text-slate">
+          Tell us where it goes and we will take it from there. Or{" "}
+          <Link
+            href="/sign-in?next=%2Fcheckout"
+            className="text-oxblood underline-offset-4 hover:underline"
+          >
+            sign in
+          </Link>{" "}
+          to use a saved address and keep the order on your account.
+        </p>
+      )}
 
       <div className="mt-10">
         <Checkout
           catalogue={basketCatalogue()}
-          addresses={addressesFor(desk.email)}
-          trade={desk.role === "TRADE"}
+          addresses={desk ? addressesFor(desk.email) : []}
+          trade={desk?.role === "TRADE"}
+          signedIn={Boolean(desk)}
         />
       </div>
     </div>
