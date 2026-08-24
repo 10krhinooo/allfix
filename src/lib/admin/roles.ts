@@ -31,7 +31,7 @@ export function capabilities(role: Person["role"]): Capabilities {
 }
 
 /** The gated subtrees. A destination outside this set is not worth returning to. */
-const GATED = ["/admin", "/trade/account"]
+const GATED = ["/admin", "/trade/account", "/account"]
 
 /**
  * Where a role belongs once it is through the door.
@@ -41,11 +41,35 @@ const GATED = ["/admin", "/trade/account"]
  * destination is honoured before the role is checked.
  */
 export function landing(role: Person["role"], next?: string | null): string {
-  const home = capabilities(role).console ? "/admin" : "/trade/account"
+  const home = HOME[role] ?? HOME.CUSTOMER
   const wanted = safeNext(next)
   if (!wanted) return home
-  if (!capabilities(role).console && wanted.startsWith("/admin")) return home
-  return wanted
+  // Somebody else's desk is not a destination, whoever asked for it. A customer
+  // arriving with `?next=/trade/account` is landed at their own account rather
+  // than at a desk the proxy will only bounce them out of again.
+  return owns(role, wanted) ? wanted : home
+}
+
+/**
+ * Where each role belongs once it is through the door.
+ *
+ * `CUSTOMER` used to fall through to `/trade/account`, which was invisible only
+ * because the door refused customers outright. It stopped being invisible the
+ * moment they were let in.
+ */
+const HOME: Record<Person["role"], string> = {
+  ADMIN: "/admin",
+  STAFF: "/admin",
+  TRADE: "/trade/account",
+  CUSTOMER: "/account",
+}
+
+/** Whether a role may be sent to a gated path at all. */
+export function owns(role: Person["role"], path: string): boolean {
+  if (path.startsWith("/admin")) return capabilities(role).console
+  if (path.startsWith("/trade/account")) return role === "TRADE"
+  if (path.startsWith("/account")) return role === "CUSTOMER"
+  return false
 }
 
 /**

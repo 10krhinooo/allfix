@@ -20,9 +20,10 @@ import { SHOP } from "@/lib/format"
  * teaches people to type anything into it, which is worse than not asking.
  *
  * That loses nothing worth demonstrating. The refusals this screen exists for
- * are decided by role and not by password: a suspended account, a shopper with
- * no console, an address nobody has registered. All three still refuse, and they
- * are the half of the model worth exercising.
+ * are decided by role and not by password: a suspended account, and an address
+ * nobody has registered. Both still refuse, and they are the half of the model
+ * worth exercising. A shopper was a third until phase 3 gave one somewhere to
+ * land, and is now let through to `/account` like anybody else.
  *
  * The trade off is real and belongs in the open: an unset variable means anybody
  * who knows a seeded address can walk into the console on that deployment. Set
@@ -62,9 +63,10 @@ export interface SeededLogin {
 /**
  * Derived from `PEOPLE` rather than a second list, so the roster cannot fork.
  *
- * The suspended account and the shopper are included on purpose. Both are
- * refused, and the refusals are the half of the model worth being able to
- * exercise while working on the screens.
+ * The suspended account is included on purpose: it is refused, and a refusal is
+ * the half of the model worth being able to exercise while working on the
+ * screens. The shopper is included because it now opens the account area, which
+ * is the screen phase 3 added.
  */
 export const SEEDED_LOGINS: SeededLogin[] = PEOPLE.map((person) => ({
   email: person.email,
@@ -79,7 +81,7 @@ export const SEEDED_LOGINS: SeededLogin[] = PEOPLE.map((person) => ({
         ? "The counter, without People"
         : person.role === "TRADE"
           ? "Trade rates, no console"
-          : "A shopper, refused",
+          : "The account area, no console",
 }))
 
 export type SignIn =
@@ -106,16 +108,11 @@ export function signInWith(email: string, password: string): SignIn {
     }
   }
 
-  // A shopper's account area is phase 3 work in PROJECT_PLAN.md and does not
-  // exist, so saying "no console access" is the honest refusal rather than
-  // signing somebody in to nowhere.
-  if (person.role === "CUSTOMER") {
-    return {
-      ok: false,
-      status: 403,
-      message: "This is the staff and trade door. The shopper account area is not built yet.",
-    }
-  }
+  // A shopper used to be refused here, because the account area did not exist
+  // and signing somebody in to nowhere is worse than turning them away. It
+  // exists now, at `/account`, so the refusal has gone with the reason for it.
+  // The remaining refusals are the ones the backend also makes: a suspended
+  // account, and an address nobody has registered.
 
   return { ok: true, person }
 }

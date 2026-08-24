@@ -1,4 +1,12 @@
-import type { PriceBasis } from "@/lib/catalogue"
+import type { OrderLine, OrderStage } from "@/lib/orders"
+
+/**
+ * The order vocabulary is shared with the customer account, so it lives in
+ * `orders.ts` and is passed straight through here. Screens on this desk keep
+ * importing it from `@/lib/trade`, which is the module they think in.
+ */
+export type { OrderLine, OrderStage } from "@/lib/orders"
+export { ORDER_STAGE, ORDER_FLOW, lineTotal, ordered } from "@/lib/orders"
 
 /**
  * A trade account's own view of the shop.
@@ -14,19 +22,6 @@ import type { PriceBasis } from "@/lib/catalogue"
  * the same customer.
  */
 
-export type OrderStage = "placed" | "packing" | "dispatched" | "collected" | "cancelled"
-
-export const ORDER_STAGE: Record<OrderStage, string> = {
-  placed: "Placed",
-  packing: "Being packed",
-  dispatched: "On the way",
-  collected: "Collected",
-  cancelled: "Cancelled",
-}
-
-/** The stages an order moves through, in the order the counter works them. */
-export const ORDER_FLOW: OrderStage[] = ["placed", "packing", "dispatched", "collected"]
-
 export type QuoteStage = "requested" | "pricing" | "sent" | "accepted" | "expired"
 
 export const QUOTE_STAGE: Record<QuoteStage, string> = {
@@ -37,14 +32,8 @@ export const QUOTE_STAGE: Record<QuoteStage, string> = {
   expired: "Expired",
 }
 
-export interface TradeLine {
-  ref: string
-  name: string
-  quantity: number
-  basis: PriceBasis
-  /** What the account pays for one, at their tier. Null while a part is unpriced. */
-  unitKes: number | null
-}
+/** A line as this desk shows it: the same shape, priced at the account's tier. */
+export type TradeLine = OrderLine
 
 export interface TradeOrder {
   reference: string
@@ -73,16 +62,6 @@ export function tradePrice(listKes: number | null): number | null {
   return listKes === null ? null : Math.round(listKes * (1 - TRADE_DISCOUNT))
 }
 
-export function lineTotal(line: TradeLine): number | null {
-  return line.unitKes === null ? null : line.unitKes * line.quantity
-}
-
-/** Null when any line is unpriced, because a partial total is a wrong total. */
-export function ordered(lines: TradeLine[]): number | null {
-  return lines.some((line) => line.unitKes === null)
-    ? null
-    : lines.reduce((sum, line) => sum + (lineTotal(line) ?? 0), 0)
-}
 
 /**
  * Seed data, keyed by the account it belongs to.

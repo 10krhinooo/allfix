@@ -215,7 +215,7 @@ export function Worksheet({
         <Stat
           label="Changed here"
           value={state.ready ? changed : "\u2014"}
-          hint="Held in this browser."
+          hint="Saved as you go."
         />
       </Stats>
 
