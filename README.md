@@ -66,12 +66,79 @@ npm run lint     # eslint
 | `/book` | Measure-up and site-survey booking |
 | `/trade` | The wholesale proposition and account application |
 | `/privacy`, `/terms` | Legal pages |
+| `/sign-in` | The staff and trade door, see below |
+| `/admin` | The counter console, staff only |
 
 A price resolves to a real figure, to the client's pricing rule in words, or to "price on
 request", and never to "KES 0", the bug that left the old store unable to sell. The
 configurator computes quantities only and hands the finished list to WhatsApp for a quote,
 because a priced bill of materials belongs on the backend that resolves it against the
 caller's account tier.
+
+## The console, and its door
+
+`/admin` is the staff console and `/sign-in` is the way in. Roles are `ADMIN`, `STAFF`,
+`TRADE` and `CUSTOMER`, and `src/lib/admin/roles.ts` is the single answer to what each may
+do: staff price parts because that is counter work, only an admin sees People, and trade
+gets no console at all and lands on `/trade/account`.
+
+### There is no password in this repository
+
+`src/lib/admin/accounts.ts` holds no credential, on purpose. A checked in string that a
+secret scanner reads as a password costs more to explain every time than it saves, and the
+refusals worth demonstrating are decided by role rather than by password anyway.
+
+So the door has two modes, and it says out loud which one it is in:
+
+- **`ALLFIX_SEED_PASSWORD` set.** The password is required and checked against it. This is
+  the only mode fit for a deployment anybody else can reach.
+- **`ALLFIX_SEED_PASSWORD` unset.** The password is not looked at, so any value opens a
+  seeded account, the empty string included. The sign-in sheet stops making the field
+  compulsory and says so, because a field that is asked for and never checked teaches
+  people to type anything into it. This is the default, so a bare clone is usable.
+
+> **Set `ALLFIX_SEED_PASSWORD` on anything reachable from the internet.** Unset, anybody
+> who knows one of the addresses below walks into the console, and those addresses are
+> printed here. Preview deployments included.
+
+### The seeded accounts
+
+Derived from `PEOPLE` in `src/lib/admin/desk.ts` rather than a second list, so the roster
+cannot fork. The last two are there to be refused: the refusals are the half of the model
+worth exercising while working on the screens. Trade is not refused, it signs in and is sent
+to `/trade/account`, because trade has no console.
+
+| Address | Role | What it opens |
+| --- | --- | --- |
+| `hafsah@allfix.co.ke` | ADMIN | Everything, including People |
+| `counter@allfix.co.ke` | STAFF | The counter, without People |
+| `workshop@allfix.co.ke` | STAFF | The counter, without People |
+| `njoroge@interiors.co.ke` | TRADE | Trade rates and `/trade/account`, no console |
+| `p.ochieng@gmail.com` | CUSTOMER | Refused: the shopper account area is phase 3 |
+| `old.counter@allfix.co.ke` | STAFF, suspended | Refused: suspended account |
+
+An unregistered address and a wrong password are refused identically, so the door cannot be
+used to enumerate the shop's customers.
+
+### Configuration
+
+Both variables are server side and neither is `NEXT_PUBLIC_`, so neither reaches the
+browser. `.env.example` carries them, but it is gitignored, so it will not be in a fresh
+clone.
+
+| Variable | Effect if unset |
+| --- | --- |
+| `ALLFIX_SEED_PASSWORD` | The password is not checked, so any value opens a seeded account |
+| `ALLFIX_SESSION_SECRET` | The session cookie is signed with a known development string, which is not a signature |
+
+The session is an HttpOnly SameSite=Lax cookie carrying a signed payload, which stops a
+role being edited in devtools. It is deliberately not a revocable session: revocation needs
+the token table in `allfix-backend`.
+
+The gate is enforced twice, in `src/proxy.ts` before a route renders and again in
+`requireConsole()` on the server, which is the authoritative check. Both, because Server
+Functions are not separate routes in the matcher chain, so a matcher typo would otherwise
+drop coverage silently.
 
 ## Deployment
 
