@@ -24,7 +24,7 @@ import { Empty } from "@/components/ui"
  */
 
 const RULE =
-  "mt-1 w-full border-0 border-b border-rule bg-transparent px-0 py-2 text-sm text-ink " +
+  "mt-2 w-full border-0 border-b border-rule bg-transparent px-0 py-2 text-sm text-ink " +
   "outline-none transition-colors placeholder:text-mute focus:border-ink disabled:opacity-55"
 
 type Settlement = "MPESA" | "PROFORMA" | "COUNTER"

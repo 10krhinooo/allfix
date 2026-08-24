@@ -71,7 +71,7 @@ export function SaveRail({
       <button
         type="button"
         onClick={() => setNaming(true)}
-        className="border border-rule px-5 py-2.5 text-sm text-ink transition-colors hover:border-brass hover:text-brass"
+        className="rounded-sm border border-rule px-6 py-3 text-sm text-ink transition-colors hover:border-brass hover:text-brass"
       >
         Save this rail
       </button>
@@ -94,10 +94,13 @@ export function SaveRail({
         })
         setSaved(true)
       }}
-      className="flex flex-wrap items-end gap-3"
+      className="space-y-4"
     >
       <label className="block">
-        <span className="callout">What is this window called?</span>
+        {/* The question and the line to write on are one control, so the gap
+            between them has to be smaller than the gap to anything else and
+            still be a gap. At `mt-1` the caret sat on the question. */}
+        <span className="callout block">What is this window called?</span>
         <input
           autoFocus
           required
@@ -105,21 +108,32 @@ export function SaveRail({
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder="Sitting room bay"
-          className="mt-1 w-56 border-0 border-b border-rule bg-transparent px-0 py-2 text-sm text-ink outline-none placeholder:text-mute focus:border-ink"
+          className="mt-2 w-full max-w-xs border-0 border-b border-rule bg-transparent px-0 py-2 text-sm text-ink outline-none placeholder:text-mute focus:border-ink"
         />
       </label>
-      <button
-        type="submit"
-        className="bg-oxblood px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
-      >
-        Save
-      </button>
-      <button type="button" onClick={() => setNaming(false)} className="callout hover:text-ink">
-        Cancel
-      </button>
+
+      {/* A matched pair. Cancel was a bare text link beside a filled button,
+          which made the two look like different kinds of thing when they are
+          the two answers to the same question. Same height, same padding, and
+          only the weight says which one is the default. */}
+      <div className="flex flex-wrap gap-3">
+        <button
+          type="submit"
+          className="rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+        >
+          Save
+        </button>
+        <button
+          type="button"
+          onClick={() => setNaming(false)}
+          className="rounded-sm border border-rule px-6 py-3 text-sm text-slate transition-colors hover:border-ink hover:text-ink"
+        >
+          Cancel
+        </button>
+      </div>
 
       {!signedIn && (
-        <p className="w-full text-xs leading-relaxed text-mute">
+        <p className="text-xs leading-relaxed text-mute">
           Kept in this browser.{" "}
           <Link href="/sign-in?next=%2Fbuild" className="text-oxblood underline-offset-4 hover:underline">
             Sign in
