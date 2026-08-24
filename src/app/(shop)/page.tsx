@@ -98,14 +98,19 @@ export default function Home() {
               whole reason the hero is dark: the photograph has no edge against
               the stage, so the product appears to be lying on the page rather
               than inside a box cut into it.
+
+              It is capped narrower than the column below the two column
+              breakpoint. The shot is square, so at full phone width it stands
+              as tall as it is wide and pushes the trust row off the screen.
             */}
-            <figure className="relative hidden lg:block">
+            <figure className="relative mx-auto w-full max-w-xs lg:mx-0 lg:max-w-none">
               <Image
                 src="/products/rlmotor_004.webp"
                 alt="A motorised curtain track with its drive unit and runners"
                 width={1200}
                 height={1200}
                 priority
+                sizes="(max-width: 1024px) 20rem, 45vw"
                 className="w-full"
               />
               <figcaption className="callout absolute bottom-6 left-0 w-full text-center">
