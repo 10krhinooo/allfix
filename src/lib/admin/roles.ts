@@ -30,8 +30,16 @@ export function capabilities(role: Person["role"]): Capabilities {
   return CAPABILITIES[role] ?? CAPABILITIES.CUSTOMER
 }
 
-/** The gated subtrees. A destination outside this set is not worth returning to. */
-const GATED = ["/admin", "/trade/account", "/account"]
+/**
+ * Destinations worth being sent back to after signing in.
+ *
+ * The three desks, and checkout. Checkout is the odd one: it is not a desk and
+ * the proxy does not gate it, but it is the one place a signed out visitor is
+ * genuinely interrupted mid task. Leaving it out meant somebody with a full
+ * basket signed in and landed on their account with no way back to the order
+ * they were placing.
+ */
+const GATED = ["/admin", "/trade/account", "/account", "/checkout"]
 
 /**
  * Where a role belongs once it is through the door.
@@ -69,6 +77,9 @@ export function owns(role: Person["role"], path: string): boolean {
   if (path.startsWith("/admin")) return capabilities(role).console
   if (path.startsWith("/trade/account")) return role === "TRADE"
   if (path.startsWith("/account")) return role === "CUSTOMER"
+  // Anybody signed in can buy something, including staff. The counter ordering
+  // through the storefront is a real thing that happens.
+  if (path.startsWith("/checkout")) return true
   return false
 }
 

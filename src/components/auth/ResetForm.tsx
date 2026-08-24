@@ -64,30 +64,37 @@ export function ResetForm({ token }: { token: string }) {
 
   return (
     <form onSubmit={submit} className="mt-7 space-y-5">
-      <Field label="New password">
-        <span className="relative block">
-          <input
-            type={showing && !busy ? "text" : "password"}
-            required
-            autoFocus
-            autoComplete="new-password"
-            maxLength={200}
-            disabled={busy}
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            className={`${RULE} pr-14`}
-          />
+      <Field
+        label="New password"
+        trailing={
           <button
             type="button"
             onClick={() => setShowing((was) => !was)}
             disabled={busy}
-            className="absolute bottom-2 right-0 font-mono text-[11px] uppercase tracking-[0.14em] text-mute transition-colors hover:text-ink disabled:opacity-0"
+            className="absolute top-8 right-0 font-mono text-[11px] uppercase tracking-[0.14em] text-mute transition-colors hover:text-ink disabled:opacity-0"
           >
             {showing && !busy ? "Hide" : "Show"}
           </button>
-        </span>
-        <PasswordMeter password={password} />
+        }
+      >
+        <input
+          type={showing && !busy ? "text" : "password"}
+          required
+          autoFocus
+          autoComplete="new-password"
+          maxLength={200}
+          disabled={busy}
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          className={`${RULE} pr-14`}
+          aria-describedby="password-meter"
+        />
       </Field>
+
+      {/* Outside the field for the same reason the register sheet's is. */}
+      <div id="password-meter">
+        <PasswordMeter password={password} />
+      </div>
 
       {problem && <Problem>{problem}</Problem>}
 

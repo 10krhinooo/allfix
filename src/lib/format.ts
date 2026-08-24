@@ -32,8 +32,33 @@ export const SHOP = {
   name: "AllFix By Kipekee",
   street: "Njugu Lane",
   area: "Nairobi CBD",
+  city: "Nairobi",
+  country: "Kenya",
   phone: "0759 963 137",
   phoneIntl: "+254759963137",
+  email: "sales@allfix.co.ke",
+  site: "allfix.co.ke",
+}
+
+/**
+ * The trading details a document has to carry that a web page does not.
+ *
+ * A receipt or an invoice leaves the site: it is printed, filed, attached to an
+ * expense claim and sometimes handed to an accountant, and by then nobody can
+ * click a header to find out who issued it. So the sheet repeats what the page
+ * takes for granted, in full.
+ *
+ * The registration and tax numbers are the shop's to supply and are not in the
+ * repository. Until they are, the fields are absent rather than invented: a
+ * plausible looking PIN on a tax invoice is worse than no PIN, because somebody
+ * will file it and only find out at the wrong moment.
+ */
+export const COMPANY = {
+  legalName: "AllFix By Kipekee",
+  addressLines: [`${SHOP.street}, ${SHOP.area}`, `${SHOP.city}, ${SHOP.country}`],
+  phone: SHOP.phone,
+  email: SHOP.email,
+  site: SHOP.site,
 }
 
 /**

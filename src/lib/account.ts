@@ -62,6 +62,19 @@ export interface AccountDocument {
   orderReference: string
   hoursAgo: number
   totalKes: number
+  /**
+   * The lines the document itemises.
+   *
+   * A receipt that shows only a total is not a receipt anybody can do anything
+   * with: it cannot be checked against what arrived, and it is no use to a
+   * customer claiming the VAT back or to a landlord being billed for a fit out.
+   */
+  lines: OrderLine[]
+}
+
+/** Where a document is found, and by whom. */
+export function documentFor(email: string, reference: string): AccountDocument | undefined {
+  return documentsFor(email).find((one) => one.reference === reference)
 }
 
 /** Field for field `AccountBookDto.Address` on the backend. */
@@ -97,6 +110,22 @@ export interface SavedRail {
 
 const ORDERS: Record<string, CustomerOrder[]> = {
   "p.ochieng@gmail.com": [
+    {
+      // Placed and not yet paid, going to an address. The one order on the seed
+      // that carries a tax invoice rather than a receipt, so all four documents
+      // are reachable from the account without inventing a state to reach them.
+      reference: "AF-2262",
+      stage: "packing",
+      hoursAgo: 3,
+      settlement: "counter",
+      deliveredTo: "Home",
+      note: "Cut the track to 3.4 m. Ring before the rider sets off.",
+      lines: [
+        { ref: "RL#20_001", name: "#20 Track", quantity: 4, basis: "each", unitKes: 2000 },
+        { ref: "RL#20_006", name: "#20 Single Wall Bracket", quantity: 8, basis: "each", unitKes: 100 },
+        { ref: "RL#20_005", name: "#20 Stoppers", quantity: 8, basis: "each", unitKes: 20 },
+      ],
+    },
     {
       reference: "AF-2211",
       stage: "dispatched",
@@ -138,9 +167,40 @@ const ORDERS: Record<string, CustomerOrder[]> = {
 
 const DOCUMENTS: Record<string, AccountDocument[]> = {
   "p.ochieng@gmail.com": [
-    { reference: "RC-2211", kind: "receipt", orderReference: "AF-2211", hoursAgo: 19, totalKes: 680 },
-    { reference: "RC-2160", kind: "receipt", orderReference: "AF-2160", hoursAgo: 640, totalKes: 5240 },
-    { reference: "PF-2244", kind: "proforma", orderReference: "AF-2244", hoursAgo: 5, totalKes: 18400 },
+    {
+      reference: "RC-2211",
+      kind: "receipt",
+      orderReference: "AF-2211",
+      hoursAgo: 19,
+      totalKes: 680,
+      lines: [
+        { ref: "RL#20_004", name: "#20 Runners", quantity: 60, basis: "each", unitKes: 10 },
+        { ref: "RL#20_005", name: "#20 Stoppers", quantity: 4, basis: "each", unitKes: 20 },
+      ],
+    },
+    {
+      reference: "RC-2160",
+      kind: "receipt",
+      orderReference: "AF-2160",
+      hoursAgo: 640,
+      totalKes: 5240,
+      lines: [
+        { ref: "RL#20_001", name: "#20 Track", quantity: 2, basis: "each", unitKes: 2000 },
+        { ref: "RL#20_003", name: "#20 Single Ceiling Bracket", quantity: 12, basis: "each", unitKes: 20 },
+        { ref: "RL#ACC_001", name: "3 Pleat Hooks", quantity: 1, basis: "box", unitKes: 1000 },
+      ],
+    },
+    {
+      reference: "PF-2244",
+      kind: "proforma",
+      orderReference: "AF-2244",
+      hoursAgo: 5,
+      totalKes: 18400,
+      lines: [
+        { ref: "RL#MOTOR_004", name: "Motorized Track", quantity: 4.2, basis: "metre", unitKes: 3000 },
+        { ref: "RL#MOTOR_002", name: "Motor 45 watts", quantity: 1, basis: "each", unitKes: 5800 },
+      ],
+    },
   ],
 }
 

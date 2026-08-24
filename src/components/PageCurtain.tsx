@@ -21,11 +21,18 @@ import { SWEEP, heroReveals, reducedMotion } from "@/lib/motion"
  * `history.replaceState` rather than a navigation, which is the same reason
  * they do not re-run the server, so the wipe correctly ignores them.
  *
- * Two things it deliberately does not do. It never plays on a fresh document,
+ * Three things it deliberately does not do. It never plays on a fresh document,
  * because covering server rendered markup behind an overlay that only a script
  * can remove trades a working page for a flourish, and because a first load
- * already has an entrance of its own. And it does not draw a rail or a motor:
- * those belong to the hero, where the point is the hardware.
+ * already has an entrance of its own. It does not draw a rail or a motor: those
+ * belong to the hero, where the point is the hardware.
+ *
+ * And it only plays on the way to the front page. It used to wipe between every
+ * pair of shop routes, which put a curtain between a product and the part list
+ * it belongs to. A curtain is the shop's signature and the home page is where a
+ * signature belongs; a customer working through the catalogue wants the next
+ * page, not a performance on the way to it. So the two curtains still share the
+ * one arrival at `/`, and everywhere else navigates plainly.
  */
 
 const RUNNERS = 14
@@ -66,14 +73,15 @@ export function PageCurtain() {
   // browser here only because this never renders on the server, which is what
   // `loaded` guarantees.
   //
-  // Home is the hero's own arrival while the hero still has one to give. Once
-  // it has played, the wipe takes the arrival over, so coming back to the front
-  // page is never the one navigation on the site that happens with a jump cut.
+  // Home only, and on home the hero has first claim: while it still has a
+  // reveal to give, this stays out of the way, and once it has played the wipe
+  // takes the arrival over so returning to the front page is never a jump cut.
   const skip =
     !loaded ||
     typeof window === "undefined" ||
     reducedMotion() ||
-    (pathname === "/" && heroReveals())
+    pathname !== "/" ||
+    heroReveals()
 
   useEffect(() => {
     loaded = true

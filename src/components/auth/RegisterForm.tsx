@@ -108,32 +108,40 @@ export function RegisterForm() {
         />
       </Field>
 
-      <Field label="Password">
-        <span className="relative block">
-          <input
-            type={showing && !busy ? "text" : "password"}
-            required
-            autoComplete="new-password"
-            maxLength={200}
-            disabled={busy}
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            className={`${RULE} pr-14`}
-            aria-describedby="password-meter"
-          />
+      <Field
+        label="Password"
+        trailing={
           <button
             type="button"
             onClick={() => setShowing((was) => !was)}
             disabled={busy}
-            className="absolute bottom-2 right-0 font-mono text-[11px] uppercase tracking-[0.14em] text-mute transition-colors hover:text-ink disabled:opacity-0"
+            className="absolute top-8 right-0 font-mono text-[11px] uppercase tracking-[0.14em] text-mute transition-colors hover:text-ink disabled:opacity-0"
           >
             {showing && !busy ? "Hide" : "Show"}
           </button>
-        </span>
-        <span id="password-meter" className="block">
-          <PasswordMeter password={password} email={email} name={name} />
-        </span>
+        }
+      >
+        <input
+          type={showing && !busy ? "text" : "password"}
+          required
+          autoComplete="new-password"
+          maxLength={200}
+          disabled={busy}
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          className={`${RULE} pr-14`}
+          aria-describedby="password-meter"
+        />
       </Field>
+
+      {/* Outside the field, not inside it. A wrapping label takes its accessible
+          name from every piece of text within, so a meter in there renamed the
+          input on each keystroke. It is the field's description, which is what
+          `aria-describedby` above says, and a description is announced after the
+          name rather than becoming it. */}
+      <div id="password-meter">
+        <PasswordMeter password={password} email={email} name={name} />
+      </div>
 
       {problem && <Problem>{problem}</Problem>}
 

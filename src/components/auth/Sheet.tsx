@@ -79,26 +79,40 @@ export function Sheet({
 
 /** A ruled line to write on, which is what a field is on a drawing. */
 export const RULE =
-  "mt-1 w-full border-0 border-b border-rule bg-transparent px-0 py-2 text-sm text-ink " +
+  "mt-2 w-full border-0 border-b border-rule bg-transparent px-0 py-2 text-sm text-ink " +
   "outline-none transition-colors placeholder:text-mute focus:border-ink disabled:opacity-55"
 
 export function Field({
   label,
   note,
+  trailing,
   children,
 }: {
   label: string
   note?: React.ReactNode
+  /**
+   * A control that sits on the line but is not part of it, such as the show and
+   * hide toggle on a password.
+   *
+   * Rendered outside the `<label>` on purpose. A wrapping label takes its
+   * accessible name from all the text inside it, so a button in there made the
+   * field announce itself as "Password Show", and the name changed every time
+   * somebody pressed it.
+   */
+  trailing?: React.ReactNode
   children: React.ReactNode
 }) {
   return (
-    <label className="block">
-      <span className="flex items-baseline justify-between gap-3">
-        <span className="callout">{label}</span>
-        {note && <span className="font-mono text-[11px] text-mute">{note}</span>}
-      </span>
-      {children}
-    </label>
+    <div className="relative block">
+      <label className="block">
+        <span className="flex items-baseline justify-between gap-3">
+          <span className="callout">{label}</span>
+          {note && <span className="font-mono text-[11px] text-mute">{note}</span>}
+        </span>
+        {children}
+      </label>
+      {trailing}
+    </div>
   )
 }
 

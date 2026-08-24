@@ -25,9 +25,17 @@ export interface Seed {
   rails: SavedRail[]
 }
 
+/** The details a customer may change about themselves. */
+export interface Profile {
+  name: string
+  phone: string
+}
+
 export interface Book extends Seed {
   /** Set once the seeded records have been copied in, so a delete sticks. */
   seeded: boolean
+  /** Absent until the customer edits their details, so the account's own stand. */
+  profile?: Profile
 }
 
 const EMPTY: Book = { addresses: [], rails: [], seeded: false }
@@ -144,4 +152,21 @@ export function saveRail(seed: Seed, rail: Omit<SavedRail, "id">) {
 export function removeRail(seed: Seed, target: string) {
   const book = current(seed)
   write({ ...book, seeded: true, rails: book.rails.filter((one) => one.id !== target) })
+}
+
+/**
+ * The customer's own name and phone.
+ *
+ * Mirrors `PUT /api/me`, which takes these two and nothing else: an email is
+ * the account's identity and where a reset link goes, so changing one is a
+ * verification flow rather than an edit, and a role is granted at the counter
+ * and never claimed.
+ */
+export function saveProfile(seed: Seed, profile: Profile) {
+  const book = current(seed)
+  write({ ...book, seeded: true, profile })
+}
+
+export function useProfile(seed: Seed, fallback: Profile): Profile {
+  return useBook(seed).profile ?? fallback
 }

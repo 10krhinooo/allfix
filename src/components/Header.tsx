@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Logo } from "@/components/Logo"
 import { MobileNav } from "@/components/MobileNav"
+import { BasketLink } from "@/components/cart/BasketLink"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { SHOP } from "@/lib/format"
 
@@ -31,7 +32,7 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-3">
           <a
             href={`tel:${SHOP.phoneIntl}`}
             className="hidden font-mono text-sm text-ink sm:block"
@@ -66,6 +67,13 @@ export function Header() {
               Your account
             </Link>
           </span>
+
+          {/* Beside the account control and before the theme toggle: the two
+              things somebody reaches for mid task are the basket and the way
+              into their account, so they sit together and at the same size. It
+              is outside the `md:` wrapper above, because a basket matters most
+              on a phone. */}
+          <BasketLink className="text-ink" />
 
           <ThemeToggle />
           <MobileNav items={NAV} />
