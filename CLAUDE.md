@@ -106,19 +106,25 @@ that go with it on every response. `script-src` keeps `'unsafe-inline'` and that
 rather than an oversight: a nonce requires dynamic rendering on every page, and Next inlines
 its own flight payload into prerendered HTML, so hardening it would cost the prerendering the
 catalogue exists for. What remains still holds: no third party script, no framing, no form
-posting elsewhere. `ALLFIX_SESSION_SECRET` now **fails closed**: outside development a missing
-key means no session can be sealed or opened, because signing with the fallback that is
-committed here would let anybody forge the owner's cookie, and a documented "must be set" is
-not a control when the failure looks exactly like success. `src/lib/rate-limit.ts` guards the
-POST routes; it is in memory, so it is per instance and a courtesy at the edge rather than the
-control, which is the backend's. A limit can be raised per route with `ALLFIX_LIMIT_<ROUTE>`
-(`hits/seconds`), which is what the e2e config does for the routes the suite uses in bulk.
+posting elsewhere. `ALLFIX_SESSION_SECRET` **fails closed**: in production a missing key
+means no session can be sealed or opened, because signing with a fallback anybody can read
+would let them forge the owner's cookie, and a documented "must be set" is not a control when
+the failure looks exactly like success. The test is `NODE_ENV === "production"`, so only
+production is shut; anywhere else falls back to a stand-in generated per process, which is why
+restarting `next dev` signs you out. A key under 32 characters is refused exactly as an absent
+one is, and is trimmed first so a stray newline is not silently part of it.
+`src/lib/rate-limit.ts` guards the POST routes; it is in memory, so it is per instance and a
+courtesy at the edge rather than the control, which is the backend's. A limit can be raised
+per route with `ALLFIX_LIMIT_<ROUTE>` (`hits/seconds`), which is what the e2e config does for
+the routes the suite uses in bulk.
 
 **There is no password in the source.** `ALLFIX_SEED_PASSWORD` is honoured when set, and
 when it is not, any non-empty password opens a seeded account. Do not reintroduce a shared
 literal: a checked in credential fails the repository's secret scan, and the refusals worth
 demonstrating (suspended, unregistered address) are decided by role anyway.
-`ALLFIX_SESSION_SECRET` signs the cookie and must be set wherever the console is real.
+`ALLFIX_SESSION_SECRET` signs the cookie and must be set wherever the console is real:
+`openssl rand -base64 32`, a distinct value per deployment environment. `.env.example` is the
+one env file that is committed, because it names every variable and carries a value for none.
 
 Roles are `ADMIN | STAFF | TRADE | CUSTOMER`, and `src/lib/admin/roles.ts` is the single
 answer to what each may do. The split follows `ROLE_NOTE` in `desk.ts` rather than one

@@ -33,6 +33,11 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# The exception, and the point of it: `.env.example` names the variables without
+# carrying a value for any of them, so it is the one env file that has to survive
+# a clone. Ignored, it could only ever document this checkout to itself.
+!.env.example
+
 # vercel
 .vercel
 

@@ -187,8 +187,8 @@ used to enumerate the shop's customers.
 ### Configuration
 
 Both variables are server side and neither is `NEXT_PUBLIC_`, so neither reaches the
-browser. `.env.example` carries them, but it is gitignored, so it will not be in a fresh
-clone.
+browser. `.env.example` names them and carries a value for neither, which is why it is the
+one env file that is committed: copy it to `.env.local` and fill it in.
 
 | Variable | Effect if unset |
 | --- | --- |
@@ -196,7 +196,9 @@ clone.
 | `ALLFIX_SESSION_SECRET` | In production, sign in is refused outright: there is no key, so no session can be signed and the door answers 503. Outside production the key is a stand-in generated per process, so restarting the server signs you out |
 
 `ALLFIX_SESSION_SECRET` fails closed rather than falling back, because a key committed here
-would be a key anybody could read, and signing with it is not signing. Generate one with
+would be a key anybody could read, and signing with it is not signing. It must be at least
+32 characters, and a shorter one is refused exactly as an absent one is, because a key with
+less in it than the signature it produces is not a key. Generate one with
 `openssl rand -base64 32`. It is a Vercel project environment variable, set per environment
 (see Deployment below), and each environment should have its own value so a leaked preview
 key cannot forge a production session. Adding it does not reach the deployments already
