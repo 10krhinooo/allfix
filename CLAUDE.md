@@ -35,7 +35,18 @@ npm run start    # next start (production)
 npm run lint     # eslint
 ```
 
-No JS/TS test suite exists yet. The Python catalogue migration has its own tests:
+```bash
+npm test         # node --test over src/lib, no bundler and no dependency
+npm run test:e2e # playwright, against a production build
+```
+
+`test/` is a unit layer for the pure logic in `src/lib`, which is where a wrong answer is one
+character and an end to end test is an expensive way to find it: the bill of materials, the
+price rules, the tier rules that mirror the backend's `unitPriceFor`, the password meter, the
+rate limiter's arithmetic and the shop's own filtering. It runs on Node's own test
+runner with type stripping, so there is no transform step and nothing to keep current;
+`test/alias.mts` is the twenty lines that teach Node the `@/` path mapping and the JSON import
+attribute Next adds for itself. The Python catalogue migration has its own tests:
 
 ```bash
 python3 -m unittest discover -s tools/migrate -t tools/migrate
