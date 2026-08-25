@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { check, tooMany } from "@/lib/rate-limit"
 import { signInWith } from "@/lib/admin/accounts"
-import { COOKIE, HINT, cookieOptions, hintOptions, seal } from "@/lib/admin/session"
+import { COOKIE, HINT, NoSessionSecret, cookieOptions, hintOptions, seal } from "@/lib/admin/session"
 import { landing } from "@/lib/admin/roles"
 
 /**
@@ -48,15 +48,22 @@ export async function POST(request: Request) {
   let sealed: string
   try {
     sealed = await seal(result.person)
-  } catch {
-    // A deployment with no signing secret. The door stays shut rather than
-    // handing out a cookie anybody could have written themselves, and the
-    // message is for whoever deployed it rather than for the person signing in.
+  } catch (error) {
+    // Only the missing key is answered here. Anything else out of `seal()` is a
+    // WebCrypto failure with nothing to do with configuration, and reporting it
+    // as an unset key would send whoever is debugging it to the wrong place.
+    if (!(error instanceof NoSessionSecret)) throw error
+
+    // A deployment with no usable signing key, whether it is absent or too short
+    // to be one. The door stays shut rather than handing out a cookie anybody
+    // could have written themselves, and the message is for whoever deployed it
+    // rather than for the person signing in. Which of the two it is stays in the
+    // error, and out of a reply anybody can ask for.
     return NextResponse.json(
       {
         message:
-          "Sign in is not available on this deployment. The session signing key is not set, " +
-          "and we will not issue a session we cannot trust.",
+          "Sign in is not available on this deployment. The session signing key is not " +
+          "configured, and we will not issue a session we cannot trust.",
       },
       { status: 503 },
     )

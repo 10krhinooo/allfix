@@ -65,9 +65,25 @@ interface Payload {
  */
 const DEVELOPMENT_SECRET = crypto.randomUUID()
 
+/**
+ * Thirty two characters, because the key is imported as raw HMAC-SHA256 material
+ * and a key shorter than the digest it feeds has less in it than the signature it
+ * produces. A floor, not a measure of quality: it catches `secret`, `changeme`
+ * and a paste that lost its tail, and it cannot tell a long guessable phrase from
+ * a random one. `openssl rand -base64 32` clears it and the question stops being
+ * interesting.
+ *
+ * A key that does not clear it is treated as no key at all, so it gets the same
+ * refusal an absent one gets rather than a second failure mode to reason about:
+ * shut in production, per process stand-in outside it. Trimmed first, because a
+ * key that arrived with the newline `echo` adds is the key nobody meant to set,
+ * and it would sign perfectly well while quietly being a different key.
+ */
+const MINIMUM_KEY = 32
+
 function secret(): string | null {
-  const set = process.env.ALLFIX_SESSION_SECRET
-  if (set && set.trim()) return set
+  const set = process.env.ALLFIX_SESSION_SECRET?.trim()
+  if (set && set.length >= MINIMUM_KEY) return set
   return process.env.NODE_ENV === "production" ? null : DEVELOPMENT_SECRET
 }
 
@@ -105,9 +121,18 @@ async function key(): Promise<CryptoKey | null> {
 /** Thrown rather than returned: there is no half-signed cookie to fall back to. */
 export class NoSessionSecret extends Error {
   constructor() {
+    // Which of the two it is never reaches the person signing in, who cannot act
+    // on it either way. It belongs in the log the operator reads, and telling
+    // them "not set" when the key is set but short would cost them the afternoon.
+    const set = process.env.ALLFIX_SESSION_SECRET?.trim()
     super(
-      "ALLFIX_SESSION_SECRET is not set, so no session can be signed. Set it wherever this " +
-        "is deployed. Signing with the development key would let anybody forge a console session.",
+      set
+        ? `ALLFIX_SESSION_SECRET is ${set.length} characters and ${MINIMUM_KEY} is the ` +
+          "minimum, so no session can be signed. A key with less in it than the signature " +
+          "it produces is not a key. Generate one with `openssl rand -base64 32`."
+        : "ALLFIX_SESSION_SECRET is not set, so no session can be signed. Set it wherever " +
+          "this is deployed. Signing with the development key would let anybody forge a " +
+          "console session.",
     )
   }
 }
