@@ -162,6 +162,27 @@ there is no "in stock" badge because stock is not tracked yet.
   says what the figure buys. A track at 400 is 400 per metre, so anything rendering money
   must pass the basis through `price()`/`priceOrAsk()`, and the eventual configurator's bill
   of materials depends on it.
+- **`src/lib/tiers.ts`**: what an account pays, and the one place the trade rate (20% off
+  list) is stated. A tier is a property of an account and never of a request: there is no
+  tier field on an order body for the same reason there is no price field. `unitFor()`
+  mirrors `OrderService.unitPriceFor` on the backend the way `password.ts` mirrors
+  `PasswordPolicy`, so a part the counter has priced for trade (`tradeKes`) is sold at that
+  figure and everything else comes off the rate. The backend's copy still falls back to list
+  rather than to the rate and has to be brought in step, or a trade account is shown 320 and
+  charged 400. Product pages are prerendered, so the storefront reads the visitor's tier
+  through `/api/session` and `useTier()` (`src/lib/tier-client.ts`), one fetch per page load
+  however many components ask; it starts at retail and never the other way round, so nobody
+  is shown a discount for a frame and has it taken away. `TradeRate` draws nothing at all for
+  a retail visitor. The figure shown is always display only: the order route re-prices from
+  the cookie.
+- **Bulk entry** is `BulkAdd` on `/systems/[slug]`: the same part list the page already
+  shows, taking quantities, adding the lot in one action. A part priced on request gets no
+  quantity field, because the order endpoint refuses to check one out.
+- **A proforma can be issued against a quote, not only an order.** `sheetFor()` in
+  `documents.ts` builds a sheet from any record with lines and a reference, and
+  `/trade/account/quotes/[reference]/proforma` is what a trade account hands to an accounts
+  department for a bank transfer. A quote the counter has not priced yet has no figures to
+  hold, so it is not found rather than printed blank.
 - **Not everything is photographed.** Only the parts that came off the old site have images.
   `imageFor()` returns `null` for the rest, which carry `imageName` (the shot they are
   waiting for); callers must render a placeholder rather than a broken image.

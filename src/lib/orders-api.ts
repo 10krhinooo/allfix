@@ -1,5 +1,6 @@
 import { products } from "@/lib/catalogue"
 import { sellable } from "@/lib/commerce"
+import { unitFor, type Tier } from "@/lib/tiers"
 
 /**
  * Placing an order, as the storefront sees it.
@@ -83,7 +84,7 @@ function reference(): string {
  * whole list of problems in one answer, and it is the only check there is on a
  * deployment the service has not been pointed at yet.
  */
-function priceLocally(request: PlaceRequest): PlaceResult {
+function priceLocally(request: PlaceRequest, tier: Tier): PlaceResult {
   const problems: string[] = []
   const lines: PlacedLine[] = []
 
@@ -112,12 +113,16 @@ function priceLocally(request: PlaceRequest): PlaceResult {
       )
       continue
     }
+    // At the tier the session says, never the one the request asked for. There
+    // is no tier on the request and there is no field for one, for the same
+    // reason there is no field for a price.
+    const unit = unitFor(product, tier)!
     lines.push({
       sku: product.sku!,
       name: product.name,
       quantity: line.quantity,
-      unitKes: product.priceKes,
-      lineKes: product.priceKes * line.quantity,
+      unitKes: unit,
+      lineKes: unit * line.quantity,
     })
   }
 
@@ -142,8 +147,14 @@ function priceLocally(request: PlaceRequest): PlaceResult {
   }
 }
 
-export async function placeOrder(request: PlaceRequest): Promise<PlaceResult> {
-  const checked = priceLocally(request)
+/**
+ * `tier` comes from the session the route handler read, and is deliberately not
+ * part of the request body: it is not sent on to the service either, because the
+ * service resolves it from the account for itself. A tier travelling in a
+ * request is a request setting its own price by another name.
+ */
+export async function placeOrder(request: PlaceRequest, tier: Tier = "retail"): Promise<PlaceResult> {
+  const checked = priceLocally(request, tier)
   if (!checked.ok) return checked
   if (!API) return checked
 

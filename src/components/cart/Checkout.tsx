@@ -7,6 +7,7 @@ import { useCart, clearCart } from "@/lib/cart"
 import { buyable, type BasketPart } from "@/lib/basket"
 import type { Address } from "@/lib/account"
 import { price, SHOP } from "@/lib/format"
+import { ratePhrase, unitFor, type Tier } from "@/lib/tiers"
 import { Empty } from "@/components/ui"
 
 /**
@@ -68,11 +69,14 @@ export function Checkout({
   const [busy, setBusy] = useState(false)
   const [placed, setPlaced] = useState<Placed | null>(null)
 
+  // Read from the session on the server rather than fetched, because this page
+  // is already dynamic: it had to read the cookie to know whether to offer a
+  // proforma at all.
+  const tier: Tier = trade ? "trade" : "retail"
+  const unit = (sku: string) => unitFor({ priceKes: catalogue[sku]?.priceKes ?? null }, tier) ?? 0
+
   const sellableLines = cart.lines.filter((line) => buyable(catalogue[line.sku]))
-  const subtotal = sellableLines.reduce(
-    (sum, line) => sum + (catalogue[line.sku]?.priceKes ?? 0) * line.quantity,
-    0,
-  )
+  const subtotal = sellableLines.reduce((sum, line) => sum + unit(line.sku) * line.quantity, 0)
 
   async function submit(event: React.FormEvent) {
     event.preventDefault()
@@ -377,7 +381,7 @@ export function Checkout({
                   <span className="ml-2 font-mono text-xs text-mute">x{line.quantity}</span>
                 </span>
                 <span className="shrink-0 font-mono text-xs text-slate">
-                  {price((part?.priceKes ?? 0) * line.quantity)}
+                  {price(unit(line.sku) * line.quantity)}
                 </span>
               </li>
             )
@@ -388,6 +392,9 @@ export function Checkout({
           <span className="callout">Subtotal</span>
           <span className="font-mono text-lg text-ink">{price(subtotal)}</span>
         </div>
+        {trade && (
+          <p className="mt-1 text-xs text-slate">Priced at {ratePhrase(tier)}, on your account.</p>
+        )}
         <p className="mt-2 text-xs leading-relaxed text-slate">
           Delivery is quoted by county and confirmed with your order. We confirm the final
           figure before anything is charged.
