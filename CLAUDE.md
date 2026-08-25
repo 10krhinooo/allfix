@@ -230,7 +230,11 @@ there is no "in stock" badge because stock is not tracked yet.
   from `src/app/(shop)/template.tsx`: a template remounts on every navigation while a layout
   does not, so mounting *is* the navigation and nothing watches the router. The template
   still spans the shop group, because the component has to be alive on the page being left,
-  but the wipe now only plays on the way to `/`. It used to run between every pair of shop
+  but the wipe now only plays on the way to `/`, and on the way out of a desk, which is the
+  same arrival: `painted()` in `motion.ts` is set by `Painted` in the **root** layout rather
+  than by the curtain itself, so "this document has drawn a page" stays true across the
+  crossing from `/admin` into the shop. Asked from inside the shop group it answered "this is
+  a page load" on exactly that navigation and suppressed the wipe where it was most wanted. It used to run between every pair of shop
   routes, which put a curtain between a product and the part list it belongs to; a customer
   working through the catalogue wants the next page, not a performance on the way to it.
   Neither ever renders on a fresh document, so no server-rendered page is hidden behind a

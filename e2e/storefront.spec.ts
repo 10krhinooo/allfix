@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test"
+import { signIn, WHO } from "./helpers"
 
 /**
  * Every public page, and the things that make them worth having.
@@ -116,6 +117,34 @@ test.describe("the curtain", () => {
   test("is still the front page's own arrival", async ({ page }) => {
     const response = await page.goto("/")
     expect(response?.status()).toBe(200)
+    await expect(page.locator("h1")).toBeVisible()
+  })
+
+  test("draws the crossing from the console out to the shop", async ({ page }) => {
+    // The one navigation that is a genuine change of place: the back of the
+    // shop to the front of it. It used to arrive on a jump cut, because the
+    // wipe decided whether a document was fresh by asking whether its own
+    // template had mounted, and coming out of a desk it never had.
+    //
+    // The hero is marked as already seen, so the wipe owns this arrival rather
+    // than the reveal. The two can never both play, which is the other half of
+    // the rule and is why the hero hides itself when it is not its turn.
+    await page.addInitScript(() => sessionStorage.setItem("allfix-curtain-seen", "1"))
+    await signIn(page, WHO.staff)
+    await expect(page).toHaveURL(/\/admin$/)
+
+    // On a phone the rail is a drawer, and the way out is inside it.
+    const menu = page.getByRole("button", { name: "Open the console menu" })
+    if (await menu.isVisible()) await menu.click()
+    await page.getByRole("link", { name: "The shop", exact: true }).click()
+    await page.waitForURL("**/")
+
+    // The runners are the wipe's own: the hero draws a rail and a motor, and
+    // this draws neither.
+    await expect(page.locator(".page-curtain-runners").first()).toBeVisible()
+
+    // And it takes itself off the page rather than parking there.
+    await expect(page.locator(".page-curtain-runners")).toHaveCount(0, { timeout: 4000 })
     await expect(page.locator("h1")).toBeVisible()
   })
 })

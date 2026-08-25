@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
 import { animate } from "animejs"
-import { SWEEP, heroReveals, reducedMotion } from "@/lib/motion"
+import { SWEEP, heroReveals, painted, reducedMotion } from "@/lib/motion"
 
 /**
  * The curtain between pages.
@@ -21,6 +21,13 @@ import { SWEEP, heroReveals, reducedMotion } from "@/lib/motion"
  * `history.replaceState` rather than a navigation, which is the same reason
  * they do not re-run the server, so the wipe correctly ignores them.
  *
+ * The crossing from a desk is the one arrival it does have to draw. `painted()`
+ * is set from the root layout rather than from this component, because the shop
+ * template mounts for the first time on the way out of the console: asking "has
+ * my own template mounted before" answered "this is a page load" and suppressed
+ * the wipe on the one navigation that is a genuine change of place, the back of
+ * the shop to the front of it.
+ *
  * Three things it deliberately does not do. It never plays on a fresh document,
  * because covering server rendered markup behind an overlay that only a script
  * can remove trades a working page for a flourish, and because a first load
@@ -37,17 +44,6 @@ import { SWEEP, heroReveals, reducedMotion } from "@/lib/motion"
 
 const RUNNERS = 14
 const SWEEP_MS = 620
-
-/**
- * False until this component has mounted once in this document, which is to say
- * until the page has loaded. Module scope rather than a ref because every
- * navigation mounts a new instance and the fact has to outlive them.
- *
- * Read during render, never written there, and never read on the server: the
- * leaves have to be in the first commit of the navigation or the new page
- * paints before the cloth covers it.
- */
-let loaded = false
 
 function Runners({ side }: { side: "left" | "right" }) {
   return (
@@ -71,21 +67,17 @@ export function PageCurtain() {
   // the very first commit of the navigation: a leaf that appears one render
   // later appears over a page the visitor has already seen. Safe to read the
   // browser here only because this never renders on the server, which is what
-  // `loaded` guarantees.
+  // `painted()` guarantees.
   //
   // Home only, and on home the hero has first claim: while it still has a
   // reveal to give, this stays out of the way, and once it has played the wipe
   // takes the arrival over so returning to the front page is never a jump cut.
   const skip =
-    !loaded ||
+    !painted() ||
     typeof window === "undefined" ||
     reducedMotion() ||
     pathname !== "/" ||
     heroReveals()
-
-  useEffect(() => {
-    loaded = true
-  }, [])
 
   useEffect(() => {
     const node = wrap.current

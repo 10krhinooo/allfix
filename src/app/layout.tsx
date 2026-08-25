@@ -3,6 +3,7 @@ import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google"
 import { SHOP, SITE } from "@/lib/format"
 import { HINT } from "@/lib/admin/hint"
 import { heroGateScript } from "@/lib/motion"
+import { Painted } from "@/components/Painted"
 import "./globals.css"
 
 /**
@@ -104,7 +105,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         console has none of them. Everything common to both, the fonts, the
         theme and the stylesheet, is what is left here.
       */}
-      <body className="flex min-h-screen flex-col">{children}</body>
+      <body className="flex min-h-screen flex-col">
+        {/* Renders nothing. It marks the document as having painted, which is
+            what tells the page curtain that an arrival is a navigation and not a
+            page load, including an arrival out of the console. */}
+        <Painted />
+        {children}
+      </body>
     </html>
   )
 }
