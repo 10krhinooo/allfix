@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { price, whatsapp, hours } from "@/lib/format"
 import { QUOTE_STAGE, type TradeQuote } from "@/lib/trade"
 import { Card, CardHeader, Pill } from "@/components/admin/parts"
@@ -43,15 +44,30 @@ export function QuoteCard({ quote }: { quote: TradeQuote }) {
         </span>
       </div>
 
-      {yours && (
-        <a
-          href={whatsapp(`Accepting quote ${quote.reference}.`)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-5 inline-flex items-center gap-2 rounded-sm bg-[#1f8f4e] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#187a41]"
-        >
-          Accept {quote.reference}
-        </a>
+      {/* A priced quote is worth a sheet whether or not it has been accepted
+          yet: the proforma is what an accounts department pays against, and
+          asking for it is often what happens before the yes rather than after
+          it. A quote still being priced has no figures to hold, so it gets no
+          link. */}
+      {quote.totalKes !== null && (
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          {yours && (
+            <a
+              href={whatsapp(`Accepting quote ${quote.reference}.`)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-sm bg-[#1f8f4e] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#187a41]"
+            >
+              Accept {quote.reference}
+            </a>
+          )}
+          <Link
+            href={`/trade/account/quotes/${quote.reference}/proforma`}
+            className="inline-flex items-center gap-2 rounded-sm border border-ink px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-paper"
+          >
+            Proforma for transfer
+          </Link>
+        </div>
       )}
     </Card>
   )

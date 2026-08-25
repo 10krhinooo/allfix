@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { readDesk } from "@/lib/admin/guard"
 import { placeOrder, type PlaceLine, type Settlement } from "@/lib/orders-api"
+import { tierFor } from "@/lib/tiers"
 
 const SETTLEMENTS: Settlement[] = ["MPESA", "PROFORMA", "COUNTER"]
 
@@ -75,14 +76,20 @@ export async function POST(request: Request) {
     )
   }
 
-  const result = await placeOrder({
-    lines,
-    settlement,
-    deliverTo: text(body.deliverTo),
-    deliverPhone: text(body.deliverPhone) ?? guest?.phone ?? null,
-    note: text(body.note),
-    guest,
-  })
+  const result = await placeOrder(
+    {
+      lines,
+      settlement,
+      deliverTo: text(body.deliverTo),
+      deliverPhone: text(body.deliverPhone) ?? guest?.phone ?? null,
+      note: text(body.note),
+      guest,
+    },
+    // From the cookie, not from the body. A guest is priced at list because
+    // there is no account to look a tier up on, which is the same answer the
+    // service gives itself.
+    tierFor(desk?.role),
+  )
 
   if (!result.ok) {
     return NextResponse.json(

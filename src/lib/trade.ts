@@ -1,4 +1,5 @@
 import type { OrderLine, OrderStage } from "@/lib/orders"
+import { TRADE_RATE, unitFor } from "@/lib/tiers"
 
 /**
  * The order vocabulary is shared with the customer account, so it lives in
@@ -55,11 +56,18 @@ export interface TradeQuote {
   note: string | null
 }
 
-/** The trade tier, and the one place the discount is stated. */
-export const TRADE_DISCOUNT = 0.2
+/**
+ * The tier this desk buys at.
+ *
+ * The rate itself moved to `tiers.ts` when the storefront started showing it
+ * too: the desk quoting 20% off while a product page quoted list was two
+ * answers to one question. These stay so the screens here keep reading in the
+ * vocabulary they think in.
+ */
+export const TRADE_DISCOUNT = TRADE_RATE
 
 export function tradePrice(listKes: number | null): number | null {
-  return listKes === null ? null : Math.round(listKes * (1 - TRADE_DISCOUNT))
+  return unitFor({ priceKes: listKes }, "trade")
 }
 
 

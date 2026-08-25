@@ -78,6 +78,12 @@ export interface Sheet {
   lines: OrderLine[]
   totalKes: number | null
   deliverTo: string | null
+  /**
+   * What the record this sheet is issued against is called. Almost always an
+   * order, and a proforma for a trade quote is the exception: it is issued
+   * before there is an order, which is the whole point of one.
+   */
+  againstLabel?: string
 }
 
 export function sheetFromDocument(document: AccountDocument): Sheet {
@@ -92,29 +98,55 @@ export function sheetFromDocument(document: AccountDocument): Sheet {
   }
 }
 
+const PREFIX: Record<SheetKind, string> = {
+  receipt: "RC",
+  invoice: "IN",
+  proforma: "PF",
+  "delivery-note": "DN",
+}
+
+/** Anything a sheet can be issued against: an order today, a trade quote too. */
+export interface Issuable {
+  reference: string
+  hoursAgo: number
+  lines: OrderLine[]
+  /** The figure the counter set, where it set one. Otherwise the lines are added up. */
+  totalKes?: number | null
+  deliverTo?: string | null
+}
+
 /**
- * A sheet built from an order.
+ * A sheet built from the record it is issued against.
  *
  * The reference is derived rather than stored, because these are issued against
- * an order rather than filed in their own right: DN-2211 is the delivery note
- * for AF-2211 and there is never a second one.
+ * a record rather than filed in their own right: DN-2211 is the delivery note
+ * for AF-2211 and there is never a second one. The same holds for a proforma
+ * against a quote, which is why both go through here: PF-Q-1180 is the proforma
+ * for AF-Q-1180, and printing it twice prints the same sheet.
  */
-export function sheetFromOrder(order: CustomerOrder, kind: SheetKind): Sheet {
-  const prefix: Record<SheetKind, string> = {
-    receipt: "RC",
-    invoice: "IN",
-    proforma: "PF",
-    "delivery-note": "DN",
-  }
+export function sheetFor(record: Issuable, kind: SheetKind, againstLabel?: string): Sheet {
   return {
     kind,
-    reference: `${prefix[kind]}-${order.reference.replace(/^AF-/, "")}`,
-    orderReference: order.reference,
-    hoursAgo: order.hoursAgo,
-    lines: order.lines,
-    totalKes: ordered(order.lines),
-    deliverTo: order.deliveredTo,
+    reference: `${PREFIX[kind]}-${record.reference.replace(/^AF-/, "")}`,
+    orderReference: record.reference,
+    hoursAgo: record.hoursAgo,
+    lines: record.lines,
+    totalKes: record.totalKes ?? ordered(record.lines),
+    deliverTo: record.deliverTo ?? null,
+    againstLabel,
   }
+}
+
+export function sheetFromOrder(order: CustomerOrder, kind: SheetKind): Sheet {
+  return sheetFor(
+    {
+      reference: order.reference,
+      hoursAgo: order.hoursAgo,
+      lines: order.lines,
+      deliverTo: order.deliveredTo,
+    },
+    kind,
+  )
 }
 
 /**

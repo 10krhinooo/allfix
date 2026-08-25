@@ -89,7 +89,7 @@ export function DocumentSheet({
           </div>
           <div className="text-right">
             <p className="font-mono text-xs uppercase tracking-[0.18em] text-neutral-500">
-              Against order
+              {sheet.againstLabel ?? "Against order"}
             </p>
             <p className="mt-2 font-mono text-sm">{sheet.orderReference}</p>
           </div>

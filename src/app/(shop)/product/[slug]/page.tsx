@@ -3,6 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { AddToCart } from "@/components/cart/AddToCart"
+import { TradeRate } from "@/components/TradeRate"
 import { Breadcrumbs, Button, JsonLd, WhatsAppIcon } from "@/components/ui"
 import { ProductCard } from "@/components/ProductCard"
 import {
@@ -154,6 +155,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             {line.text}
           </p>
           {line.note && <p className="mt-1.5 text-sm text-slate">{line.note}</p>}
+
+          {/* Nothing for a retail visitor, and nothing for a part priced on
+              request. The page is prerendered, so the account behind it is read
+              in the browser rather than here. */}
+          <TradeRate listKes={product.priceKes} basis={product.priceBasis} />
 
           {product.summary && (
             <p className="mt-5 leading-relaxed text-slate">{product.summary}</p>

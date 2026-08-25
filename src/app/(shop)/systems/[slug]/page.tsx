@@ -3,6 +3,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { Profile } from "@/components/Profile"
 import { ProductCard } from "@/components/ProductCard"
+import { BulkAdd, type BulkPart } from "@/components/systems/BulkAdd"
 import { TraceOnView } from "@/components/TraceOnView"
 import { Breadcrumbs, Button, Empty, WhatsAppIcon } from "@/components/ui"
 import {
@@ -49,6 +50,23 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
 
   const groups = partsForSystemByComponent(system.slug)
   const skus = skuCountForSystem(system.slug)
+
+  /*
+   * A compact projection for the bulk list, the same arrangement `/shop` and the
+   * trade desk's quote builder use: five fields a row, so none of the specs or
+   * copy behind each part reaches a bundle whose whole job is to count things.
+   */
+  const bulk: BulkPart[] = groups.flatMap(({ component, parts }) =>
+    parts
+      .filter((part) => part.sku)
+      .map((part) => ({
+        sku: part.sku as string,
+        name: part.name,
+        component: component.name,
+        priceKes: part.priceKes,
+        priceBasis: part.priceBasis,
+      })),
+  )
   const ask = whatsapp(
     `Hello AllFix, I have a ${system.name} curtain rail and I need parts for it.`,
   )
@@ -183,6 +201,13 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
           ))
         )}
       </div>
+
+      {/* --------------------------------------------------- bulk entry */}
+      {groups.length > 0 && (
+        <div className="shell pb-14">
+          <BulkAdd parts={bulk} system={system.shortName} />
+        </div>
+      )}
 
       {/* ------------------------------------------------- wrong system? */}
       <section className="border-t border-rule bg-panel">

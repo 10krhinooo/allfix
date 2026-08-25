@@ -6,6 +6,8 @@ import { useState } from "react"
 import { useCart, setQuantity, removeFromCart, clearCart, MAX_QUANTITY } from "@/lib/cart"
 import { buyable, type BasketPart } from "@/lib/basket"
 import { price } from "@/lib/format"
+import { useTier } from "@/lib/tier-client"
+import { ratePhrase, unitFor } from "@/lib/tiers"
 import { Empty } from "@/components/ui"
 
 /**
@@ -29,6 +31,10 @@ export function CartLines({
   children?: React.ReactNode
 }) {
   const cart = useCart()
+  // The basket is the same basket whoever is holding it. What changes for a
+  // trade account is what each line costs, and the figure is worked out here
+  // the same way the order endpoint works it out from the cookie.
+  const { tier } = useTier()
   // Confirmed rather than immediate. Emptying a basket somebody spent ten
   // minutes filling is not something to do on a mis-tap, and there is no undo.
   const [confirming, setConfirming] = useState(false)
@@ -52,7 +58,9 @@ export function CartLines({
   const onRequest = known.filter(({ part }) => part && !buyable(part))
   const missing = known.filter(({ part }) => !part)
 
-  const subtotal = priced.reduce(
+  const unit = (part: BasketPart) => unitFor({ priceKes: part.priceKes }, tier) ?? 0
+  const subtotal = priced.reduce((sum, { line, part }) => sum + unit(part!) * line.quantity, 0)
+  const list = priced.reduce(
     (sum, { line, part }) => sum + (part!.priceKes ?? 0) * line.quantity,
     0,
   )
@@ -102,7 +110,10 @@ export function CartLines({
                 </p>
               ) : (
                 <p className="mt-1 font-mono text-sm text-slate">
-                  {price(part.priceKes, part.priceBasis)}
+                  {price(unit(part), part.priceBasis)}
+                  {tier === "trade" && (
+                    <span className="ml-2 text-mute line-through">{price(part.priceKes)}</span>
+                  )}
                 </p>
               )}
 
@@ -130,7 +141,7 @@ export function CartLines({
 
             {part && buyable(part) && (
               <p className="shrink-0 font-mono text-sm text-ink">
-                {price(part.priceKes! * line.quantity)}
+                {price(unit(part) * line.quantity)}
               </p>
             )}
           </li>
@@ -143,6 +154,11 @@ export function CartLines({
           <span className="ml-3 font-mono text-2xl text-ink">{price(subtotal)}</span>
         </div>
         <p className="max-w-sm text-sm leading-relaxed text-slate">
+          {tier === "trade" && (
+            <span className="mb-1 block text-ink">
+              At {ratePhrase(tier)}, against {price(list)} list.
+            </span>
+          )}
           Delivery is quoted by county and confirmed with your order. We confirm the final
           figure before anything is charged.
         </p>
