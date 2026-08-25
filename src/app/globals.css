@@ -22,8 +22,21 @@
   --rule: #dcdee0;
   --ink: #16151a;
   --slate: #5c5f66;
-  --mute: #8a8e96;
-  --brass: #9d840f;
+  /*
+   * Darkened from #8a8e96, which read 3.07:1 against `--panel` and failed WCAG
+   * AA for the small text it is used on. It carries the `callout` class, which
+   * is 11px, so it is the smallest type on the site and the least forgiving.
+   * This is 4.9:1 on the panel and 5.3:1 on paper, with enough headroom that a
+   * later nudge to either ground does not quietly drop it back under.
+   */
+  --mute: #686c73;
+  /*
+   * Darkened from #9d840f, which was 3.65:1 on paper. Brass is the accent and
+   * it is used as text: a part number on the worksheet, the step numbers on the
+   * trade page, the "flagship" line on a system. One legible brass is better
+   * than a decorative one and a second token for when it has to be read.
+   */
+  --brass: #826e0c;
   --brass-soft: #f6f1d8;
   --oxblood: #7c1518;
   --oxblood-deep: #5d0f12;
@@ -90,7 +103,9 @@
   --rule: #2e2d36;
   --ink: #f2f1ee;
   --slate: #a8abb3;
-  --mute: #7b7f88;
+  /* Lifted for the same reason its light twin was darkened: 4.26:1 on the dark
+     panel was under AA, and this is 5.0:1. */
+  --mute: #878b94;
   --brass: #d4b73a;
   --brass-soft: #2a2618;
   /* Lifted for contrast on a dark ground, but held warm so it does not read pink. */
@@ -160,13 +175,24 @@ body {
 .no-bar { scrollbar-width: none; }
 .no-bar::-webkit-scrollbar { display: none; }
 
-/* An eyebrow label, in the voice of a drawing callout. */
-.callout {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--mute);
+/*
+ * An eyebrow label, in the voice of a drawing callout.
+ *
+ * In `@layer components`, and that is the whole point of it. A rule written
+ * outside a layer beats every layered one whatever its specificity, so while
+ * this was a plain rule its colour beat `text-white` on the element itself: the
+ * breadcrumbs on the oxblood band were drawn grey on oxblood at 2.27:1 and no
+ * amount of utility class would move them. Inside `components` the utilities
+ * layer wins, which is what a page saying "this label is white here" should get.
+ */
+@layer components {
+  .callout {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mute);
+  }
 }
 
 :where(a, button, input, select, summary):focus-visible {

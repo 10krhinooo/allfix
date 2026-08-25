@@ -60,9 +60,7 @@ export default function Trade() {
       {/* ------------------------------------------------------------ hero */}
       <section className="bg-band text-white">
         <div className="shell py-14 sm:py-20">
-          <div className="[&_*]:text-white/80">
-            <Breadcrumbs trail={[{ href: "/", label: "Home" }, { label: "Trade" }]} />
-          </div>
+          <Breadcrumbs trail={[{ href: "/", label: "Home" }, { label: "Trade" }]} tone="band" />
 
           <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.14em] text-white/60">
             Wholesale

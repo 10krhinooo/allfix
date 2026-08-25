@@ -35,7 +35,7 @@ export default async function CheckoutPage() {
       {desk ? (
         <p className="mt-3 max-w-xl leading-relaxed text-slate">
           Signed in as {desk.name}.{" "}
-          <Link href="/account" className="text-oxblood underline-offset-4 hover:underline">
+          <Link href="/account" className="text-oxblood underline underline-offset-4">
             Your account
           </Link>
         </p>
@@ -44,7 +44,7 @@ export default async function CheckoutPage() {
           Tell us where it goes and we will take it from there. Or{" "}
           <Link
             href="/sign-in?next=%2Fcheckout"
-            className="text-oxblood underline-offset-4 hover:underline"
+            className="text-oxblood underline underline-offset-4"
           >
             sign in
           </Link>{" "}

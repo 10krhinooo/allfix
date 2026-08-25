@@ -5,8 +5,8 @@ type Variant = "primary" | "secondary" | "ghost" | "whatsapp"
 const STYLES: Record<Variant, string> = {
   primary: "bg-oxblood text-white hover:bg-oxblood-deep",
   secondary: "border border-ink text-ink hover:bg-ink hover:text-paper",
-  ghost: "text-slate hover:text-ink underline-offset-4 hover:underline",
-  whatsapp: "bg-[#1f8f4e] text-white hover:bg-[#187a41]",
+  ghost: "text-slate hover:text-ink underline underline-offset-4",
+  whatsapp: "bg-[#1d8649] text-white hover:bg-[#15703c]",
 }
 
 const BASE =
@@ -44,16 +44,41 @@ export function WhatsAppIcon({ className = "h-4 w-4" }: { className?: string }) 
   )
 }
 
-export function Breadcrumbs({ trail }: { trail: { href?: string; label: string }[] }) {
+/**
+ * `tone` exists because the trail is drawn on two grounds. On paper it is grey
+ * on white; on the oxblood band at the top of `/trade` it has to be white, and
+ * the page used to say so with `[&_*]:text-white/80` on a wrapper. That is a tie
+ * on specificity with the classes below, so which colour won came down to the
+ * order Tailwind happened to emit its utilities in, and what it settled on was
+ * grey on oxblood at 2.27:1. A component that draws itself on two grounds should
+ * be told which one it is on.
+ */
+export function Breadcrumbs({
+  trail,
+  tone = "paper",
+}: {
+  trail: { href?: string; label: string }[]
+  tone?: "paper" | "band"
+}) {
+  const link = tone === "band" ? "text-white/80 hover:text-white" : "hover:text-ink"
+  const here = tone === "band" ? "text-white" : "text-ink"
+  const divider = tone === "band" ? "text-white/60" : ""
+
   return (
     <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5">
       {trail.map((step, index) => (
         <span key={step.label} className="flex items-center gap-1.5">
-          {index > 0 && <span className="callout" aria-hidden="true">/</span>}
+          {index > 0 && (
+            <span className={`callout ${divider}`} aria-hidden="true">
+              /
+            </span>
+          )}
           {step.href ? (
-            <Link href={step.href} className="callout hover:text-ink">{step.label}</Link>
+            <Link href={step.href} className={`callout ${link}`}>
+              {step.label}
+            </Link>
           ) : (
-            <span className="callout text-ink">{step.label}</span>
+            <span className={`callout ${here}`}>{step.label}</span>
           )}
         </span>
       ))}

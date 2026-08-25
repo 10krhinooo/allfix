@@ -161,7 +161,7 @@ export function RegisterForm() {
 
       <p className="text-sm text-slate">
         Already have one?{" "}
-        <Link href="/sign-in" className="text-oxblood underline-offset-4 hover:underline">
+        <Link href="/sign-in" className="text-oxblood underline underline-offset-4">
           Sign in
         </Link>
         .

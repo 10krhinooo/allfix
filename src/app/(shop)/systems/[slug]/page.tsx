@@ -168,7 +168,7 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
                 need and we will confirm it from the shelf.
               </p>
               <p className="mt-4">
-                <a href={ask} className="font-medium text-oxblood underline-offset-4 hover:underline">
+                <a href={ask} className="font-medium text-oxblood underline underline-offset-4">
                   Ask on WhatsApp
                 </a>{" "}
                 <span className="text-mute">or call {SHOP.phone}</span>

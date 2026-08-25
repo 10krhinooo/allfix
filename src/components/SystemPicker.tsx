@@ -50,7 +50,7 @@ export function SystemPicker({ list }: { list: System[] }) {
           </p>
           <a
             href={whatsapp("Hello AllFix, can you tell me which rail system this is? I will send a photo of the end of my track.")}
-            className="mt-1 text-sm font-medium text-oxblood underline-offset-4 hover:underline"
+            className="mt-1 text-sm font-medium text-oxblood underline underline-offset-4"
           >
             Ask on WhatsApp
           </a>

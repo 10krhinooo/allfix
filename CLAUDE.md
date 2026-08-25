@@ -254,6 +254,16 @@ there is no "in stock" badge because stock is not tracked yet.
   script-only overlay. Both read their gate from `src/lib/motion.ts` (`reducedMotion()`,
   `heroReveals()`), which is the one place that decides which of the two owns the arrival at
   home. The console has no template and gets no wipe.
+- **Accessibility is checked, not assumed.** `e2e/accessibility.spec.ts` runs axe over every
+  public page and the three console screens, failing on serious and critical only, plus the
+  things axe cannot check: the skip link, the phone menu's Escape and focus return, an
+  announced refusal. It runs with reduced motion asked for, because a contrast reading taken
+  mid-animation is a reading of a colour nobody ever sees. Two rules came out of it and are
+  worth keeping: `.callout` lives in `@layer components` so a page can recolour it (an
+  unlayered rule beats every utility whatever its specificity, which is why breadcrumbs on the
+  oxblood band were grey on oxblood and no class would move them), and a panel that stays
+  mounted while closed uses `inert`, never `aria-hidden`, which hides it from a screen reader
+  while leaving its controls in the tab order.
 - **Theming**: CSS custom properties in `src/app/globals.css`, toggled via `data-theme` on
   `<html>` (opt-in dark mode only, never OS-driven; see the comment block there). The inline
   `<Script>` in `src/app/layout.tsx` applies the stored theme before first paint to avoid a

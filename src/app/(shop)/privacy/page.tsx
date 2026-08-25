@@ -102,7 +102,7 @@ export default function Privacy() {
 
         <p className="text-sm">
           See also our{" "}
-          <Link href="/terms" className="text-oxblood underline-offset-4 hover:underline">
+          <Link href="/terms" className="text-oxblood underline underline-offset-4">
             terms
           </Link>
           .

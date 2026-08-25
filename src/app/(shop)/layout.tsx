@@ -42,8 +42,24 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
   return (
     <>
       <JsonLd schema={businessSchema()} />
+      {/*
+        The first thing a keyboard reaches on every page. Without it, getting to
+        the part list on a product page means tabbing through the whole header
+        and the basket first, on every page, every time. The console has had one
+        since it was built; the shop, which is where the customers are, had not.
+      */}
+      <a
+        href="#content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[70] focus:rounded-sm focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:text-paper"
+      >
+        Skip to the page
+      </a>
       <Header />
-      <main className="flex-1">{children}</main>
+      {/* `tabIndex={-1}` so following the link moves focus here rather than only
+          scrolling: without it the next Tab goes back to the top of the header. */}
+      <main id="content" tabIndex={-1} className="flex-1 outline-none">
+        {children}
+      </main>
       <Footer />
     </>
   )
