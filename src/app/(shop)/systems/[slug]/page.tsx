@@ -5,7 +5,7 @@ import { Profile } from "@/components/Profile"
 import { ProductCard } from "@/components/ProductCard"
 import { BulkAdd, type BulkPart } from "@/components/systems/BulkAdd"
 import { TraceOnView } from "@/components/TraceOnView"
-import { Breadcrumbs, Button, Empty, WhatsAppIcon } from "@/components/ui"
+import { Breadcrumbs, Button, Empty, JsonLd, WhatsAppIcon } from "@/components/ui"
 import {
   getSystem,
   partsForSystemByComponent,
@@ -73,10 +73,11 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema(system.slug)) }}
-      />
+      {/* Through `JsonLd`, which escapes `<` on the way in. A part name is
+          catalogue data rather than a customer's typing, but a script tag is a
+          script tag and the other seven pages on this site already go through
+          the component that closes it. */}
+      <JsonLd schema={schema(system.slug)} />
 
       {/* ---------------------------------------------------------- header */}
       <section className="drafting border-b border-rule">

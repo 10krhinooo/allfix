@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { check, tooMany } from "@/lib/rate-limit"
 import { register } from "@/lib/admin/registration"
 
 /**
@@ -9,6 +10,11 @@ import { register } from "@/lib/admin/registration"
  * server to server and the first party cookie is issued from here.
  */
 export async function POST(request: Request) {
+  // Before anything else, including reading the body: a flood is cheapest to
+  // refuse before it costs anything.
+  const knock = check(request, "register")
+  if (!knock.ok) return tooMany(knock.retryAfter)
+
   let body: { email?: unknown; password?: unknown; displayName?: unknown; phone?: unknown }
   try {
     body = await request.json()
