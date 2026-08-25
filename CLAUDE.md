@@ -122,10 +122,31 @@ and deliberately does not share code with it: the meter is a courtesy shown as s
 types, the server is the control. The wording is copied so both read identically, so change
 them together.
 
-Four console screens, not five: prices and the shot list were two lenses on one part and are
-now one worksheet at `/admin/parts`, filtered by what is missing. The old paths redirect.
+Prices and the shot list were two lenses on one part and are now one worksheet at
+`/admin/parts`, filtered by what is missing. The old paths redirect.
 `src/components/admin/parts.tsx` holds the console's own primitives; reach for those rather
 than the storefront's, which assume a page that is selling something.
+
+Two screens are admin's alone, and for the same reason: People decides who gets in, and
+`/admin/settings` decides what the shop says to everybody who does not. Settings owns the
+social accounts and the sending of the shop's messages, both true of the whole shop rather
+than of one part, which is why a member of staff prices a bracket and does not touch these.
+`capabilities().settings` is the answer, checked on the rail, again in the page (which
+`notFound()`s rather than redirecting, so a guessed URL does not confirm the screen exists),
+and a third time at the top of the server action that saves. That third check is the one that
+matters: a Server Function is not a route in the matcher chain, so the proxy never sees the
+save at all.
+
+`src/lib/settings.ts` is the shape (client safe, imported by the form) and
+`src/lib/settings-service.ts` is the seam: with `ALLFIX_API_URL` set it reads and writes the
+console API server to server, and without it it reads `ALLFIX_SOCIAL_*` and `ALLFIX_MAIL_*`
+from the environment and says plainly that a save was not kept, the same answer
+`registration.ts` gives. The two differ in when a change lands: the footer is on every
+prerendered page, so an environment variable is read at build and changing one is a redeploy,
+while the service is a tagged fetch that revalidates on a timer and at once on a save
+(`updateTag`, not `revalidateTag`, because the person who just changed a link is going to go
+and look at it). **The social links are not hardcoded anywhere.** None are set today, so
+`SocialRow` renders nothing rather than six icons pointing at accounts that do not exist.
 
 Every route the header and footer link to is now built: `/`, `/systems`, `/systems/[slug]`,
 `/shop`, `/product/[slug]`, `/build`, `/services`, `/services/[slug]`, `/book`, `/trade`,

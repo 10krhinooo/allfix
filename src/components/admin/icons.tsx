@@ -47,6 +47,16 @@ export const ICONS = {
       <path d="M9 12h6M9 16h4" />
     </>
   ),
+  settings: (
+    <>
+      <path d="M4 7h9M17 7h3" />
+      <path d="M4 12h3M11 12h9" />
+      <path d="M4 17h9M17 17h3" />
+      <circle cx="15" cy="7" r="2" />
+      <circle cx="9" cy="12" r="2" />
+      <circle cx="15" cy="17" r="2" />
+    </>
+  ),
   profile: (
     <>
       <circle cx="12" cy="8" r="3.5" />
