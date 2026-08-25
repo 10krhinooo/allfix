@@ -6,8 +6,8 @@ import type { Person } from "@/lib/admin/desk"
  * The split is the one `ROLE_NOTE` in desk.ts already describes, rather than one
  * invented for the demo: admin is "everything, including who else gets in", and
  * staff is "the counter: prices, enquiries and orders". So staff price parts,
- * because that is counter work, and only admin sees the people screen. Trade
- * buys at a tier and has no console at all.
+ * because that is counter work, and only admin sees the people screen or the
+ * shop's own settings. Trade buys at a tier and has no console at all.
  *
  * Pure, and importable from a client component. Nothing here reads a cookie:
  * this answers "what may this role do", never "who is this".
@@ -17,13 +17,20 @@ export interface Capabilities {
   console: boolean
   people: boolean
   prices: boolean
+  /**
+   * What the shop says about itself: the social accounts it links to and the
+   * address its messages come from. Admin only, and for the same reason People
+   * is: both change what a customer sees or receives from the whole shop, not
+   * what one part costs.
+   */
+  settings: boolean
 }
 
 const CAPABILITIES: Record<Person["role"], Capabilities> = {
-  ADMIN: { console: true, people: true, prices: true },
-  STAFF: { console: true, people: false, prices: true },
-  TRADE: { console: false, people: false, prices: false },
-  CUSTOMER: { console: false, people: false, prices: false },
+  ADMIN: { console: true, people: true, prices: true, settings: true },
+  STAFF: { console: true, people: false, prices: true, settings: false },
+  TRADE: { console: false, people: false, prices: false, settings: false },
+  CUSTOMER: { console: false, people: false, prices: false, settings: false },
 }
 
 export function capabilities(role: Person["role"]): Capabilities {

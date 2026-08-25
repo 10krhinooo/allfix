@@ -28,9 +28,12 @@ interface NavItem extends ConsoleNav {
 }
 
 /**
- * Four screens, not five. Prices and the shot list were two lenses on one
- * object, a part, and both answered a version of "why can this not be sold yet".
- * They are one worksheet now, so the answer is in one place.
+ * Prices and the shot list were two lenses on one object, a part, and both
+ * answered a version of "why can this not be sold yet". They are one worksheet
+ * now, so the answer is in one place.
+ *
+ * Two of these are admin's alone. People decides who gets in, and Settings
+ * decides what the shop says about itself to everybody who does not.
  */
 const NAV: NavItem[] = [
   {
@@ -60,6 +63,13 @@ const NAV: NavItem[] = [
     hint: "Who gets in, and as what",
     icon: ICONS.people,
     needs: "people",
+  },
+  {
+    href: "/admin/settings",
+    label: "Settings",
+    hint: "Social accounts, and what the shop sends",
+    icon: ICONS.settings,
+    needs: "settings",
   },
 ]
 
