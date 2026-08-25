@@ -17,6 +17,26 @@ export const SEEN = "allfix-curtain-seen"
 /** The shared easing. Slow out of the stack, slow into it, quick across. */
 export const SWEEP = "inOut(2.2)"
 
+/**
+ * Whether this document has already drawn a page.
+ *
+ * Module scope rather than a ref, because every navigation mounts new
+ * components and the fact has to outlive them, and set from `Painted` in the
+ * root layout rather than from anything inside a route group, because the whole
+ * point is that it stays true across the crossing from a desk to the shop.
+ *
+ * Never read on the server, and never written during render.
+ */
+let hasPainted = false
+
+export function markPainted() {
+  hasPainted = true
+}
+
+export function painted(): boolean {
+  return hasPainted
+}
+
 export function reducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches
 }
