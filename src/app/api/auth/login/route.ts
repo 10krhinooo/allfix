@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { check, tooMany } from "@/lib/rate-limit"
 import { signInWith } from "@/lib/admin/accounts"
-import { COOKIE, HINT, cookieOptions, hintOptions, seal } from "@/lib/admin/session"
+import { COOKIE, HINT, NoSessionSecret, cookieOptions, hintOptions, seal } from "@/lib/admin/session"
 import { landing } from "@/lib/admin/roles"
 
 /**
@@ -48,7 +48,12 @@ export async function POST(request: Request) {
   let sealed: string
   try {
     sealed = await seal(result.person)
-  } catch {
+  } catch (error) {
+    // Only the missing key is answered here. Anything else out of `seal()` is a
+    // WebCrypto failure with nothing to do with configuration, and reporting it
+    // as an unset key would send whoever is debugging it to the wrong place.
+    if (!(error instanceof NoSessionSecret)) throw error
+
     // A deployment with no signing secret. The door stays shut rather than
     // handing out a cookie anybody could have written themselves, and the
     // message is for whoever deployed it rather than for the person signing in.
