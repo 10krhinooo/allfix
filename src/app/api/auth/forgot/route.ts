@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { check, tooMany } from "@/lib/rate-limit"
 import { requestReset } from "@/lib/admin/registration"
 
 /**
@@ -10,6 +11,11 @@ import { requestReset } from "@/lib/admin/registration"
  * a demo build leaking that it is a demo build by answering differently.
  */
 export async function POST(request: Request) {
+  // Before anything else, including reading the body: a flood is cheapest to
+  // refuse before it costs anything.
+  const knock = check(request, "forgot")
+  if (!knock.ok) return tooMany(knock.retryAfter)
+
   let body: { email?: unknown }
   try {
     body = await request.json()

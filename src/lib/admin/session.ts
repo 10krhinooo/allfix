@@ -37,7 +37,39 @@ interface Payload {
   exp: number
 }
 
-const SECRET = process.env.ALLFIX_SESSION_SECRET ?? "allfix-development-secret-set-me-in-production"
+/**
+ * The signing key, and what happens when nobody set one.
+ *
+ * The fallback used to be a string in this file, so a deployment that never set
+ * `ALLFIX_SESSION_SECRET` was signing sessions with a key anybody can read:
+ * forging `{"email":"hafsah@allfix.co.ke"}` and landing in the console as the
+ * owner is then a two line script. Documenting that the variable "must be set"
+ * is not a control, because the failure is silent and looks exactly like
+ * success.
+ *
+ * So it fails closed instead. Outside development a missing secret means no
+ * session can be sealed and none can be opened: the console is shut rather than
+ * open to everybody. It is checked at the point of use rather than at import,
+ * because a throw at import time would take out the build itself, and a build
+ * that cannot run is a worse way to learn this than a sign in that refuses and
+ * says why.
+ */
+/**
+ * The development stand-in is generated per process rather than written here.
+ *
+ * A fallback constant in this file is a signing key published in a public
+ * repository, and a scanner is right to call that what it is. Generated, it
+ * cannot be known off the page, and the only cost is that restarting `next dev`
+ * signs you out: set `ALLFIX_SESSION_SECRET` in `.env.local` if that is a
+ * nuisance, which is the same thing every deployment has to do anyway.
+ */
+const DEVELOPMENT_SECRET = crypto.randomUUID()
+
+function secret(): string | null {
+  const set = process.env.ALLFIX_SESSION_SECRET
+  if (set && set.trim()) return set
+  return process.env.NODE_ENV === "production" ? null : DEVELOPMENT_SECRET
+}
 
 function encode(bytes: Uint8Array<ArrayBuffer>): string {
   let binary = ""
@@ -58,20 +90,35 @@ function decode(text: string): Uint8Array<ArrayBuffer> {
  * constant time by construction, so the comparison does not have to be written
  * carefully by hand.
  */
-async function key(): Promise<CryptoKey> {
+async function key(): Promise<CryptoKey | null> {
+  const signing = secret()
+  if (!signing) return null
   return crypto.subtle.importKey(
     "raw",
-    new TextEncoder().encode(SECRET),
+    new TextEncoder().encode(signing),
     { name: "HMAC", hash: "SHA-256" },
     false,
     ["sign", "verify"],
   )
 }
 
+/** Thrown rather than returned: there is no half-signed cookie to fall back to. */
+export class NoSessionSecret extends Error {
+  constructor() {
+    super(
+      "ALLFIX_SESSION_SECRET is not set, so no session can be signed. Set it wherever this " +
+        "is deployed. Signing with the development key would let anybody forge a console session.",
+    )
+  }
+}
+
 export async function seal(person: Person): Promise<string> {
+  const signing = await key()
+  if (!signing) throw new NoSessionSecret()
+
   const payload: Payload = { email: person.email, exp: Date.now() + MAX_AGE * 1000 }
   const body = encode(new TextEncoder().encode(JSON.stringify(payload)))
-  const signature = await crypto.subtle.sign("HMAC", await key(), new TextEncoder().encode(body))
+  const signature = await crypto.subtle.sign("HMAC", signing, new TextEncoder().encode(body))
   return `${body}.${encode(new Uint8Array(signature))}`
 }
 
@@ -87,10 +134,15 @@ export async function open(token: string | undefined): Promise<Desk | null> {
   const [body, signature] = token.split(".")
   if (!body || !signature) return null
 
+  const signing = await key()
+  // Nothing to verify against, so nobody is signed in. The refusal to seal is
+  // where somebody finds out why.
+  if (!signing) return null
+
   try {
     const valid = await crypto.subtle.verify(
       "HMAC",
-      await key(),
+      signing,
       decode(signature),
       new TextEncoder().encode(body),
     )

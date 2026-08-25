@@ -1,4 +1,6 @@
+import { randomUUID } from "node:crypto"
 import { defineConfig, devices } from "@playwright/test"
+import { PASSWORD } from "./e2e/helpers"
 
 /**
  * End to end, against a real build.
@@ -35,7 +37,33 @@ export default defineConfig({
   webServer: {
     // The seeded password is set here rather than read from `.env.local`, so the
     // suite behaves the same on a machine that has never had one.
-    command: "ALLFIX_SEED_PASSWORD=allfix npm run start -- --port 3210",
+    //
+    // The rate limits are raised for the routes this suite uses in bulk: it
+    // signs in dozens of times a minute on purpose, which is exactly what the
+    // shipped limit is meant to stop, and a suite that spent its time being
+    // refused would be testing the limiter rather than the shop. `reset` keeps
+    // its real limit, and `security.spec.ts` asserts the refusal against it, so
+    // the limiter is still exercised end to end rather than switched off.
+    //
+    // The signing key is set here for the same reason as the password: a fresh
+    // clone has no `.env.local`, and without a key the door now refuses to issue
+    // a session at all rather than signing one with a value that is printed in
+    // this repository.
+    command: "npm run start -- --port 3210",
+    env: {
+      // The one the specs sign in with, imported rather than repeated so the
+      // suite and the server cannot drift apart, and so this file carries no
+      // credential of its own.
+      ALLFIX_SEED_PASSWORD: PASSWORD,
+      // Generated per run. A signing key written into a repository is a signing
+      // key anybody can read, and the suite has no reason to use the same one
+      // twice.
+      ALLFIX_SESSION_SECRET: randomUUID(),
+      ALLFIX_LIMIT_LOGIN: "1000/60",
+      ALLFIX_LIMIT_REGISTER: "1000/60",
+      ALLFIX_LIMIT_FORGOT: "1000/60",
+      ALLFIX_LIMIT_ORDER: "1000/60",
+    },
     url: "http://127.0.0.1:3210",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

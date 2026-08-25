@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { check, tooMany } from "@/lib/rate-limit"
 import { signInWith } from "@/lib/admin/accounts"
 import { COOKIE, HINT, cookieOptions, hintOptions, seal } from "@/lib/admin/session"
 import { landing } from "@/lib/admin/roles"
@@ -24,6 +25,11 @@ import { landing } from "@/lib/admin/roles"
  * the account the backend returns. Do not delete it as redundant.
  */
 export async function POST(request: Request) {
+  // Before anything else, including reading the body: a flood is cheapest to
+  // refuse before it costs anything.
+  const knock = check(request, "login")
+  if (!knock.ok) return tooMany(knock.retryAfter)
+
   let body: { email?: unknown; password?: unknown }
   try {
     body = await request.json()
@@ -39,13 +45,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: result.message }, { status: result.status })
   }
 
+  let sealed: string
+  try {
+    sealed = await seal(result.person)
+  } catch {
+    // A deployment with no signing secret. The door stays shut rather than
+    // handing out a cookie anybody could have written themselves, and the
+    // message is for whoever deployed it rather than for the person signing in.
+    return NextResponse.json(
+      {
+        message:
+          "Sign in is not available on this deployment. The session signing key is not set, " +
+          "and we will not issue a session we cannot trust.",
+      },
+      { status: 503 },
+    )
+  }
+
   const response = NextResponse.json({
     email: result.person.email,
     name: result.person.name,
     role: result.person.role,
     to: landing(result.person.role),
   })
-  response.cookies.set(COOKIE, await seal(result.person), cookieOptions())
+  response.cookies.set(COOKIE, sealed, cookieOptions())
   response.cookies.set(HINT, "1", hintOptions())
   return response
 }

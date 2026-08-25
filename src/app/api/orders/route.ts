@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { check, tooMany } from "@/lib/rate-limit"
 import { readDesk } from "@/lib/admin/guard"
 import { placeOrder, type PlaceLine, type Settlement } from "@/lib/orders-api"
 import { tierFor } from "@/lib/tiers"
@@ -17,6 +18,11 @@ const SETTLEMENTS: Settlement[] = ["MPESA", "PROFORMA", "COUNTER"]
  * quantities and the money is worked out from the catalogue.
  */
 export async function POST(request: Request) {
+  // Before anything else, including reading the body: a flood is cheapest to
+  // refuse before it costs anything.
+  const knock = check(request, "order")
+  if (!knock.ok) return tooMany(knock.retryAfter)
+
   // No sign in required. Somebody who has found the part, checked it fits their
   // rail and put it in a basket has done the hard part; asking them to invent a
   // password before they can pay is where they leave. A session, when there is
