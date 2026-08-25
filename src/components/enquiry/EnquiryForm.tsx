@@ -116,7 +116,7 @@ export function EnquiryForm({
           )}
           <a
             href={enquiryMessage(draft)}
-            className="mt-6 inline-flex items-center gap-2 rounded-sm bg-[#1f8f4e] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#187a41]"
+            className="mt-6 inline-flex items-center gap-2 rounded-sm bg-[#1d8649] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#15703c]"
           >
             <WhatsAppIcon /> Send it on WhatsApp too
           </a>
@@ -213,7 +213,7 @@ export function EnquiryForm({
         </button>
         <a
           href={enquiryMessage(draft)}
-          className="inline-flex items-center gap-2 rounded-sm bg-[#1f8f4e] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#187a41]"
+          className="inline-flex items-center gap-2 rounded-sm bg-[#1d8649] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#15703c]"
         >
           <WhatsAppIcon /> Send on WhatsApp
         </a>

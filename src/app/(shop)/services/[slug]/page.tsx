@@ -162,7 +162,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
               </p>
               <Link
                 href="/book"
-                className="mt-3 inline-block text-sm font-medium text-oxblood underline-offset-4 hover:underline"
+                className="mt-3 inline-block text-sm font-medium text-oxblood underline underline-offset-4"
               >
                 Book a visit &rarr;
               </Link>

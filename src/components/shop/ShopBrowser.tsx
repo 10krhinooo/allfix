@@ -195,7 +195,7 @@ export function ShopBrowser({ data }: { data: ShopData }) {
       </Group>
 
       {active > 0 && (
-        <button onClick={clear} className="text-sm text-oxblood underline-offset-4 hover:underline">
+        <button onClick={clear} className="text-sm text-oxblood underline underline-offset-4">
           Clear all filters
         </button>
       )}
@@ -286,7 +286,7 @@ export function ShopBrowser({ data }: { data: ShopData }) {
                 </button>
                 <a
                   href={ASK}
-                  className="rounded-sm bg-[#1f8f4e] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#187a41]"
+                  className="rounded-sm bg-[#1d8649] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#15703c]"
                 >
                   Ask on WhatsApp
                 </a>
@@ -318,7 +318,15 @@ export function ShopBrowser({ data }: { data: ShopData }) {
         }`}
         role="dialog"
         aria-label="Filters"
-        aria-hidden={!drawer}
+        /*
+         * `inert` rather than `aria-hidden`. The drawer stays mounted so it has
+         * something to slide in from, and `aria-hidden` on a subtree full of
+         * checkboxes hides it from a screen reader while leaving every one of
+         * them in the tab order: focus lands on a control that is not announced
+         * and, off screen, cannot be seen either. `inert` takes both away, and
+         * takes the aria with it.
+         */
+        inert={!drawer}
       >
         <div className="mb-6 flex items-center justify-between">
           <p className="font-display text-lg font-semibold tracking-tight">Filters</p>

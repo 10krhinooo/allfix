@@ -274,7 +274,7 @@ export function Checkout({
             <p className="mt-3 text-sm text-slate">
               <Link
                 href="/account/addresses"
-                className="text-oxblood underline-offset-4 hover:underline"
+                className="text-oxblood underline underline-offset-4"
               >
                 Manage your addresses
               </Link>

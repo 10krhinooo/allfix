@@ -135,7 +135,7 @@ export function Enquiries() {
                       )}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="rounded-sm bg-[#1f8f4e] px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[#187a41]"
+                      className="rounded-sm bg-[#1d8649] px-4 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[#15703c]"
                     >
                       Reply on WhatsApp
                       <span className="sr-only"> to {enquiry.name}</span>

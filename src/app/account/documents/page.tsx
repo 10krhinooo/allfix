@@ -94,7 +94,7 @@ export default async function DocumentsPage() {
               it?{" "}
               <a
                 href={whatsapp("Hello AllFix, could you check this document for me:")}
-                className="text-oxblood underline-offset-4 hover:underline"
+                className="text-oxblood underline underline-offset-4"
               >
                 Ask the counter
               </a>

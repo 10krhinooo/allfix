@@ -56,7 +56,7 @@ export function QuoteCard({ quote }: { quote: TradeQuote }) {
               href={whatsapp(`Accepting quote ${quote.reference}.`)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-sm bg-[#1f8f4e] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#187a41]"
+              className="inline-flex items-center gap-2 rounded-sm bg-[#1d8649] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#15703c]"
             >
               Accept {quote.reference}
             </a>

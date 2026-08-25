@@ -89,7 +89,7 @@ export function ForgotForm() {
 
       <p className="text-sm text-slate">
         Remembered it?{" "}
-        <Link href="/sign-in" className="text-oxblood underline-offset-4 hover:underline">
+        <Link href="/sign-in" className="text-oxblood underline underline-offset-4">
           Sign in
         </Link>
         .

@@ -135,7 +135,7 @@ export function SaveRail({
       {!signedIn && (
         <p className="text-xs leading-relaxed text-mute">
           Kept in this browser.{" "}
-          <Link href="/sign-in?next=%2Fbuild" className="text-oxblood underline-offset-4 hover:underline">
+          <Link href="/sign-in?next=%2Fbuild" className="text-oxblood underline underline-offset-4">
             Sign in
           </Link>{" "}
           and it goes on your account instead.

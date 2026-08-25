@@ -80,13 +80,21 @@ export function Header() {
         </div>
       </div>
 
-      {/* The counter is the business. Say where it is on every page. */}
+      {/*
+        The counter is the business. Say where it is on every page.
+
+        It wraps rather than scrolls sideways. As a scroller it was a region a
+        keyboard could never reach: nothing inside it is focusable, so there was
+        no way to scroll it without a mouse or a finger, and half the line was
+        simply unreadable on a narrow phone. Two short lines of text have no
+        business being a carousel.
+      */}
       <div className="border-t border-rule bg-panel">
-        <div className="no-bar shell flex h-8 items-center gap-4 overflow-x-auto">
-          <span className="callout whitespace-nowrap">
+        <div className="shell flex min-h-8 flex-wrap items-center gap-x-4 gap-y-0.5 py-1">
+          <span className="callout">
             Counter sales · {SHOP.street}, {SHOP.area}
           </span>
-          <span className="callout whitespace-nowrap text-brass">Wholesale 20% off</span>
+          <span className="callout text-brass">Wholesale 20% off</span>
         </div>
       </div>
     </header>

@@ -119,7 +119,7 @@ export default async function AccountPage() {
           {rails.length === 0 ? (
             <p className="mt-4 text-sm leading-relaxed text-slate">
               Measure a window in{" "}
-              <Link href="/build" className="text-oxblood underline-offset-4 hover:underline">
+              <Link href="/build" className="text-oxblood underline underline-offset-4">
                 the configurator
               </Link>{" "}
               and save it here, and the parts list comes back with it.
@@ -179,7 +179,7 @@ export default async function AccountPage() {
         Something not right on an order?{" "}
         <a
           href={whatsapp("Hello AllFix, I have a question about an order on my account:")}
-          className="text-oxblood underline-offset-4 hover:underline"
+          className="text-oxblood underline underline-offset-4"
         >
           Message the counter
         </a>

@@ -82,11 +82,11 @@ export default async function Build({
 
       <p className="mt-8 text-sm text-slate">
         Not sure which rail you have?{" "}
-        <Link href="/systems" className="text-oxblood underline-offset-4 hover:underline">
+        <Link href="/systems" className="text-oxblood underline underline-offset-4">
           Match it by its section
         </Link>{" "}
         or{" "}
-        <a href={HELP} className="text-oxblood underline-offset-4 hover:underline">
+        <a href={HELP} className="text-oxblood underline underline-offset-4">
           send us the window
         </a>
         .

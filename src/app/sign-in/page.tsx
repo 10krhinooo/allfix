@@ -49,7 +49,7 @@ export default async function SignInPage({
       stageLine="The rail you already own, and the parts that fit it."
       footer={
         <span className="flex flex-wrap items-baseline justify-between gap-3">
-          <Link href="/auth/forgot" className="text-oxblood underline-offset-4 hover:underline">
+          <Link href="/auth/forgot" className="text-oxblood underline underline-offset-4">
             Forgotten your password?
           </Link>
           <Link href="/auth/register" className="underline-offset-4 hover:text-ink hover:underline">

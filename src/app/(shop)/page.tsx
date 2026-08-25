@@ -223,7 +223,9 @@ export default function Home() {
                 ["Fits", "New or existing track"],
               ].map(([label, value]) => (
                 <div key={label} className="bg-band px-4 py-5">
-                  <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/55">{label}</dt>
+                  {/* /80 rather than /55: at 11px on the oxblood band the
+                      lighter one was 4.5:1 on nothing. */}
+                  <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/80">{label}</dt>
                   <dd className="mt-1.5 font-medium">{value}</dd>
                 </div>
               ))}
