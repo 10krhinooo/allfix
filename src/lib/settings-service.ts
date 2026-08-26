@@ -1,9 +1,13 @@
 import {
   DEFAULT_EMAIL,
+  DEFAULT_SESSION,
+  idleMinutes,
+  SESSION_ENV,
   socialLink,
   SOCIAL_ENV,
   SOCIAL_KINDS,
   type EmailSettings,
+  type SessionSettings,
   type ShopSettings,
   type SocialKind,
 } from "@/lib/settings"
@@ -23,6 +27,27 @@ import {
 
 const API = process.env.ALLFIX_API_URL ?? ""
 
+/**
+ * How this server proves it is this server.
+ *
+ * The console's settings are admin's, and rightly `@RolesAllowed("ADMIN")` on the
+ * other side. But the caller here is a Next server rendering a page, not a
+ * person: it holds no account, and the session cookie it does hold is one it
+ * minted and signed itself, so there is nothing it could forward that Quarkus
+ * has ever issued. Every read and every save was therefore anonymous, came back
+ * 401, and was swallowed by the fallbacks below. That is why a social link saved
+ * on the console never reached the footer, and it went unnoticed because the
+ * fallback looks exactly like a shop that has not set one.
+ *
+ * So the trusted caller carries a name. Server only, never `NEXT_PUBLIC_`, and
+ * never sent from a browser: if this ever appears in a bundle it has stopped
+ * being a secret and has to be rotated.
+ */
+const SERVICE_TOKEN = process.env.ALLFIX_SERVICE_TOKEN ?? ""
+
+const asService = (): Record<string, string> =>
+  SERVICE_TOKEN ? { "X-Allfix-Service": SERVICE_TOKEN } : {}
+
 function fromEnvironment(): ShopSettings {
   const social: Partial<Record<SocialKind, string>> = {}
   for (const kind of SOCIAL_KINDS) {
@@ -39,6 +64,10 @@ function fromEnvironment(): ShopSettings {
       replyTo: process.env.ALLFIX_MAIL_REPLY_TO || DEFAULT_EMAIL.replyTo,
       copyTo: process.env.ALLFIX_MAIL_COPY_TO || null,
     },
+    session: {
+      idleMinutes:
+        idleMinutes(process.env[SESSION_ENV.idleMinutes]) ?? DEFAULT_SESSION.idleMinutes,
+    },
     source: "environment",
   }
 }
@@ -51,13 +80,24 @@ function fromEnvironment(): ShopSettings {
  * no-store fetch here would make the whole storefront dynamic to print four
  * icons, so the settings are revalidated on a timer instead: a social link
  * appearing five minutes after it is saved is not a problem anybody has.
+ *
+ * Two endpoints, split by audience rather than by convenience. `/api/settings`
+ * is public and carries only what a visitor would learn anyway: the accounts the
+ * shop publishes, and how long it waits before signing somebody out.
+ * `/api/admin/settings` additionally carries the sending and reply addresses,
+ * which are internal, so it needs the service token. `everything` says which is
+ * wanted: the footer does not need the email block and should not be able to
+ * leak it, while the console screen edits it.
  */
-export async function readSettings(): Promise<ShopSettings> {
+export async function readSettings(everything = false): Promise<ShopSettings> {
   if (!API) return fromEnvironment()
 
+  const path = everything ? "/api/admin/settings" : "/api/settings"
+
   try {
-    const response = await fetch(`${API}/api/admin/settings`, {
+    const response = await fetch(`${API}${path}`, {
       next: { revalidate: 300, tags: ["settings"] },
+      headers: everything ? asService() : {},
     })
     if (!response.ok) return fromEnvironment()
 
@@ -70,6 +110,12 @@ export async function readSettings(): Promise<ShopSettings> {
     return {
       social,
       email: { ...DEFAULT_EMAIL, ...body.email, sends: { ...DEFAULT_EMAIL.sends, ...body.email?.sends } },
+      // Through the normaliser rather than spread straight in: a service that
+      // answers with nothing, or with a number outside the bounds, must not be
+      // able to leave the shop with no idle window.
+      session: {
+        idleMinutes: idleMinutes(body.session?.idleMinutes) ?? DEFAULT_SESSION.idleMinutes,
+      },
       source: "service",
     }
   } catch {
@@ -91,6 +137,7 @@ export type SaveResult = { ok: true } | { ok: false; message: string }
 export async function saveSettings(next: {
   social: Partial<Record<SocialKind, string>>
   email: EmailSettings
+  session: SessionSettings
 }): Promise<SaveResult> {
   if (!API) {
     return {
@@ -105,7 +152,7 @@ export async function saveSettings(next: {
   try {
     const response = await fetch(`${API}/api/admin/settings`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...asService() },
       body: JSON.stringify(next),
       cache: "no-store",
     })

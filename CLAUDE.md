@@ -16,9 +16,13 @@ repo too, not just files you edit.
 AllFix By Kipekee: a storefront for a Nairobi curtain-hardware supplier, replacing a
 WooCommerce site (`allfix.co.ke`) that could not take an order (every product priced 0 in
 USD). This repo is the frontend only. A second repo, `Projects/allfix-backend` (Quarkus,
-PostgreSQL, Flyway), will own authorization, pricing and transactions, and does not exist
-yet. Until it lands, `src/lib/catalogue.ts` reads the migrated catalogue JSON directly and
-is the seam where API calls will slot in later without touching any page.
+PostgreSQL, Flyway), owns authorization, pricing and transactions. This section used to say
+it did not exist yet, which stopped being true without the note being updated: its `main`
+carries auth, the admin console, accounts, orders and M-Pesa, the trade tier and shop
+settings, up to migration V12. What is still true is that **nothing here is wired to it by
+default**: with `ALLFIX_API_URL` unset every seam falls back to local data or to the
+environment, so `src/lib/catalogue.ts` reads the migrated catalogue JSON directly and is
+the seam where API calls slot in later without touching any page.
 
 `PROJECT_PLAN.md` and `project_requirments.md` are the source of truth for the full plan
 (data model, auth, backend, client requirements) and should be kept in sync as the system
@@ -113,6 +117,23 @@ the failure looks exactly like success. The test is `NODE_ENV === "production"`,
 production is shut; anywhere else falls back to a stand-in generated per process, which is why
 restarting `next dev` signs you out. A key under 32 characters is refused exactly as an absent
 one is, and is trimmed first so a stray newline is not silently part of it.
+**Doing nothing signs you out.** A session carries `seen` and `idle` beside `exp`, and
+`open()` refuses one whose last use is outside the window. The default is twenty minutes,
+`ALLFIX_SESSION_IDLE_MINUTES` sets it where there is no settings service, and the owner
+sets it on `/admin/settings` where there is. Three things are worth not undoing:
+`refresh()` exists separately from `seal()` because only it may move `seen` and it must
+never move `exp`, or a session touched once a day lasts for ever and the fourteen day cap
+is gone; **the proxy deliberately does not slide the window** (Next strips the Flight
+headers before the proxy sees a request, so a prefetch is indistinguishable from a visit,
+and `NextResponse.cookies.set` there feeds the guard the cookie the proxy just wrote,
+which is the wrong way round), so `POST /api/session/touch` is the only thing that slides
+it; and `src/components/IdleWatch.tsx` is not decoration but the primary keep-alive,
+because there is one `"use server"` file in this repo and the console's edits go to
+`localStorage`, so a member of staff pricing forty parts makes no server requests at all.
+The rule mirrors the backend's, the way `password.ts` mirrors `PasswordPolicy`: change
+them together, and keep the backend's window the longer of the two so the console always
+signs somebody out with a warning rather than the API doing it with a 401.
+
 `src/lib/rate-limit.ts` guards the POST routes; it is in memory, so it is per instance and a
 courtesy at the edge rather than the control, which is the backend's. A limit can be raised
 per route with `ALLFIX_LIMIT_<ROUTE>` (`hits/seconds`), which is what the e2e config does for
@@ -218,9 +239,11 @@ there is no "in stock" badge because stock is not tracked yet.
   tier field on an order body for the same reason there is no price field. `unitFor()`
   mirrors `OrderService.unitPriceFor` on the backend the way `password.ts` mirrors
   `PasswordPolicy`, so a part the counter has priced for trade (`tradeKes`) is sold at that
-  figure and everything else comes off the rate. The backend's copy still falls back to list
-  rather than to the rate and has to be brought in step, or a trade account is shown 320 and
-  charged 400. Product pages are prerendered, so the storefront reads the visitor's tier
+  figure and everything else comes off the rate. This note used to say the backend's copy
+  still fell back to list, so a trade account was shown 320 and charged 400; that was fixed
+  on the backend's `main` and the fallback is now the base rate, which keeps the promise the
+  shop makes publicly on `/trade`. The two are in step and have to be changed together.
+  Product pages are prerendered, so the storefront reads the visitor's tier
   through `/api/session` and `useTier()` (`src/lib/tier-client.ts`), one fetch per page load
   however many components ask; it starts at retail and never the other way round, so nobody
   is shown a discount for a frame and has it taken away. `TradeRate` draws nothing at all for

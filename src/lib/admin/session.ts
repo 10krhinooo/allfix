@@ -1,4 +1,5 @@
 import { PEOPLE, type Person } from "@/lib/admin/desk"
+import { DEFAULT_SESSION, SESSION_ENV, idleMinutes } from "@/lib/settings"
 
 /**
  * The session cookie's shape and signature, in one place.
@@ -30,11 +31,31 @@ export interface Desk {
   email: string
   name: string
   role: Person["role"]
+  /**
+   * How long this session has left before inactivity ends it, in ms.
+   *
+   * Milliseconds remaining rather than the deadline itself, because the only
+   * consumer is a browser and a browser's clock is not ours. A machine ten
+   * minutes fast handed an absolute timestamp signs itself out on arrival.
+   */
+  idleInMs: number
+  /** The whole window, so a caller can pace itself against it rather than guess. */
+  idleWindowMs: number
 }
 
 interface Payload {
   email: string
+  /**
+   * The absolute cap, written once at sign in. `refresh()` carries it across
+   * untouched: a re-seal that recomputed it would make a session that is used
+   * once a day last for ever, and the fourteen days would quietly stop being a
+   * limit at all.
+   */
   exp: number
+  /** When this session was last used. The only field a re-seal moves. */
+  seen: number
+  /** The window it was sealed under, in ms, so the gate needs no settings read. */
+  idle: number
 }
 
 /**
@@ -80,6 +101,40 @@ const DEVELOPMENT_SECRET = crypto.randomUUID()
  * and it would sign perfectly well while quietly being a different key.
  */
 const MINIMUM_KEY = 32
+
+/**
+ * How long an account may do nothing before it is signed out.
+ *
+ * Read from the environment here rather than through `settings-service.ts`, and
+ * that is the point: this function is called on the path that opens every
+ * session, including in the proxy, and a settings fetch there would be a
+ * network round trip in front of every gated request. The console's screen is
+ * the place the number is *set*; a sealed cookie carries the answer with it, so
+ * the gate only ever compares two integers.
+ *
+ * Written in the shape of `configured()` in `src/lib/rate-limit.ts`, for its
+ * reason as well as its shape: a malformed value falls back to the default and
+ * never to no timeout at all, because the failure mode of a typo here should be
+ * the window somebody expected and never an open door.
+ */
+export function configuredIdle(): number {
+  /*
+   * Seconds first, and only ever as a lever for a test.
+   *
+   * The minutes variable is the one an operator sets and it is floored at five,
+   * because a window shorter than that expires people mid-task. That floor also
+   * makes the feature impossible to test in anything like reasonable time, which
+   * is the same bind `ALLFIX_LIMIT_*` exists to solve in `rate-limit.ts`: the
+   * end to end suite needs the behaviour to happen in seconds on purpose. Named
+   * in seconds so it cannot be confused with the setting, and left out of the
+   * console entirely.
+   */
+  const seconds = Number(process.env.ALLFIX_SESSION_IDLE_SECONDS?.trim())
+  if (Number.isFinite(seconds) && seconds >= 1) return seconds * 1000
+
+  const raw = process.env[SESSION_ENV.idleMinutes]
+  return (idleMinutes(raw) ?? DEFAULT_SESSION.idleMinutes) * 60 * 1000
+}
 
 function secret(): string | null {
   const set = process.env.ALLFIX_SESSION_SECRET?.trim()
@@ -137,14 +192,45 @@ export class NoSessionSecret extends Error {
   }
 }
 
-export async function seal(person: Person): Promise<string> {
+async function sign(payload: Payload): Promise<string> {
   const signing = await key()
   if (!signing) throw new NoSessionSecret()
 
-  const payload: Payload = { email: person.email, exp: Date.now() + MAX_AGE * 1000 }
   const body = encode(new TextEncoder().encode(JSON.stringify(payload)))
   const signature = await crypto.subtle.sign("HMAC", signing, new TextEncoder().encode(body))
   return `${body}.${encode(new Uint8Array(signature))}`
+}
+
+export async function seal(person: Person): Promise<string> {
+  const now = Date.now()
+  return sign({
+    email: person.email,
+    exp: now + MAX_AGE * 1000,
+    seen: now,
+    idle: configuredIdle(),
+  })
+}
+
+/**
+ * The same session, used again just now.
+ *
+ * A separate function rather than an argument to `seal()`, because the whole
+ * difference between them is which fields may move, and that is worth being
+ * unable to get wrong: `exp` is carried across verbatim and only `seen` is
+ * rewritten. Sealing afresh on every touch would hand out a new fourteen days
+ * each time and there would be no cap left.
+ *
+ * The window is re-read while we are here, so an owner who shortens it on the
+ * settings screen reaches sessions that are already open, on their next touch,
+ * rather than only sessions opened afterwards.
+ *
+ * Returns null when the token no longer opens, so a caller cannot accidentally
+ * extend something that had already lapsed.
+ */
+export async function refresh(token: string | undefined): Promise<string | null> {
+  const payload = await verified(token)
+  if (!payload) return null
+  return sign({ ...payload, seen: Date.now(), idle: configuredIdle() })
 }
 
 /**
@@ -154,7 +240,7 @@ export async function seal(person: Person): Promise<string> {
  * their token happens to expire. That is the one revocation property this file
  * can honestly offer, and it is worth having.
  */
-export async function open(token: string | undefined): Promise<Desk | null> {
+async function verified(token: string | undefined): Promise<Payload | null> {
   if (!token) return null
   const [body, signature] = token.split(".")
   if (!body || !signature) return null
@@ -174,16 +260,42 @@ export async function open(token: string | undefined): Promise<Desk | null> {
     if (!valid) return null
 
     const payload = JSON.parse(new TextDecoder().decode(decode(body))) as Payload
-    if (!payload.exp || payload.exp < Date.now()) return null
+    const now = Date.now()
+    if (!payload.exp || payload.exp < now) return null
 
-    const person = PEOPLE.find((candidate) => candidate.email === payload.email)
-    if (!person || !person.active) return null
+    /*
+     * A cookie sealed before there was an idle rule carries neither field.
+     * Treated as used just now and re-sealed by the next touch, which
+     * grandfathers everybody in for one window. Aging it from its issue time
+     * instead would be a forced sign out of every live session the moment this
+     * deploys, which is a real cost to pay for a rule nobody has been given the
+     * chance to obey yet.
+     */
+    const seen = payload.seen ?? now
+    const idle = payload.idle ?? configuredIdle()
+    if (now - seen > idle) return null
 
-    return { email: person.email, name: person.name, role: person.role }
+    return { ...payload, seen, idle }
   } catch {
     // A cookie that will not parse is stale or tampered with, and either way the
     // answer is the same: nobody is signed in.
     return null
+  }
+}
+
+export async function open(token: string | undefined): Promise<Desk | null> {
+  const payload = await verified(token)
+  if (!payload) return null
+
+  const person = PEOPLE.find((candidate) => candidate.email === payload.email)
+  if (!person || !person.active) return null
+
+  return {
+    email: person.email,
+    name: person.name,
+    role: person.role,
+    idleInMs: Math.max(0, payload.seen + payload.idle - Date.now()),
+    idleWindowMs: payload.idle,
   }
 }
 

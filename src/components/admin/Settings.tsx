@@ -5,7 +5,11 @@ import Link from "next/link"
 import { save } from "@/app/admin/settings/actions"
 import { SHOP } from "@/lib/format"
 import {
+  IDLE_MAX,
+  IDLE_MIN,
+  idleMinutes,
   NOTICES,
+  SESSION_ENV,
   SOCIAL_ENV,
   SOCIAL_KINDS,
   SOCIAL_LABEL,
@@ -40,6 +44,13 @@ const RULE =
 export function Settings({ settings }: { settings: ShopSettings }) {
   const [social, setSocial] = useState<Partial<Record<SocialKind, string>>>(settings.social)
   const [email, setEmail] = useState<EmailSettings>(settings.email)
+  /*
+   * Held as typed rather than as a number. A number input that coerces while
+   * somebody is still typing turns a half entered "45" into 4 and then into
+   * something they did not mean, and an empty field has to be expressible for
+   * as long as it takes to type the next digit.
+   */
+  const [idle, setIdle] = useState(String(settings.session.idleMinutes))
   const [answer, setAnswer] = useState<{ ok: boolean; message: string } | null>(null)
   const [saving, startSaving] = useTransition()
 
@@ -52,11 +63,18 @@ export function Settings({ settings }: { settings: ShopSettings }) {
   }
   const bad = SOCIAL_KINDS.filter((kind) => (social[kind] ?? "").trim() && !live[kind])
 
+  const window = idleMinutes(idle)
+  const badWindow = window === undefined
+
   function submit(event: React.FormEvent) {
     event.preventDefault()
     setAnswer(null)
     startSaving(async () => {
-      const result = await save({ social, email })
+      const result = await save({
+        social,
+        email,
+        session: { idleMinutes: idle },
+      })
       setAnswer(
         result.ok
           ? { ok: true, message: "Saved. The shop is showing these now." }
@@ -217,6 +235,42 @@ export function Settings({ settings }: { settings: ShopSettings }) {
             ))}
           </ul>
         </div>
+      </Card>
+
+      <Card className="mb-4">
+        <CardHeader
+          title="Signing out"
+          hint="How long an account may sit idle before the shop signs it out."
+        />
+        <label className="block max-w-xs">
+          <span className="callout">Minutes of inactivity</span>
+          <input
+            inputMode="numeric"
+            value={idle}
+            onChange={(event) => setIdle(event.target.value)}
+            aria-invalid={badWindow ? true : undefined}
+            className={`${RULE} ${badWindow ? "border-oxblood" : ""}`}
+            disabled={saving}
+          />
+          <span className="mt-1 block text-[11px] leading-relaxed text-mute">
+            Counted from the last thing somebody did, not from when they signed in. A
+            minute before the end they are warned and can stay. This applies to everyone
+            with an account, the counter and customers alike.
+          </span>
+          <span className="mt-1 block font-mono text-[11px] text-mute">
+            {SESSION_ENV.idleMinutes}
+          </span>
+        </label>
+
+        {badWindow && (
+          <p
+            role="alert"
+            className="mt-5 border-l-2 border-oxblood bg-oxblood/5 px-3 py-2 text-sm leading-relaxed text-ink"
+          >
+            That is not a window we can set. Give a whole number of minutes between{" "}
+            {IDLE_MIN} and {IDLE_MAX}.
+          </p>
+        )}
       </Card>
 
       <div className="flex flex-wrap items-center gap-4">

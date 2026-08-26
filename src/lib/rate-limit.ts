@@ -54,6 +54,13 @@ const DEFAULTS: Record<string, Limit> = {
   forgot: { hits: 3, seconds: 600 },
   reset: { hits: 5, seconds: 600 },
   order: { hits: 10, seconds: 60 },
+  /*
+   * Generous, because this one is not a door: it is the browser saying "still
+   * here" for a session it already holds. The watcher asks at most once every
+   * thirty to a hundred and twenty seconds, so sixty a minute is a wide margin
+   * for several tabs, and it still stops a loop hammering it.
+   */
+  touch: { hits: 60, seconds: 60 },
 }
 
 /**

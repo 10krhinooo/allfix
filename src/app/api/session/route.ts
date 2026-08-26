@@ -22,7 +22,7 @@ export async function GET() {
 
   if (!desk) {
     return NextResponse.json(
-      { signedIn: false, tier: "retail", rate: 0 },
+      { signedIn: false, tier: "retail", rate: 0, idleInMs: 0, idleWindowMs: 0 },
       { headers: { "Cache-Control": "no-store" } },
     )
   }
@@ -35,6 +35,15 @@ export async function GET() {
       role: desk.role,
       tier,
       rate: rateFor(tier),
+      /*
+       * How long this session has left, for the watcher that has to warn before
+       * it ends. Milliseconds remaining rather than a deadline, because a
+       * browser whose clock is wrong would read an absolute time as already
+       * past. A signed out visitor is told nothing and needs nothing: the
+       * watcher never arms for them.
+       */
+      idleInMs: desk.idleInMs,
+      idleWindowMs: desk.idleWindowMs,
     },
     // Private and never cached. A shared cache holding this would hand one
     // visitor's account to the next.
