@@ -37,7 +37,9 @@ export const PROFILES: Record<string, ProfileSpec> = {
   "20":          { width: 42, height: 34, wall: 4, slot: 13 },
   "20-rubber":   { width: 42, height: 34, wall: 4, slot: 13, rubber: true },
   "28":          { width: 56, height: 44, wall: 5, slot: 17 },
-  "15-bendable": { width: 30, height: 27, wall: 3, slot: 10, radius: 7 },
+  // Renumbered from #15 by the client in the August sheet. The section is the
+  // same track, so the dimensions carry over with the key.
+  "10-bendable": { width: 30, height: 27, wall: 3, slot: 10, radius: 7 },
   "17-rubber":   { width: 34, height: 30, wall: 3, slot: 11, radius: 9, rubber: true },
   ks:            { width: 50, height: 22, wall: 3, slot: 14 },
   "double-rail": { width: 74, height: 34, wall: 4, slot: 13, twin: true },

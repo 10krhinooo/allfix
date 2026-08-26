@@ -10,7 +10,7 @@
       "skuPrefixes": [
         "RL#MOTOR_"
       ],
-      "partCount": 28,
+      "partCount": 32,
       "components": [
         "belt",
         "bracket",
@@ -37,7 +37,7 @@
       "skuPrefixes": [
         "RL#20R_"
       ],
-      "partCount": 16,
+      "partCount": 20,
       "components": [
         "bracket",
         "buckle",
@@ -59,11 +59,10 @@
       "skuPrefixes": [
         "RL#20_"
       ],
-      "partCount": 16,
+      "partCount": 19,
       "components": [
         "bracket",
         "buckle",
-        "corner-joint",
         "hook",
         "joint",
         "runner",
@@ -81,7 +80,7 @@
       "skuPrefixes": [
         "RL#28_"
       ],
-      "partCount": 16,
+      "partCount": 21,
       "components": [
         "bracket",
         "buckle",
@@ -95,14 +94,14 @@
       "stockLengthM": 6
     },
     {
-      "slug": "15-bendable",
-      "name": "#15 bendable",
-      "shortName": "#15",
-      "blurb": "A bendable track that follows a bay window or a curved wall.",
+      "slug": "10-bendable",
+      "name": "#10 bendable",
+      "shortName": "#10",
+      "blurb": "A bendable track that follows a bay window or a curved wall, plain or with a rubber insert for a quieter glide.",
       "skuPrefixes": [
-        "RL#15_"
+        "RL#10_"
       ],
-      "partCount": 14,
+      "partCount": 25,
       "components": [
         "bracket",
         "buckle",
@@ -120,12 +119,14 @@
       "shortName": "#17",
       "blurb": "A bendable rubber groove track, for curves that need a quiet, soft glide.",
       "skuPrefixes": [
-        "RL#17_"
+        "RL#17_",
+        "RL#GROOVE_"
       ],
-      "partCount": 12,
+      "partCount": 17,
       "components": [
         "bracket",
         "buckle",
+        "holder",
         "hook",
         "runner",
         "stopper",
@@ -142,7 +143,7 @@
       "skuPrefixes": [
         "RL#KS_"
       ],
-      "partCount": 12,
+      "partCount": 16,
       "components": [
         "bracket",
         "buckle",
@@ -162,7 +163,7 @@
       "skuPrefixes": [
         "RL#DR_"
       ],
-      "partCount": 11,
+      "partCount": 15,
       "components": [
         "buckle",
         "hook",
@@ -181,7 +182,7 @@
       "skuPrefixes": [
         "RL#ROMAN_"
       ],
-      "partCount": 19,
+      "partCount": 23,
       "components": [
         "blind-ring",
         "bracket",
@@ -195,6 +196,51 @@
         "tape",
         "thread",
         "track",
+        "weight"
+      ],
+      "stockLengthM": 6
+    },
+    {
+      "slug": "zebra-blind",
+      "curtainParts": false,
+      "name": "Zebra blind",
+      "shortName": "Zebra",
+      "blurb": "The double layer blind that tunes light by sliding one band of fabric over another. Tube, mechanism, brackets and the fabric itself.",
+      "skuPrefixes": [
+        "RL#ZEBRA_"
+      ],
+      "partCount": 10,
+      "components": [
+        "bracket",
+        "end-seal",
+        "fabric",
+        "mechanism",
+        "pin-end",
+        "thread",
+        "track",
+        "tube"
+      ],
+      "stockLengthM": 6
+    },
+    {
+      "slug": "roller-blind",
+      "curtainParts": false,
+      "name": "Roller blind",
+      "shortName": "Roller",
+      "blurb": "A single sheet on a chain driven tube, the plainest blind we fit. Every part of one, down to the base bar and the end seals.",
+      "skuPrefixes": [
+        "RL#ROLLER_"
+      ],
+      "partCount": 12,
+      "components": [
+        "base-bar",
+        "bracket",
+        "end-seal",
+        "fabric",
+        "mechanism",
+        "pin-end",
+        "thread",
+        "tube",
         "weight"
       ],
       "stockLengthM": 6
@@ -302,9 +348,23 @@
   ],
   "components": [
     {
+      "slug": "base-bar",
+      "name": "Base bars",
+      "purpose": "Weights the bottom of a roller blind so it hangs true.",
+      "perMetre": null,
+      "minimum": null
+    },
+    {
       "slug": "belt",
       "name": "Belts",
       "purpose": "The loop that transmits drive along a motorised track.",
+      "perMetre": null,
+      "minimum": null
+    },
+    {
+      "slug": "fabric",
+      "name": "Blind fabric",
+      "purpose": "The blind itself, cut to the window.",
       "perMetre": null,
       "minimum": null
     },
@@ -372,6 +432,13 @@
       "minimum": null
     },
     {
+      "slug": "end-seal",
+      "name": "End seals",
+      "purpose": "Caps the tube and keeps the fabric square on it.",
+      "perMetre": null,
+      "minimum": null
+    },
+    {
       "slug": "fibre",
       "name": "Fibre rods",
       "purpose": "Slots into the back of the blind to form each fold.",
@@ -407,9 +474,23 @@
       "minimum": null
     },
     {
+      "slug": "mechanism",
+      "name": "Mechanisms",
+      "purpose": "The chain driven end that raises and lowers the blind.",
+      "perMetre": null,
+      "minimum": null
+    },
+    {
       "slug": "motor",
       "name": "Motors",
       "purpose": "Drives a motorised track. Sized to the length and weight of the run.",
+      "perMetre": null,
+      "minimum": null
+    },
+    {
+      "slug": "pin-end",
+      "name": "Pin ends",
+      "purpose": "The idle end the tube turns on, opposite the mechanism.",
       "perMetre": null,
       "minimum": null
     },
@@ -463,6 +544,13 @@
       "minimum": null
     },
     {
+      "slug": "tube",
+      "name": "Tubes",
+      "purpose": "The barrel the blind rolls onto, cut to your window width.",
+      "perMetre": null,
+      "minimum": null
+    },
+    {
       "slug": "weight",
       "name": "Weights",
       "purpose": "Sits in the hem so the blind hangs straight.",
@@ -472,16 +560,16 @@
   ],
   "products": [
     {
-      "sku": "RL#15_004",
-      "name": "#15 Bendable Brackets",
-      "slug": "15-bendable-brackets",
+      "sku": "RL#10_004",
+      "name": "#10 Bendable Single Ceiling Brackets",
+      "slug": "10-bendable-single-ceiling-brackets",
       "family": "rail",
-      "system": "15-bendable",
+      "system": "10-bendable",
       "range": null,
       "diameter": null,
       "universal": false,
       "fitsSystems": [
-        "15-bendable"
+        "10-bendable"
       ],
       "component": "bracket",
       "componentLabel": "Brackets",
@@ -496,31 +584,187 @@
         },
         {
           "label": "Color",
-          "value": "White or silver"
+          "value": "White"
         }
       ],
-      "summary": "\"#15 Bendable Track Mounting Brackets \u2013 Heavy-Duty Metal for Smooth, Stable Curtain track Support\"",
-      "description": "Mount Type: Ceiling or wall mount\nFunction: Securely holds curved or straight sections of the track\nVariants: Available in single and double options\nFeature: Flexible design to follow curved wall profiles",
-      "priceKes": 10,
+      "summary": "\"#10 Bendable Track Mounting Brackets \u2013 Heavy-Duty Metal for Smooth, Stable Curtain track Support\"",
+      "description": "Mount Type: Ceiling mount\nFunction: Securely holds curved or straight sections of the track\nFeature: Flexible design to follow curved wall profiles",
+      "priceKes": 15,
       "priceBasis": "each",
       "priceNote": null,
       "tradePriceKes": null,
       "stock": null,
       "image": null,
-      "imageName": "#15-Bendable-Brackets",
+      "imageName": "#10-Bendable-Brackets",
       "legacyUrl": null
     },
     {
-      "sku": "RL#15_002",
-      "name": "#15 Bendable Runners",
-      "slug": "15-bendable-runners",
+      "sku": "RL#10_012",
+      "name": "#10 Bendable Track Double Wall Bracket",
+      "slug": "10-bendable-track-double-wall-bracket",
       "family": "rail",
-      "system": "15-bendable",
+      "system": "10-bendable",
       "range": null,
       "diameter": null,
       "universal": false,
       "fitsSystems": [
-        "15-bendable"
+        "10-bendable"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-strength metal alloy"
+        },
+        {
+          "label": "Finish",
+          "value": "Anti-rust coating for long-term durability"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        }
+      ],
+      "summary": "#10 Bendable Track Mounting Brackets \u2013 Heavy-Duty Metal for Smooth, Stable Curtain track Support",
+      "description": "Mount Type: Wall mount\nFunction: Securely holds curved or straight sections of the track\nFeature: Flexible design to follow curved wall profiles",
+      "priceKes": 80,
+      "priceBasis": "each",
+      "priceNote": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#10_013",
+      "name": "#10 Bendable Track Single Wall Bracket",
+      "slug": "10-bendable-track-single-wall-bracket",
+      "family": "rail",
+      "system": "10-bendable",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "10-bendable"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-strength metal alloy"
+        },
+        {
+          "label": "Finish",
+          "value": "Anti-rust coating for long-term durability"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        }
+      ],
+      "summary": "#10 Bendable Track Mounting Brackets \u2013 Heavy-Duty Metal for Smooth, Stable Curtain track Support",
+      "description": "Mount Type: Wall mount\nFunction: Securely holds curved or straight sections of the track\nFeature: Flexible design to follow curved wall profiles",
+      "priceKes": 25,
+      "priceBasis": "each",
+      "priceNote": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#10_010",
+      "name": "#10 Bendable Track With Rubber Single Ceiling Brackets",
+      "slug": "10-bendable-track-with-rubber-single-ceiling-brackets",
+      "family": "rail",
+      "system": "10-bendable",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "10-bendable"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-strength metal alloy"
+        },
+        {
+          "label": "Finish",
+          "value": "Anti-rust coating for long-term durability"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        }
+      ],
+      "summary": "\"#10 Bendable Track Mounting Brackets \u2013 Heavy-Duty Metal for Smooth, Stable Curtain track Support\"",
+      "description": "Mount Type: Ceiling mount\nFunction: Securely holds curved or straight sections of the track\nFeature: Flexible design to follow curved wall profiles",
+      "priceKes": 15,
+      "priceBasis": "each",
+      "priceNote": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#10_011",
+      "name": "#10 Bendable Track With Rubber double Ceiling Brackets",
+      "slug": "10-bendable-track-with-rubber-double-ceiling-brackets",
+      "family": "rail",
+      "system": "10-bendable",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "10-bendable"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-strength metal alloy"
+        },
+        {
+          "label": "Finish",
+          "value": "Anti-rust coating for long-term durability"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        }
+      ],
+      "summary": "\"#10 Bendable Track Mounting Brackets \u2013 Heavy-Duty Metal for Smooth, Stable Curtain track Support\"",
+      "description": "Mount Type: Ceiling mount\nFunction: Securely holds curved or straight sections of the track\nFeature: Flexible design to follow curved wall profiles",
+      "priceKes": 50,
+      "priceBasis": "each",
+      "priceNote": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#10_002",
+      "name": "#10 Bendable Runners",
+      "slug": "10-bendable-runners",
+      "family": "rail",
+      "system": "10-bendable",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "10-bendable"
       ],
       "component": "runner",
       "componentLabel": "Runners",
@@ -532,50 +776,30 @@
         {
           "label": "Color",
           "value": "White"
-        },
-        {
-          "label": "Hook Type",
-          "value": "Plastic with metal hook"
-        },
-        {
-          "label": "Function",
-          "value": "Smooth and silent glide through curved tracks"
-        },
-        {
-          "label": "Durability",
-          "value": "Resistant to wear and deformation"
-        },
-        {
-          "label": "Feature",
-          "value": "Easy to install and remove for cleaning or replacement"
-        },
-        {
-          "label": "Application",
-          "value": "Ripple or pleated curtain systems"
         }
       ],
-      "summary": "\"#15 Curtain Runners for Bendable Tracks \u2013 Wear-Resistant, Noise-Free Curtain Movement\"",
-      "description": "Hook Type: Plastic with metal hook\nFunction: Smooth and silent glide through curved tracks\nDurability: Resistant to wear and deformation\nFeature: Easy to install and remove for cleaning or replacement\nApplication: Ripple or pleated curtain systems",
+      "summary": "\"#10 Curtain Runners for Bendable Tracks \u2013 Wear-Resistant, Noise-Free Curtain Movement\"",
+      "description": "Hook Type: Plastic with metal hook\nFunction: Smooth and silent glide through curved tracks\nDurability: Resistant to wear and deformation\nFeature: Easy to install and remove for cleaning or replacement\nApplication: Pleated curtain systems",
       "priceKes": 10,
       "priceBasis": "each",
       "priceNote": null,
       "tradePriceKes": null,
       "stock": null,
-      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/15-Bendable-Runners.jpg",
-      "imageName": "#15-Bendable-Runners",
-      "legacyUrl": "https://allfix.co.ke/product/15-bendable-runners/"
+      "image": null,
+      "imageName": "#10-Bendable-Runners",
+      "legacyUrl": null
     },
     {
-      "sku": "RL#15_003",
-      "name": "#15 Bendable Runners with Metal",
-      "slug": "15-bendable-runners-with-metal",
+      "sku": "RL#10_003",
+      "name": "#10 Bendable Runners with Metal",
+      "slug": "10-bendable-runners-with-metal",
       "family": "rail",
-      "system": "15-bendable",
+      "system": "10-bendable",
       "range": null,
       "diameter": null,
       "universal": false,
       "fitsSystems": [
-        "15-bendable"
+        "10-bendable"
       ],
       "component": "runner",
       "componentLabel": "Runners",
@@ -587,50 +811,65 @@
         {
           "label": "Color",
           "value": "White"
-        },
-        {
-          "label": "Hook Type",
-          "value": "Plastic with metal hook"
-        },
-        {
-          "label": "Function",
-          "value": "Smooth and silent glide through curved tracks"
-        },
-        {
-          "label": "Durability",
-          "value": "Resistant to wear and deformation"
-        },
-        {
-          "label": "Feature",
-          "value": "Easy to install and remove for cleaning or replacement"
-        },
-        {
-          "label": "Application",
-          "value": "Ripple or pleated curtain systems"
         }
       ],
-      "summary": "\"#15 Curtain Runners for Bendable Tracks \u2013 Wear-Resistant, Noise-Free Curtain Movement\"",
+      "summary": "\"#10 Curtain Runners for Bendable Tracks \u2013 Wear-Resistant, Noise-Free Curtain Movement\"",
       "description": "Hook Type: Plastic with metal hook\nFunction: Smooth and silent glide through curved tracks\nDurability: Resistant to wear and deformation\nFeature: Easy to install and remove for cleaning or replacement\nApplication: Ripple or pleated curtain systems",
-      "priceKes": null,
+      "priceKes": 18,
       "priceBasis": "each",
       "priceNote": null,
       "tradePriceKes": null,
       "stock": null,
-      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/15-Bendable-Metal-Runners.jpg",
-      "imageName": "#15-Bendable-Metal-Runners",
-      "legacyUrl": "https://allfix.co.ke/product/15-bendable-runners-with-metal/"
+      "image": null,
+      "imageName": "#10-Bendable-Metal-Runners",
+      "legacyUrl": null
     },
     {
-      "sku": "RL#15_006",
-      "name": "#15 Bendable Metal Stoppers",
-      "slug": "15-bendable-metal-stoppers",
+      "sku": "RL#10_008",
+      "name": "#10 Bendable Track With Rubber Runners",
+      "slug": "10-bendable-track-with-rubber-runners",
       "family": "rail",
-      "system": "15-bendable",
+      "system": "10-bendable",
       "range": null,
       "diameter": null,
       "universal": false,
       "fitsSystems": [
-        "15-bendable"
+        "10-bendable"
+      ],
+      "component": "runner",
+      "componentLabel": "Runners",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Durable plastic or nylon"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        }
+      ],
+      "summary": "\"#10 with rubber Curtain Runners for Bendable Tracks \u2013 Wear-Resistant, Noise-Free Curtain Movement\"",
+      "description": "Hook Type: Plastic with metal hook\nFunction: Smooth and silent glide through curved tracks\nDurability: Resistant to wear and deformation\nFeature: Easy to install and remove for cleaning or replacement\nApplication: Pleated curtain systems",
+      "priceKes": 10,
+      "priceBasis": "each",
+      "priceNote": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#10_006",
+      "name": "#10 Bendable Metal Stoppers",
+      "slug": "10-bendable-metal-stoppers",
+      "family": "rail",
+      "system": "10-bendable",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "10-bendable"
       ],
       "component": "stopper",
       "componentLabel": "Stoppers",
@@ -642,54 +881,30 @@
         {
           "label": "Color",
           "value": "Silver"
-        },
-        {
-          "label": "Function",
-          "value": "Prevents runners from sliding off the track ends"
-        },
-        {
-          "label": "Grip",
-          "value": "Firm hold even after bending the track"
-        },
-        {
-          "label": "Feature",
-          "value": "Adjustable and easy to install"
-        },
-        {
-          "label": "Durability",
-          "value": "Corrosion and impact resistant"
-        },
-        {
-          "label": "Compatibility",
-          "value": "Fits perfectly into #15 bendable tracks"
-        },
-        {
-          "label": "Application",
-          "value": "Curtain systems with curved installations"
         }
       ],
-      "summary": "\"#15 Bendable Rail Metal Stoppers \u2013 Anti-Slip, Easy-Fit Ends for Smooth Curtain Operation\"",
-      "description": "Function: Prevents runners from sliding off the track ends\nGrip: Firm hold even after bending the track\nFeature: Adjustable and easy to install\nDurability: Corrosion and impact resistant\nCompatibility: Fits perfectly into #15 bendable tracks\nApplication: Curtain systems with curved installations",
+      "summary": "\"#10 Bendable Rail Metal Stoppers \u2013 Anti-Slip, Easy-Fit Ends for Smooth Curtain Operation\"",
+      "description": "Function: Prevents runners from sliding off the track ends\nGrip: Firm hold even after bending the track\nFeature: Adjustable and easy to install\nDurability: Corrosion and impact resistant\nCompatibility: Fits perfectly into #10 bendable tracks\nApplication: Curtain systems with curved installations",
       "priceKes": 20,
       "priceBasis": "each",
       "priceNote": null,
       "tradePriceKes": null,
       "stock": null,
-      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/15-Bendable-Metal-Stoppers.jpg",
-      "imageName": "#15-Bendable-Metal-Stoppers",
-      "legacyUrl": "https://allfix.co.ke/product/15-bendable-metal-stoppers/"
+      "image": null,
+      "imageName": "#10-Bendable-Metal-Stoppers",
+      "legacyUrl": null
     },
     {
-      "sku": "RL#15_005",
-      "name": "#15 Bendable Stoppers",
-      "slug": "15-bendable-stoppers",
+      "sku": "RL#10_005",
+      "name": "#10 Bendable Stoppers",
+      "slug": "10-bendable-stoppers",
       "family": "rail",
-      "system": "15-bendable",
+      "system": "10-bendable",
       "range": null,
       "diameter": null,
       "universal": false,
       "fitsSystems": [
-        "15-bendable"
+        "10-bendable"
       ],
       "component": "stopper",
       "componentLabel": "Stoppers",
@@ -700,55 +915,66 @@
         },
         {
           "label": "Color",
-          "value": "White or silver"
-        },
-        {
-          "label": "Function",
-          "value": "Prevents runners from sliding off the track ends"
-        },
-        {
-          "label": "Grip",
-          "value": "Firm hold even after bending the track"
-        },
-        {
-          "label": "Feature",
-          "value": "Adjustable and easy to install"
-        },
-        {
-          "label": "Durability",
-          "value": "Corrosion and impact resistant"
-        },
-        {
-          "label": "Compatibility",
-          "value": "Fits perfectly into #15 bendable tracks"
-        },
-        {
-          "label": "Application",
-          "value": "Curtain systems with curved installations"
+          "value": "White"
         }
       ],
-      "summary": "\"#15 Bendable Rail Stoppers \u2013 Anti-Slip, Easy-Fit Ends for Smooth Curtain Operation\"",
-      "description": "Function: Prevents runners from sliding off the track ends\nGrip: Firm hold even after bending the track\nFeature: Adjustable and easy to install\nDurability: Corrosion and impact resistant\nCompatibility: Fits perfectly into #15 bendable tracks\nApplication: Curtain systems with curved installations",
+      "summary": "\"#10 Bendable Rail Stoppers \u2013 Anti-Slip, Easy-Fit Ends for Smooth Curtain Operation\"",
+      "description": "Function: Prevents runners from sliding off the track ends\nGrip: Firm hold even after bending the track\nFeature: Adjustable and easy to install\nDurability: Corrosion and impact resistant\nCompatibility: Fits perfectly into #10 bendable tracks\nApplication: Curtain systems with curved installations",
       "priceKes": 10,
       "priceBasis": "each",
       "priceNote": null,
       "tradePriceKes": null,
       "stock": null,
-      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/15-Bendable-Stoppers.jpg",
-      "imageName": "#15-Bendable-Stoppers",
-      "legacyUrl": "https://allfix.co.ke/product/15-bendable-stoppers/"
+      "image": null,
+      "imageName": "#10-Bendable-Stoppers",
+      "legacyUrl": null
     },
     {
-      "sku": "RL#15_001",
-      "name": "#15 Bendable Track",
-      "slug": "15-bendable-track",
+      "sku": "RL#10_009",
+      "name": "#10 Bendable Track With Rubber Stoppers",
+      "slug": "10-bendable-track-with-rubber-stoppers",
       "family": "rail",
-      "system": "15-bendable",
+      "system": "10-bendable",
       "range": null,
       "diameter": null,
       "universal": false,
       "fitsSystems": [
-        "15-bendable"
+        "10-bendable"
+      ],
+      "component": "stopper",
+      "componentLabel": "Stoppers",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality plastic"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        }
+      ],
+      "summary": "\"#10 Bendable Rail Stoppers \u2013 Anti-Slip, Easy-Fit Ends for Smooth Curtain Operation\"",
+      "description": "Function: Prevents runners from sliding off the track ends\nGrip: Firm hold even after bending the track\nFeature: Adjustable and easy to install\nDurability: Corrosion and impact resistant\nCompatibility: Fits perfectly into #10 bendable tracks\nApplication: Curtain systems with curved installations",
+      "priceKes": 10,
+      "priceBasis": "each",
+      "priceNote": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#10_001",
+      "name": "#10 Bendable Track",
+      "slug": "10-bendable-track",
+      "family": "rail",
+      "system": "10-bendable",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "10-bendable"
       ],
       "component": "track",
       "componentLabel": "Tracks",
@@ -768,42 +994,61 @@
         {
           "label": "Surface Finish",
           "value": "Smooth, anti-corrosive coating"
-        },
-        {
-          "label": "Type",
-          "value": "Bendable track for curved and bay window installations"
-        },
-        {
-          "label": "Function",
-          "value": "Allows both inward and outward bending without deformation"
-        },
-        {
-          "label": "Compatibility",
-          "value": "Works with #15 bendable runners, brackets, and stoppers"
-        },
-        {
-          "label": "Load Capacity",
-          "value": "Suitable for light to medium curtain weights"
-        },
-        {
-          "label": "Installation",
-          "value": "Ceiling or wall mount depending on bracket choice"
-        },
-        {
-          "label": "Application",
-          "value": "Residential, hotel, or office window systems"
         }
       ],
-      "summary": "\"#15 Flexible Aluminum Curtain Track \u2013 Bendable Ceiling Rail for Curved & Bay Windows \u2013 Smooth Glide System\"",
-      "description": "Type: Bendable track for curved and bay window installations\nFunction: Allows both inward and outward bending without deformation\nCompatibility: Works with #15 bendable runners, brackets, and stoppers\nLoad Capacity: Suitable for light to medium curtain weights\nInstallation: Ceiling or wall mount depending on bracket choice\nApplication: Residential, hotel, or office window systems",
-      "priceKes": 1500,
+      "summary": "\"#10 Flexible Aluminum Curtain Track \u2013 Bendable Ceiling Rail for Curved & Bay Windows \u2013 Smooth Glide System\"",
+      "description": "Type: Bendable track for curved and bay window installations\nFunction: Allows both inward and outward bending without deformation\nCompatibility: Works with #10 bendable runners, brackets, and stoppers\nLoad Capacity: Suitable for light to medium curtain weights\nInstallation: Ceiling or wall mount depending on bracket choice\nApplication: Residential, hotel, or office window systems",
+      "priceKes": 2000,
       "priceBasis": "each",
       "priceNote": null,
       "tradePriceKes": null,
       "stock": null,
-      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/15-Bendable-Track.jpg",
-      "imageName": "#15-Bendable-Track",
-      "legacyUrl": "https://allfix.co.ke/product/15-bendable-track/"
+      "image": null,
+      "imageName": "#10-Bendable-Track",
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#10_007",
+      "name": "#10 Bendable Track With Rubber",
+      "slug": "10-bendable-track-with-rubber",
+      "family": "rail",
+      "system": "10-bendable",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "10-bendable"
+      ],
+      "component": "track",
+      "componentLabel": "Tracks",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality flexible aluminum alloy with rubber lining"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Length",
+          "value": "Customizable upon request"
+        },
+        {
+          "label": "Surface",
+          "value": "Smooth, anti-corrosive coating"
+        }
+      ],
+      "summary": "\"#10 Bendable Curtain Track with Rubber \u2014 Smooth, Quiet and Flexible Operation\"",
+      "description": "Function: Allows curtains to glide smoothly and quietly\nFeature: Rubber lining helps reduce friction and noise\nFlexibility: Easily bends inward and outward without deformation\nCompatibility: Works with #10 runners, brackets and stoppers\nApplication: Suitable for curved windows, bay windows and room dividers",
+      "priceKes": 2000,
+      "priceBasis": "each",
+      "priceNote": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
     },
     {
       "sku": "RL#17_002",
@@ -869,9 +1114,40 @@
       "legacyUrl": "https://allfix.co.ke/product/17-rubber-single-ceiling-bracket/"
     },
     {
+      "sku": "RL#GROOVE_001",
+      "name": "Groove Runner with Metal Holder",
+      "slug": "groove-runner-with-metal-holder",
+      "family": "rail",
+      "system": "17-rubber",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "17-rubber"
+      ],
+      "component": "holder",
+      "componentLabel": "Holders",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Plastic with metal holder"
+        }
+      ],
+      "summary": "\" Groove Runner with metal holder\"",
+      "description": "",
+      "priceKes": 18,
+      "priceBasis": "each",
+      "priceNote": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
       "sku": "RL#17_003",
-      "name": "#17 Rubber Runners",
-      "slug": "17-rubber-runners",
+      "name": "#17 Runners",
+      "slug": "17-runners",
       "family": "rail",
       "system": "17-rubber",
       "range": null,
@@ -905,8 +1181,8 @@
     },
     {
       "sku": "RL#17_004",
-      "name": "#17 Rubber Stoppers",
-      "slug": "17-rubber-stoppers",
+      "name": "#17 Stoppers",
+      "slug": "17-stoppers",
       "family": "rail",
       "system": "17-rubber",
       "range": null,
@@ -953,7 +1229,7 @@
       ],
       "summary": "\" #17 Rubber Track End Stopper \u2013 Durable Plastic Cap to Prevent Curtain Runner Slip-Off\"",
       "description": "Material: High-strength ABS plastic or metal\nType: Curtain track end stoppers for #17 rubber tracks\nRubber Compatibility: Firmly fits and grips rubber-lined tracks\nFunction: Prevents runners from slipping off track ends\nDesign: Easy to install or adjust without tools\nDurability: Shock-resistant and long-lasting\nApplication: Suitable for #17 rubber track installations in both residential and commercial settings",
-      "priceKes": 20,
+      "priceKes": 15,
       "priceBasis": "each",
       "priceNote": null,
       "tradePriceKes": null,
@@ -1016,8 +1292,8 @@
       ],
       "summary": "\"#17 Rubber-Lined Curtain Rail \u2013 Noise-Reducing Aluminum Track for Ceiling or Wall Mounts\"",
       "description": "Type: Rubber-lined curtain track for smooth and silent operation\nRubber Insert: Reduces noise and friction during curtain movement\nCompatibility: Works with #17 rubber runners, stoppers, and brackets\nMounting: Suitable for ceiling or wall installation\nLoad Capacity: Supports medium to heavy curtain fabrics\nLength: Customizable according to size.",
-      "priceKes": 2500,
-      "priceBasis": "each",
+      "priceKes": 2400,
+      "priceBasis": "length",
       "priceNote": null,
       "tradePriceKes": null,
       "stock": null,
@@ -1075,7 +1351,7 @@
       ],
       "summary": "\"Premium #20 Double Ceiling Bracket \u2013 Heavy Duty Metal Support for Two Tracks\"",
       "description": "Design: Double-rail ceiling mount for layered curtains\nMounting: Secure ceiling installation with screws\nCompatibility: Fits #20 curtain rail tracks\nSupport Capacity: Handles medium curtain loads on dual rails\nApplication: Ideal for homes, offices, and hotels",
-      "priceKes": 40,
+      "priceKes": 100,
       "priceBasis": "each",
       "priceNote": null,
       "tradePriceKes": null,
@@ -1196,41 +1472,6 @@
     },
     {
       "sku": "RL#20_007",
-      "name": "#20 Corner Joint",
-      "slug": "20-corner-joint",
-      "family": "rail",
-      "system": "20",
-      "range": null,
-      "diameter": null,
-      "universal": false,
-      "fitsSystems": [
-        "20"
-      ],
-      "component": "corner-joint",
-      "componentLabel": "Corner joints",
-      "specs": [
-        {
-          "label": "Material",
-          "value": "Plastic composite"
-        },
-        {
-          "label": "Colour",
-          "value": "Off-White"
-        }
-      ],
-      "summary": "\"Premium #20 Curtain Rail Corner Piece \u2013 Smooth Transition for Bay Windows and L-shaped\"",
-      "description": "Angle: Precision-engineered 90\u00b0 connector\nCompatibility: Joins two #20 curtain rails smoothly\nFunction: Allows runners and curtains to glide around corners\nFinish: Matches #20 curtain rail finish\nDurability: Long-lasting construction\nApplication: Ideal for bay windows and L-shaped installations",
-      "priceKes": null,
-      "priceBasis": "each",
-      "priceNote": null,
-      "tradePriceKes": null,
-      "stock": null,
-      "image": null,
-      "imageName": "#20-Corner-Joint",
-      "legacyUrl": null
-    },
-    {
-      "sku": "RL#20_008",
       "name": "#20 Joint",
       "slug": "20-joint",
       "family": "rail",
@@ -1251,30 +1492,6 @@
         {
           "label": "Colour",
           "value": "Silver"
-        },
-        {
-          "label": "Purpose",
-          "value": "Connects two #20 rails in a straight extension"
-        },
-        {
-          "label": "Compatibility",
-          "value": "Designed to fit #20 curtain rail profile"
-        },
-        {
-          "label": "Installation",
-          "value": "Easy slide-in fitting for secure connection"
-        },
-        {
-          "label": "Strength",
-          "value": "Keeps rails aligned and stable"
-        },
-        {
-          "label": "Finish",
-          "value": "Matches #20 rail design for a uniform look"
-        },
-        {
-          "label": "Application",
-          "value": "Extends curtain rails for wide spans"
         }
       ],
       "summary": "\"#20 Curtain Rail Joint \u2013 Strong Straight Connector for Curtain Track Extension\"",
@@ -1284,9 +1501,9 @@
       "priceNote": null,
       "tradePriceKes": null,
       "stock": null,
-      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/20-Joint.jpg",
+      "image": null,
       "imageName": "#20-Joint",
-      "legacyUrl": "https://allfix.co.ke/product/20-joint/"
+      "legacyUrl": null
     },
     {
       "sku": "RL#20_004",
@@ -1445,7 +1662,7 @@
       "summary": "\"Curtain Track #20 \u2013 Sleek & Reliable Rail System for Everyday Curtains\"",
       "description": "Profile Size: #20 standard rail (compatible with all #20 accessories)\nLoad Capacity: Designed for light to medium curtain weights\nOperation: Smooth and silent glide performance\nLength: Customizable; can be cut to size or extended using joints\nInstallation: Supports both ceiling and wall mount brackets\nDurability: Rust-resistant and built for long-term use",
       "priceKes": 2000,
-      "priceBasis": "each",
+      "priceBasis": "length",
       "priceNote": null,
       "tradePriceKes": null,
       "stock": null,
@@ -1808,8 +2025,8 @@
       ],
       "summary": "\"#20 Curtain Rail Track with Noise-Reducing Rubber Insert \u2013 Heavy Duty Aluminum for Smooth & Silent Curtain Glide\"",
       "description": "Profile Size: #20 standard rail with noise-reducing rubber lining\nNoise Control: Rubber insert ensures ultra-quiet curtain movement\nLoad Capacity: Supports light to medium curtain weights\nLength: Customizable; cut to size or extended using joints\nInstallation: Suitable for wall and ceiling mounting\nDurability: Anti-rust, anti-corrosion, and long-lasting",
-      "priceKes": 2500,
-      "priceBasis": "each",
+      "priceKes": 2400,
+      "priceBasis": "length",
       "priceNote": null,
       "tradePriceKes": null,
       "stock": null,
@@ -1843,7 +2060,7 @@
       ],
       "summary": "\"#28 Double Ceiling Bracket \u2013 Secure Dual Holder for Curtain Rail Installation\"",
       "description": "Finish: Antique brass plating / powder coating for enhanced style\nDesign: Dual-rail support for layered curtains (sheer + curtain)\nMounting: Wall installation with screw fittings\nCompatibility: Specifically designed for #28 curtain rail track\nDurability: Heavy-duty design for stable support",
-      "priceKes": 120,
+      "priceKes": 150,
       "priceBasis": "each",
       "priceNote": null,
       "tradePriceKes": null,
@@ -2023,8 +2240,8 @@
     },
     {
       "sku": "RL#28_008",
-      "name": "#28 Runners",
-      "slug": "28-runners",
+      "name": "#28 Double Ceiling Bracket",
+      "slug": "28-double-ceiling-bracket",
       "family": "rail",
       "system": "28",
       "range": null,
@@ -2069,6 +2286,41 @@
           "value": "Suitable for homes, hotels, and office curtain systems"
         }
       ],
+      "summary": "\"#28 Double Ceiling Bracket \u2013 Easy Install, Long-Lasting Support\"",
+      "description": "Design: Double-rail support bracket for ceiling installations\nCompatibility: Fits #28 curtain rail track system\nMounting: Easy ceiling installation with included hardware\nDurability: Corrosion-resistant and long-lasting",
+      "priceKes": 100,
+      "priceBasis": "each",
+      "priceNote": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/28-Runners.jpg",
+      "imageName": null,
+      "legacyUrl": "https://allfix.co.ke/product/28-runners/"
+    },
+    {
+      "sku": "RL#28_009",
+      "name": "#28 Runners",
+      "slug": "28-runners",
+      "family": "rail",
+      "system": "28",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "28"
+      ],
+      "component": "runner",
+      "componentLabel": "Runners",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality plastic with smooth-glide rollers"
+        },
+        {
+          "label": "Colour",
+          "value": "White"
+        }
+      ],
       "summary": "\"#28 Curtain Track Runners \u2013 Smooth, noise-free Sliding Carriers for Easy Curtain Movement\"",
       "description": "Glide: Silent and friction-free operation\nCompatibility: Specifically designed for #28 curtain rail track\nDurability: Resistant to daily wear and tear\nFinish: Neutral color to blend with curtain hardware\nQuantity: Available in bulk packs for large installations\nApplication: Suitable for homes, hotels, and office curtain systems",
       "priceKes": 15,
@@ -2076,9 +2328,9 @@
       "priceNote": null,
       "tradePriceKes": null,
       "stock": null,
-      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/28-Runners.jpg",
+      "image": null,
       "imageName": "#28-Runners",
-      "legacyUrl": "https://allfix.co.ke/product/28-runners/"
+      "legacyUrl": null
     },
     {
       "sku": "RL#28_002",
@@ -2122,7 +2374,7 @@
       ],
       "summary": "\"Heavy Duty #28 Curtain Track Stoppers \u2013 Strong End Caps for Secure wave Curtain Mounting\"",
       "description": "Purpose: Specially designed stopper for ripple fold curtain setups\nApplication: Ensures even spacing and consistent wave formation\nDurability: Durable construction for long-term use\nOperation: Prevents runners from moving beyond the set limit",
-      "priceKes": 30,
+      "priceKes": 60,
       "priceBasis": "each",
       "priceNote": null,
       "tradePriceKes": null,
@@ -2229,7 +2481,7 @@
       "summary": "\"Premium #28 Curtain Track \u2013 Durable Rust-Resistant Rail for Home & Commercial Use\"",
       "description": "Track Size: #28 standard profile (compatible with #28 accessories)\nOperation: Designed for smooth, silent curtain glide\nLoad Capacity: Supports medium to heavy curtain weights\nLength: Customizable; can be cut to size or extended with joints\nInstallation: Compatible with both ceiling and wall mounting brackets\nDurability: Rust-resistant and long-lasting construction",
       "priceKes": 2400,
-      "priceBasis": "each",
+      "priceBasis": "length",
       "priceNote": null,
       "tradePriceKes": null,
       "stock": null,
@@ -2399,7 +2651,7 @@
       "description": "Design: Dual-channel rail design for operating two curtain layers (sheer and curtain) independently\nOperation: Silent glide operation \nLoad Capacity: Designed to hold medium to heavy fabric weights securely\nInstallation: Supports ceiling or wall mount via compatible brackets\nApplication: Ideal for homes, hotels, offices, and high-end interior installations",
       "priceKes": 700,
       "priceBasis": "metre",
-      "priceNote": "KES 3,900 per length",
+      "priceNote": null,
       "tradePriceKes": null,
       "stock": null,
       "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Double-Rail-Track.jpg",
@@ -2864,8 +3116,8 @@
     },
     {
       "sku": "RL#MOTOR_019",
-      "name": "Motorized 45 Degree Corner Joint",
-      "slug": "motorized-45-degree-corner-joint",
+      "name": "Motorized 90 Degree Corner Joint",
+      "slug": "motorized-90-degree-corner-joint",
       "family": "rail",
       "system": "motorised",
       "range": null,
@@ -2911,14 +3163,14 @@
         }
       ],
       "summary": "Features: *Seamless transition for belt and runners at 45? angle *Low-friction inner surface for quiet, smooth glide *Anti-jamming design to ensure uninterrupted operation *Sturdy, wear-resistant plastic construction",
-      "description": "Function: Connects two curtain track sections at a 45\u00b0 angle for corner or bay window installations\nDimensions: Compact insert-type joint with precision-molded curve (approx. radius 8\u201312 cm)\nLoad Capacity: Maintains smooth curtain movement for systems up to 50\u201370 kg total load\nFeatures:\n    *Seamless transition for belt and runners at 45\u00b0 angle\n    *Low-friction inner surface for quiet, smooth glide\n    *Anti-jamming design to ensure uninterrupted operation\n    *Sturdy, wear-resistant plastic construction\nInstallation: Slides into both track ends and secures with screws\nApplication: Ideal for angled curtain layouts, bay windows, or architectural corners\nPackage Includes: 1 \u00d7 45\u00b0 corner joint",
-      "priceKes": 2500,
+      "description": "Function: Connects two curtain track sections at a 90\u00b0 angle for corner or bay window installations\nDimensions: Compact insert-type joint with precision-molded curve (approx. radius 8\u201312 cm)\nLoad Capacity: Maintains smooth curtain movement for systems up to 50\u201370 kg total load\nFeatures:\n    *Seamless transition for belt and runners at 90\u00b0 angle\n    *Low-friction inner surface for quiet, smooth glide\n    *Anti-jamming design to ensure uninterrupted operation\n    *Sturdy, wear-resistant plastic construction\nInstallation: Slides into both track ends and secures with screws\nApplication: Ideal for angled curtain layouts, bay windows, or architectural corners\nPackage Includes: 1 \u00d7 90\u00b0 corner joint",
+      "priceKes": 2000,
       "priceBasis": "each",
       "priceNote": null,
       "tradePriceKes": null,
       "stock": null,
       "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motorized-45-Degree-Corner-Joint.jpg",
-      "imageName": "Motorized-45-Degree-Corner-Joint",
+      "imageName": "Motorized-90-Degree-Corner-Joint",
       "legacyUrl": "https://allfix.co.ke/product/motorized-45-degree-corner-joint/"
     },
     {
@@ -3375,7 +3627,7 @@
       ],
       "summary": "Load Capacity: *Curtain: up to 50 kgs Package Contents: *1 ? DT82TN/NAC-1.2/14 Curtain Motor *Remote with batteries",
       "description": "Installation: Ceiling mounting and needs power supply socket\nLoad Capacity:\n    *Curtain: up to 50 kgs\nApplication: Suitable for residential, hotel, and commercial curtain installations\nPackage Contents:\n     *1 \u00d7 DT82TN/NAC-1.2/14 Curtain Motor\n     *Remote with batteries",
-      "priceKes": 1300,
+      "priceKes": 13000,
       "priceBasis": "each",
       "priceNote": null,
       "tradePriceKes": null,
@@ -3673,6 +3925,318 @@
       "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Motorized-Track.jpg",
       "imageName": "Motorized-Track",
       "legacyUrl": "https://allfix.co.ke/product/motorized-track/"
+    },
+    {
+      "sku": "RL#ROLLER_005",
+      "name": "Roller Blind Base Bar",
+      "slug": "roller-blind-base-bar",
+      "family": "rail",
+      "system": "roller-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "roller-blind"
+      ],
+      "component": "base-bar",
+      "componentLabel": "Base bars",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ROLLER_008",
+      "name": "Roller Blind Bracket Cover",
+      "slug": "roller-blind-bracket-cover",
+      "family": "rail",
+      "system": "roller-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "roller-blind"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ROLLER_006",
+      "name": "Roller Blind Left Bracket",
+      "slug": "roller-blind-left-bracket",
+      "family": "rail",
+      "system": "roller-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "roller-blind"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ROLLER_007",
+      "name": "Roller Blind Right Bracket",
+      "slug": "roller-blind-right-bracket",
+      "family": "rail",
+      "system": "roller-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "roller-blind"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ROLLER_009",
+      "name": "Roller Blind Top Mount Bracket",
+      "slug": "roller-blind-top-mount-bracket",
+      "family": "rail",
+      "system": "roller-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "roller-blind"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ROLLER_010",
+      "name": "Roller Blind End Seal",
+      "slug": "roller-blind-end-seal",
+      "family": "rail",
+      "system": "roller-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "roller-blind"
+      ],
+      "component": "end-seal",
+      "componentLabel": "End seals",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ROLLER_012",
+      "name": "Roller Blind Material",
+      "slug": "roller-blind-material",
+      "family": "rail",
+      "system": "roller-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "roller-blind"
+      ],
+      "component": "fabric",
+      "componentLabel": "Blind fabric",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ROLLER_002",
+      "name": "Roller Blind Roller Mechanism",
+      "slug": "roller-blind-roller-mechanism",
+      "family": "rail",
+      "system": "roller-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "roller-blind"
+      ],
+      "component": "mechanism",
+      "componentLabel": "Mechanisms",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ROLLER_004",
+      "name": "Roller Blind Pin End",
+      "slug": "roller-blind-pin-end",
+      "family": "rail",
+      "system": "roller-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "roller-blind"
+      ],
+      "component": "pin-end",
+      "componentLabel": "Pin ends",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ROLLER_003",
+      "name": "Roller Blind Chain Thread",
+      "slug": "roller-blind-chain-thread",
+      "family": "rail",
+      "system": "roller-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "roller-blind"
+      ],
+      "component": "thread",
+      "componentLabel": "Threads",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ROLLER_001",
+      "name": "Roller Blind Aluminium Tube",
+      "slug": "roller-blind-aluminium-tube",
+      "family": "rail",
+      "system": "roller-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "roller-blind"
+      ],
+      "component": "tube",
+      "componentLabel": "Tubes",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": 2500,
+      "priceBasis": "metre",
+      "priceNote": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ROLLER_011",
+      "name": "Roller Blind Weight",
+      "slug": "roller-blind-weight",
+      "family": "rail",
+      "system": "roller-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "roller-blind"
+      ],
+      "component": "weight",
+      "componentLabel": "Weights",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
     },
     {
       "sku": "RL#ROMAN_008",
@@ -4088,6 +4652,266 @@
       "legacyUrl": null
     },
     {
+      "sku": "RL#ZEBRA_005",
+      "name": "Cover Box Left Side Bracket",
+      "slug": "cover-box-left-side-bracket",
+      "family": "rail",
+      "system": "zebra-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "zebra-blind"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ZEBRA_006",
+      "name": "Cover Box Right Side Bracket",
+      "slug": "cover-box-right-side-bracket",
+      "family": "rail",
+      "system": "zebra-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "zebra-blind"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ZEBRA_007",
+      "name": "Zebra Blind Top Mount Brackets",
+      "slug": "zebra-blind-top-mount-brackets",
+      "family": "rail",
+      "system": "zebra-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "zebra-blind"
+      ],
+      "component": "bracket",
+      "componentLabel": "Brackets",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ZEBRA_009",
+      "name": "Zebra Blind End Seal",
+      "slug": "zebra-blind-end-seal",
+      "family": "rail",
+      "system": "zebra-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "zebra-blind"
+      ],
+      "component": "end-seal",
+      "componentLabel": "End seals",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ZEBRA_010",
+      "name": "Zebra Blind Material",
+      "slug": "zebra-blind-material",
+      "family": "rail",
+      "system": "zebra-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "zebra-blind"
+      ],
+      "component": "fabric",
+      "componentLabel": "Blind fabric",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ZEBRA_003",
+      "name": "Zebra Roller Mechanism",
+      "slug": "zebra-roller-mechanism",
+      "family": "rail",
+      "system": "zebra-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "zebra-blind"
+      ],
+      "component": "mechanism",
+      "componentLabel": "Mechanisms",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ZEBRA_004",
+      "name": "Zebra Blind Pin End",
+      "slug": "zebra-blind-pin-end",
+      "family": "rail",
+      "system": "zebra-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "zebra-blind"
+      ],
+      "component": "pin-end",
+      "componentLabel": "Pin ends",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ZEBRA_008",
+      "name": "Zebra Blind Ball Chain Thread",
+      "slug": "zebra-blind-ball-chain-thread",
+      "family": "rail",
+      "system": "zebra-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "zebra-blind"
+      ],
+      "component": "thread",
+      "componentLabel": "Threads",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ZEBRA_001",
+      "name": "Zebra Rail Cover",
+      "slug": "zebra-rail-cover",
+      "family": "rail",
+      "system": "zebra-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "zebra-blind"
+      ],
+      "component": "track",
+      "componentLabel": "Tracks",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": 2500,
+      "priceBasis": "metre",
+      "priceNote": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#ZEBRA_002",
+      "name": "Zebra Aluminium Tube",
+      "slug": "zebra-aluminium-tube",
+      "family": "rail",
+      "system": "zebra-blind",
+      "range": null,
+      "diameter": null,
+      "universal": false,
+      "fitsSystems": [
+        "zebra-blind"
+      ],
+      "component": "tube",
+      "componentLabel": "Tubes",
+      "specs": [],
+      "summary": "",
+      "description": "",
+      "priceKes": null,
+      "priceBasis": "each",
+      "priceNote": "Included in the cost of the track per mtr",
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
       "sku": null,
       "name": "Curtain Buckles",
       "slug": "curtain-buckles",
@@ -4101,7 +4925,7 @@
         "20-rubber",
         "20",
         "28",
-        "15-bendable",
+        "10-bendable",
         "17-rubber",
         "ks",
         "double-rail",
@@ -4141,7 +4965,7 @@
       ],
       "summary": "\"Plastic Curtain Buckles \u2013 Durable Buckles for Curtain Hanging on Curtain Rods\"",
       "description": "Design: Snap-fit buckle for secure curtain attachment\nFunction: Used to fasten curtain fabrics or connect tapes to rods\nFinish: Smooth, rust-resistant surface\nDurability: Designed for long-term use without loosening or cracking\nApplication: Compatible with most curtain tapes and tracks",
-      "priceKes": null,
+      "priceKes": 500,
       "priceBasis": "each",
       "priceNote": null,
       "tradePriceKes": null,
@@ -4155,7 +4979,7 @@
           "sku": "RL#ACC_010",
           "label": "Marble brown",
           "swatch": "#6B4A32",
-          "priceKes": null,
+          "priceKes": 500,
           "priceBasis": "each",
           "tradePriceKes": null,
           "stock": null,
@@ -4166,7 +4990,7 @@
           "sku": "RL#ACC_007",
           "label": "Gold",
           "swatch": "#C9A227",
-          "priceKes": null,
+          "priceKes": 500,
           "priceBasis": "each",
           "tradePriceKes": null,
           "stock": null,
@@ -4177,7 +5001,7 @@
           "sku": "RL#ACC_009",
           "label": "Marble black",
           "swatch": "#2B2B2E",
-          "priceKes": null,
+          "priceKes": 500,
           "priceBasis": "each",
           "tradePriceKes": null,
           "stock": null,
@@ -4188,7 +5012,7 @@
           "sku": "RL#ACC_008",
           "label": "Black",
           "swatch": "#141416",
-          "priceKes": null,
+          "priceKes": 500,
           "priceBasis": "each",
           "tradePriceKes": null,
           "stock": null,
@@ -4199,7 +5023,7 @@
           "sku": "RL#ACC_006",
           "label": "Copper",
           "swatch": "#B06B3A",
-          "priceKes": null,
+          "priceKes": 500,
           "priceBasis": "each",
           "tradePriceKes": null,
           "stock": null,
@@ -4210,7 +5034,7 @@
           "sku": "RL#ACC_005",
           "label": "Silver",
           "swatch": "#B9BCC1",
-          "priceKes": null,
+          "priceKes": 500,
           "priceBasis": "each",
           "tradePriceKes": null,
           "stock": null,
@@ -4221,7 +5045,7 @@
           "sku": "RL#ACC_004",
           "label": "White",
           "swatch": "#F2F2F0",
-          "priceKes": null,
+          "priceKes": 500,
           "priceBasis": "each",
           "tradePriceKes": null,
           "stock": null,
@@ -4244,7 +5068,7 @@
         "20-rubber",
         "20",
         "28",
-        "15-bendable",
+        "10-bendable",
         "17-rubber",
         "ks",
         "double-rail",
@@ -4315,7 +5139,7 @@
         "20-rubber",
         "20",
         "28",
-        "15-bendable",
+        "10-bendable",
         "17-rubber",
         "ks",
         "double-rail",
@@ -4359,7 +5183,7 @@
       ],
       "summary": "\"Curtain Hooks \u2013 Durable and Easy-to-Use Hooks for Tape Curtains and Curtain Tracks and Rail\"",
       "description": "Design: Lightweight and flexible hook for use with curtain heading tapes\nFinish: Smooth surface to prevent tearing of the curtain tape\nDurability: Resistant to wear, UV rays, and corrosion\nCompatibility: Fits standard curtain rods and rails\nUsage: Ideal for light to medium-weight curtain fabrics\nInstallation: Simple or slide-in application",
-      "priceKes": 180,
+      "priceKes": 150,
       "priceBasis": "each",
       "priceNote": null,
       "tradePriceKes": null,
@@ -4373,7 +5197,7 @@
           "sku": "RL#ACC_003",
           "label": "Plastic",
           "swatch": "#E8E8E6",
-          "priceKes": null,
+          "priceKes": 300,
           "priceBasis": "each",
           "tradePriceKes": null,
           "stock": null,
@@ -4384,7 +5208,7 @@
           "sku": "RL#ACC_002",
           "label": "Metal",
           "swatch": "#9AA0A6",
-          "priceKes": 180,
+          "priceKes": 150,
           "priceBasis": "box",
           "tradePriceKes": null,
           "stock": null,
@@ -4394,9 +5218,9 @@
       ]
     },
     {
-      "sku": "RL#ACC_015",
-      "name": "Ripple runners",
-      "slug": "ripple-runners",
+      "sku": "RL#RIPPLE_001",
+      "name": "#10 Bendable Ripple Runner",
+      "slug": "10-bendable-ripple-runner",
       "family": "rail",
       "system": null,
       "range": null,
@@ -4407,7 +5231,7 @@
         "20-rubber",
         "20",
         "28",
-        "15-bendable",
+        "10-bendable",
         "17-rubber",
         "ks",
         "double-rail",
@@ -4418,43 +5242,243 @@
       "specs": [
         {
           "label": "Material",
-          "value": "Woven polyester with evenly spaced pockets for ripple fold hooks"
+          "value": "Durable plastic"
         },
         {
           "label": "Color",
           "value": "White"
         },
         {
-          "label": "Width",
-          "value": "Commonly 80mm wide for balanced wave flow"
-        },
-        {
-          "label": "Design",
-          "value": "Creates symmetrical, ripple-like curtain wave"
-        },
-        {
-          "label": "Durability",
-          "value": "Long-lasting and easy to sew onto curtain headers"
+          "label": "Type",
+          "value": "Ripple curtain runner"
         },
         {
           "label": "Compatibility",
-          "value": "Designed for ripple fold and wave curtain systems"
+          "value": "Designed for #10 bendable tracks"
         },
         {
-          "label": "Usage",
-          "value": "Ideal for both manual and motorized curtain tracks"
+          "label": "Feature",
+          "value": "Smooth and easy gliding operation"
         }
       ],
-      "summary": "\"Allfix Ripple Fold Tape \u2013 Creates Elegant Curtain Waves for Modern Interiors\"",
-      "description": "Design: Creates symmetrical, ripple-like curtain wave\nDurability: Long-lasting and easy to sew onto curtain headers\nCompatibility: Designed for ripple fold and wave curtain systems\nUsage: Ideal for both manual and motorized curtain tracks",
+      "summary": "\"#10 Bendable Ripple Runner \u2014 Smooth and Even Movement for Ripple Curtains\"",
+      "description": "Function: Supports and guides ripple curtains smoothly along the track\nDesign: Helps maintain a neat and consistent curtain wave\nDurability: Wear-resistant and suitable for frequent use\nCompatibility: Fits #10 bendable curtain tracks\nApplication: Ideal for curved and straight ripple curtain installations",
       "priceKes": 30,
       "priceBasis": "each",
       "priceNote": null,
       "tradePriceKes": null,
       "stock": null,
-      "image": "https://allfix.co.ke/wp-content/uploads/2026/04/Ripple-Tape-with-runners.jpg",
-      "imageName": "Ripple-Tape-with-runners",
-      "legacyUrl": "https://allfix.co.ke/product/ripple-runners/"
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#RIPPLE_002",
+      "name": "Double Sided Ripple Runner without thread",
+      "slug": "double-sided-ripple-runner-without-thread",
+      "family": "rail",
+      "system": null,
+      "range": null,
+      "diameter": null,
+      "universal": true,
+      "fitsSystems": [
+        "motorised",
+        "20-rubber",
+        "20",
+        "28",
+        "10-bendable",
+        "17-rubber",
+        "ks",
+        "double-rail",
+        "roman-blind"
+      ],
+      "component": "runner",
+      "componentLabel": "Runners",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Durable plastic or nylon"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Design",
+          "value": "Double-sided connection"
+        },
+        {
+          "label": "Thread",
+          "value": "Without connecting thread"
+        },
+        {
+          "label": "Feature",
+          "value": "Easy installation and smooth movement"
+        }
+      ],
+      "summary": "\"Double-Sided Ripple Runner \u2014 Flexible Connection for Neat Curtain Waves\"",
+      "description": "Function: Connects and supports ripple curtain fabric for smooth movement\nDesign: Double-sided structure helps maintain consistent curtain spacing\nFeature: Can be used without pre-attached thread for flexible installation\nDurability: Resistant to wear and deformation",
+      "priceKes": 30,
+      "priceBasis": "each",
+      "priceNote": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#RIPPLE_004",
+      "name": "KS Ripple Runner",
+      "slug": "ks-ripple-runner",
+      "family": "rail",
+      "system": null,
+      "range": null,
+      "diameter": null,
+      "universal": true,
+      "fitsSystems": [
+        "motorised",
+        "20-rubber",
+        "20",
+        "28",
+        "10-bendable",
+        "17-rubber",
+        "ks",
+        "double-rail",
+        "roman-blind"
+      ],
+      "component": "runner",
+      "componentLabel": "Runners",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "High-quality durable plastic"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Feature",
+          "value": "Smooth, stable and easy gliding"
+        },
+        {
+          "label": "Compatibility",
+          "value": "Suitable for KS curtain tracks"
+        }
+      ],
+      "summary": "\"KS Ripple Runner \u2014 Smooth and Stable Performance for Elegant Ripple Curtains\"",
+      "description": "Function: Supports ripple curtains and enables smooth movement along KS tracks\nDesign: Helps create uniform and well-defined curtain waves\nDurability: Wear-resistant and designed for long-term use\nCompatibility: Fits compatible KS curtain rail systems",
+      "priceKes": 30,
+      "priceBasis": "each",
+      "priceNote": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#RIPPLE_003",
+      "name": "Ripple Runner with thread black wheel",
+      "slug": "ripple-runner-with-thread-black-wheel",
+      "family": "rail",
+      "system": null,
+      "range": null,
+      "diameter": null,
+      "universal": true,
+      "fitsSystems": [
+        "motorised",
+        "20-rubber",
+        "20",
+        "28",
+        "10-bendable",
+        "17-rubber",
+        "ks",
+        "double-rail",
+        "roman-blind"
+      ],
+      "component": "runner",
+      "componentLabel": "Runners",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Durable plastic with black wheel"
+        },
+        {
+          "label": "Color",
+          "value": "White runner with black wheel"
+        },
+        {
+          "label": "Thread",
+          "value": "Pre-attached connecting thread"
+        },
+        {
+          "label": "Wheel",
+          "value": "Smooth-gliding black wheel"
+        }
+      ],
+      "summary": "\"Ripple Runner with Thread & Black Wheel \u2014 Smooth, Quiet and Perfectly Spaced Waves\"",
+      "description": "Function: Allows ripple curtains to glide smoothly while maintaining uniform waves\nThread System: Pre-attached thread ensures consistent spacing between runners\nWheel: Black wheel provides smooth and low-friction movement",
+      "priceKes": 30,
+      "priceBasis": "each",
+      "priceNote": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
+    },
+    {
+      "sku": "RL#RIPPLE_005",
+      "name": "Ripple Runner with thread white wheel",
+      "slug": "ripple-runner-with-thread-white-wheel",
+      "family": "rail",
+      "system": null,
+      "range": null,
+      "diameter": null,
+      "universal": true,
+      "fitsSystems": [
+        "motorised",
+        "20-rubber",
+        "20",
+        "28",
+        "10-bendable",
+        "17-rubber",
+        "ks",
+        "double-rail",
+        "roman-blind"
+      ],
+      "component": "runner",
+      "componentLabel": "Runners",
+      "specs": [
+        {
+          "label": "Material",
+          "value": "Durable plastic with white wheel"
+        },
+        {
+          "label": "Color",
+          "value": "White"
+        },
+        {
+          "label": "Thread",
+          "value": "Pre-attached connecting thread"
+        },
+        {
+          "label": "Wheel",
+          "value": "Smooth-gliding white wheel"
+        }
+      ],
+      "summary": "\"Ripple Runner with Thread & White Wheel \u2014 Quiet, Smooth and Consistent Curtain Waves\"",
+      "description": "Function: Supports smooth curtain movement while maintaining even ripple spacing\nThread System: Pre-attached thread keeps runners evenly spaced for a uniform wave effect\nWheel: White wheel ensures smooth and quiet gliding\nDurability: Resistant to wear and suitable for frequent use",
+      "priceKes": 30,
+      "priceBasis": "each",
+      "priceNote": null,
+      "tradePriceKes": null,
+      "stock": null,
+      "image": null,
+      "imageName": null,
+      "legacyUrl": null
     },
     {
       "sku": "RL#ACC_012",
@@ -4470,7 +5494,7 @@
         "20-rubber",
         "20",
         "28",
-        "15-bendable",
+        "10-bendable",
         "17-rubber",
         "ks",
         "double-rail",
@@ -4514,7 +5538,7 @@
       ],
       "summary": "\"3 Pleat Curtain Tape \u2013 Easy Sew-On 3 Pleat Design for Perfect Drapery Folds\"",
       "description": "Design: Pre-marked pockets for easy 3-pleat hook insertion\nDurability: Resistant to tearing, wrinkling, and UV fading\nCompatibility: Works with 3-pleat hooks, standard rods and tracks\nUsage: Ideal for creating structured, elegant drapery folds\nApplication: Suitable for living rooms, hotels, and offices",
-      "priceKes": 2000,
+      "priceKes": 1800,
       "priceBasis": "roll",
       "priceNote": null,
       "tradePriceKes": null,
@@ -4537,7 +5561,7 @@
         "20-rubber",
         "20",
         "28",
-        "15-bendable",
+        "10-bendable",
         "17-rubber",
         "ks",
         "double-rail",
@@ -4581,8 +5605,8 @@
       ],
       "summary": "\"Strong Polyester Buckle Tape \u2013 Easy Sew-On Curtain Heading Tape\"",
       "description": "Design: Integrated loops or eyelets for easy hook or buckle insertion\nDurability: Resistant to shrinkage, fraying, and UV damage\nCompatibility: Works with standard curtain buckles \nUsage: Suitable for custom-made drapery and pleated curtains\nApplication: Used for precise curtain hanging and alignment",
-      "priceKes": null,
-      "priceBasis": "each",
+      "priceKes": 1000,
+      "priceBasis": "roll",
       "priceNote": null,
       "tradePriceKes": null,
       "stock": null,
@@ -4604,7 +5628,7 @@
         "20-rubber",
         "20",
         "28",
-        "15-bendable",
+        "10-bendable",
         "17-rubber",
         "ks",
         "double-rail",
@@ -4651,7 +5675,7 @@
         "20-rubber",
         "20",
         "28",
-        "15-bendable",
+        "10-bendable",
         "17-rubber",
         "ks",
         "double-rail",
@@ -4691,7 +5715,7 @@
       ],
       "summary": "\"Allfix S-Fold Curtain Tape \u2013 Premium Tape for Smooth \u201cS\u201d Style Curtains\"",
       "description": "Design: Round metal pins create the flowing \u201cS\u201d style curtain waves\nCompatibility: Works with S-fold runners and gliders\nDurability: Resistant to shrinkage, wear, and sunlight\nApplication: Best suited for contemporary curtain installations",
-      "priceKes": 150,
+      "priceKes": 200,
       "priceBasis": "metre",
       "priceNote": null,
       "tradePriceKes": null,
@@ -7932,5 +8956,15 @@
     "Product",
     "Product"
   ],
-  "skuCount": 161
+  "retired": [
+    "RL#ACC_015",
+    "RL#15_006",
+    "RL#15_005",
+    "RL#15_003",
+    "RL#15_002",
+    "RL#15_001",
+    "RL#20_008"
+  ],
+  "unplaced": [],
+  "skuCount": 195
 }

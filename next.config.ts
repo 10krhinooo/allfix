@@ -114,6 +114,15 @@ const nextConfig: NextConfig = {
         destination,
         permanent: true,
       })),
+      // The client renumbered the bendable line from #15 to #10 in the August
+      // sheet, which moves the system page with it. Permanent, like the
+      // WooCommerce entries above and for the same reason: the old URL is
+      // indexed and there is a page still doing its job.
+      {
+        source: "/systems/15-bendable",
+        destination: "/systems/10-bendable",
+        permanent: true,
+      },
       ...CONSOLE_REDIRECTS.map(({ source, destination }) => ({
         source,
         destination,

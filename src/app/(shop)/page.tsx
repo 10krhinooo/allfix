@@ -147,8 +147,8 @@ export default function Home() {
               <p className="callout">{systems.length} systems</p>
               <p className="mt-2 font-display text-xl font-semibold tracking-tight">Curtain rails</p>
               <p className="mt-2 text-sm leading-relaxed text-slate">
-                Aluminium track from the slim #15 to the heavy #28, bendable for a bay, and
-                every bracket, runner and stopper that fits it.
+                Aluminium track from the slim #10 to the heavy #28, bendable for a bay,
+                roller and zebra blinds, and every part that fits them.
               </p>
               <p className="mt-4 text-sm font-medium text-oxblood">Browse rails</p>
             </Link>
