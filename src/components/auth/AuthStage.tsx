@@ -36,7 +36,7 @@ import { reducedMotion } from "@/lib/motion"
  */
 
 /** Ordered so the cycle opens on the flagship and the widths visibly change. */
-const CYCLE = ["motorised", "20", "28", "ks", "double-rail", "15-bendable"].filter(
+const CYCLE = ["motorised", "20", "28", "ks", "double-rail", "10-bendable"].filter(
   (slug) => slug in PROFILES,
 )
 
@@ -46,7 +46,7 @@ const NAMES: Record<string, string> = {
   "28": "#28",
   ks: "KS",
   "double-rail": "Double rail",
-  "15-bendable": "#15 bendable",
+  "10-bendable": "#10 bendable",
 }
 
 const DWELL = 4200

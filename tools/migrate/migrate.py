@@ -28,7 +28,7 @@ from collections import defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from systems import SYSTEMS, system_for_sku, UNIVERSAL_PREFIX, stock_length_for
+from systems import SYSTEMS, system_for_sku, UNIVERSAL_PREFIXES, curtain_side_systems, stock_length_for
 from components import component_for_name, component_for_category, PURPOSE, PER_METRE, MINIMUM
 from variants import VARIANT_GROUPS, group_for_sku
 from ranges import RANGES, ROD_PREFIX, range_for_sku
@@ -183,13 +183,20 @@ def build_sheet_rails(sheet, seen, prices):
     These rows have never been photographed, so they carry the shot name the
     sheet asks for and no image, exactly as the rods do.
     """
-    items = []
+    items, unplaced = [], []
     for code, entry in sheet.items():
         if code.startswith(ROD_PREFIX) or code in seen:
             continue
-        universal = code.startswith(UNIVERSAL_PREFIX)
+        universal = code.startswith(UNIVERSAL_PREFIXES)
         system_slug = system_for_sku(code)
         if not universal and not system_slug:
+            # A prefix this table has never seen. It used to be dropped without a
+            # word, which is how a sheet adding five product lines could be run
+            # through the migration and report the same count as before: forty
+            # two parts went in and nothing came out to say they had not landed.
+            # Named here and printed at the end, so a new prefix is a line of
+            # output rather than a silence.
+            unplaced.append(code)
             continue
         component_slug, component_label = component_for_name(entry["name"])
         override = prices.get(code, {})
@@ -202,7 +209,7 @@ def build_sheet_rails(sheet, seen, prices):
             "range": None,
             "diameter": None,
             "universal": universal,
-            "fitsSystems": [s["slug"] for s in SYSTEMS] if universal else [system_slug],
+            "fitsSystems": curtain_side_systems() if universal else [system_slug],
             "component": component_slug,
             "componentLabel": component_label,
             "specs": entry["specs"],
@@ -217,7 +224,7 @@ def build_sheet_rails(sheet, seen, prices):
             "imageName": entry["imageName"],
             "legacyUrl": None,
         })
-    return items
+    return items, unplaced
 
 
 # ---------------------------------------------------------------- build
@@ -226,9 +233,9 @@ def build(prices, sheet):
     products = json.loads((RAW / "wc-products.json").read_text())
 
     system_by_slug = {s["slug"]: s for s in SYSTEMS}
-    all_system_slugs = [s["slug"] for s in SYSTEMS]
+    all_system_slugs = curtain_side_systems()
 
-    dropped, items = [], []
+    dropped, retired, items = [], [], []
 
     for source in products:
         sku = (source.get("sku") or "").strip()
@@ -236,6 +243,20 @@ def build(prices, sheet):
         # They are placeholder rows, not stock, and are dropped outright.
         if not sku:
             dropped.append(source.get("name") or f"id:{source.get('id')}")
+            continue
+
+        # The sheet is the list of what the shop sells, and the export is a
+        # record of what it sold. Until the August sheet every SKU in the export
+        # was on the sheet as well, so the difference never arose; that sheet
+        # renumbers the #15 line to #10 and withdraws two more parts, and
+        # without this they would stay in the catalogue as the export left them,
+        # priced at nothing because the sheet no longer quotes them. A part
+        # quietly losing its price is the fault this whole project exists to
+        # correct, so a part the sheet has dropped leaves with it. Guarded on
+        # the sheet having loaded at all, because an absent workbook must not
+        # read as every part being withdrawn.
+        if sheet and sku not in sheet:
+            retired.append(sku)
             continue
 
         system_slug = system_for_sku(sku)
@@ -249,13 +270,25 @@ def build(prices, sheet):
         # A part made for one system fits that system. Curtain-side parts --
         # tapes, hooks, buckles -- attach to the curtain rather than the track,
         # so they fit every system.
-        universal = sku.startswith(UNIVERSAL_PREFIX)
+        universal = sku.startswith(UNIVERSAL_PREFIXES)
         fits = all_system_slugs if universal else [system_slug]
+
+        # The sheet's name wins where it has one, and that is a change worth
+        # stating. The export is what the old site called a part; the sheet is
+        # what the shop calls it now, and the August sheet renames four of them,
+        # one of which had gone badly wrong: RL#28_008 is listed in the export
+        # as "#28 Runners" and is a double ceiling bracket, which collided with
+        # the real runners the sheet adds as RL#28_009 and would have put two
+        # different parts on one product URL. Another moves a motorised corner
+        # joint from 45 degrees to 90, and somebody ordering the wrong one finds
+        # out on site. Only four of the sixty two differ, so this is a
+        # correction rather than a rewrite.
+        name = quoted.get("name") or source["name"]
 
         items.append({
             "sku": sku,
-            "name": source["name"],
-            "slug": slugify(source["name"]),
+            "name": name,
+            "slug": slugify(name),
             "family": "rail",
             "system": system_slug,
             "range": None,
@@ -282,7 +315,8 @@ def build(prices, sheet):
     # The sheet knows rail parts the export never carried. They join here, ahead
     # of the variant pass, so a colour the export never listed still collapses
     # into its group rather than standing alone beside it.
-    items.extend(build_sheet_rails(sheet, {i["sku"] for i in items}, prices))
+    from_sheet, unplaced = build_sheet_rails(sheet, {i["sku"] for i in items}, prices)
+    items.extend(from_sheet)
 
     # ------------------------------------------------ collapse variants
     grouped, standalone = defaultdict(list), []
@@ -390,6 +424,8 @@ def build(prices, sheet):
         "components": sorted(components_used.values(), key=lambda c: c["name"]),
         "products": catalogue,
         "dropped": dropped,
+        "retired": retired,
+        "unplaced": unplaced,
         "skuCount": sum(len(p.get("variants", [])) or 1 for p in catalogue),
     }
 
@@ -415,10 +451,20 @@ def main():
     print(f"  rails       {len(rails)}")
     print(f"  rods        {len(rods)} from the client sheet")
     print(f"dropped       {len(catalogue['dropped'])}  {catalogue['dropped']}")
+    print(f"retired       {len(catalogue['retired'])}  {catalogue['retired']}")
+    if catalogue["unplaced"]:
+        # Loud, and last of the counts, because it is the one line here that
+        # means the sheet said something this migration did not understand.
+        print(f"UNPLACED      {len(catalogue['unplaced'])} sku prefixes are not in systems.py, "
+              f"so these were left out: {catalogue['unplaced']}")
     print(f"systems       {len(catalogue['systems'])}")
     print(f"ranges        {len(catalogue['ranges'])}")
     print(f"components    {len(catalogue['components'])}")
     print(f"priced        {priced}/{len(products)}, {quoted} carry a pricing note")
+    # Beside the price count, because it is the same kind of gap and it lands on
+    # the same worksheet: /admin/parts is filtered by what is missing.
+    waiting = [p["sku"] or p["slug"] for p in products if not p["image"] and not p["imageName"]]
+    print(f"no shot yet   {len(waiting)}  {waiting}")
     print(f"unpriced      {[p['sku'] or p['slug'] for p in products if p['priceKes'] is None]}")
     print(f"-> {OUT.relative_to(REPO)}")
 

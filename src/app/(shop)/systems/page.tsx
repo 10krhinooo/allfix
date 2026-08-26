@@ -9,7 +9,8 @@ export const metadata: Metadata = {
   title: "Rail systems",
   description:
     "Every curtain rail system AllFix stocks, drawn as its cross-section: motorised, #20, " +
-    "#28, #15 bendable, #17 groove rubber, KS, double rail and roman blind track.",
+    "#28, #10 bendable, #17 groove rubber, KS, double rail and roman blind track, plus " +
+    "roller and zebra blinds.",
 }
 
 export default function Systems() {

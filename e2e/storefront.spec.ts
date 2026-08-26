@@ -52,7 +52,16 @@ test.describe("the storefront", () => {
   })
 
   test("an unpriced part asks rather than showing a figure", async ({ page }) => {
-    await page.goto("/shop?buy=0")
+    // Filtered to a system rather than opening the whole grid and hoping. There
+    // is no "only unpriced" facet, so `?buy=0` was simply the unfiltered shop,
+    // and this passed only for as long as an unpriced part happened to land on
+    // the first page. The August sheet pushed the last one off it.
+    //
+    // Motorised, because a part has to be unpriced *and* carry no pricing note
+    // to reach these words: a note is the client's own rule in prose and the
+    // card shows that instead, which is the whole point of `priceLine()`. Three
+    // parts in the catalogue qualify and two of them are here.
+    await page.goto("/shop?system=motorised")
     await expect(page.getByText(/on request/i).first()).toBeVisible()
   })
 })

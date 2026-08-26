@@ -19,6 +19,7 @@ HERE = Path(__file__).parent
 REPO = HERE.parent.parent
 sys.path.insert(0, str(HERE))
 
+from systems import curtain_side_systems
 from ranges import RANGES, ROD_PREFIX
 from sheet import load_sheet
 
@@ -60,28 +61,45 @@ class TestCatalogue(unittest.TestCase):
         }
         quoted = set(load_sheet())
 
-        self.assertEqual(exported - listed, set(), "export SKUs missing from the catalogue")
+        # An export SKU may be absent, but only by being withdrawn on purpose:
+        # the sheet is the list of what the shop sells and the export is a
+        # record of what it sold, so a part the sheet has dropped leaves with
+        # it rather than lingering at no price. Anything else missing is a bug.
+        self.assertEqual(exported - listed, set(CATALOGUE["retired"]),
+                         "export SKUs missing from the catalogue for no stated reason")
+        self.assertEqual(set(CATALOGUE["retired"]) & quoted, set(),
+                         "a retired SKU is one the sheet no longer carries")
         self.assertEqual(quoted - listed, set(), "sheet SKUs missing from the catalogue")
         self.assertEqual(len(listed), CATALOGUE["skuCount"])
-        self.assertEqual(len(listed), len(exported | quoted), "SKUs must be unique")
+        self.assertEqual(len(listed), len((exported | quoted) - set(CATALOGUE["retired"])),
+                         "SKUs must be unique")
 
     def test_no_junk_rows(self):
         names = [p["name"] for p in PRODUCTS]
         self.assertNotIn("Product", names)
         self.assertEqual(len(CATALOGUE["dropped"]), 5)
 
-    def test_every_entry_has_a_sku_and_a_picture_or_a_brief(self):
+    def test_every_entry_has_a_sku_and_a_photograph_or_says_it_has_none(self):
         """
-        A SKU that came from the old site keeps its photograph. Everything the
-        sheet added has never been shot, so it names the picture it is waiting
-        for instead, and the card draws a placeholder until the file arrives.
+        A SKU that came from the old site keeps its photograph.
+
+        Everything the sheet added has never been shot. Most name the picture
+        they are waiting for and the card draws a placeholder until the file
+        arrives, but the August sheet leaves the Images column blank for the
+        blind lines and the ripple runners, so those name nothing at all. That
+        is a gap in the client's data rather than in this migration, it is the
+        same kind of gap as a missing price, and it surfaces in the same place:
+        the migration counts it and /admin/parts is filtered by what is
+        missing. What must never happen is a card pointing at a file that would
+        404, so the rule here is that a part without a photograph says so.
         """
         for product, entry in every_sku():
             self.assertTrue(entry["sku"], product["name"])
             if entry.get("legacyUrl"):
                 self.assertTrue(entry["image"], f"{product['name']} has no image")
             else:
-                self.assertTrue(product["imageName"], f"{product['name']} names no shot")
+                self.assertIsNone(entry["image"],
+                                  f"{product['name']} points at a photograph it never had")
 
     def test_rails_resolve_a_system(self):
         for product in RAILS:
@@ -96,10 +114,18 @@ class TestCatalogue(unittest.TestCase):
             self.assertEqual(product["fitsSystems"], [], product["name"])
             self.assertTrue(product["sku"].startswith(ROD_PREFIX), product["sku"])
 
-    def test_universal_parts_fit_every_system(self):
+    def test_universal_parts_fit_every_system_that_carries_a_curtain(self):
+        """
+        Universal used to mean every system, which was true while every system
+        was a track. Zebra and roller blinds take no tape, no hooks and no
+        runners, so a part listed as fitting one would be the shop saying a part
+        will work when it will not.
+        """
+        expected = set(curtain_side_systems())
+        self.assertTrue(expected < SYSTEM_SLUGS, "the blinds should be outside this set")
         for product in PRODUCTS:
             if product["universal"]:
-                self.assertEqual(set(product["fitsSystems"]), SYSTEM_SLUGS, product["name"])
+                self.assertEqual(set(product["fitsSystems"]), expected, product["name"])
 
     def test_every_system_has_parts(self):
         """A system with no parts behind it is the empty-shelf bug from the old site."""

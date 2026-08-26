@@ -29,6 +29,18 @@ COMPONENT_TYPES = [
     ("blind-ring",     "Blind rings",     ["blind plastic ring", "blind ring"]),
     ("fibre",          "Fibre rods",      ["fiber", "fibre"]),
     ("weight",         "Weights",         ["weight"]),
+    # A zebra or a roller blind is a tube with a mechanism in one end of it, and
+    # the fabric is a part in its own right rather than something sewn up
+    # elsewhere and hung. None of that has a match on a curtain track either, so
+    # it follows the roman blind above and gets its own types. Listed before the
+    # track rule because a head rail cover is the one part of a blind that is
+    # genuinely a rail.
+    ("tube",           "Tubes",           ["tube"]),
+    ("mechanism",      "Mechanisms",      ["mechanism"]),
+    ("base-bar",       "Base bars",       ["base bar"]),
+    ("pin-end",        "Pin ends",        ["pin end"]),
+    ("end-seal",       "End seals",       ["end seal"]),
+    ("fabric",         "Blind fabric",    ["blind material"]),
     ("track",          "Tracks",          ["track", "rail"]),
     # "Plastic Curtain Tape Hooks" is a hook and "Buckle Tape" is a tape, so
     # hooks are matched before tapes, and tapes before buckles.
@@ -107,6 +119,12 @@ PURPOSE = {
     "blind-ring":     "Sewn to the back of the blind for the cord to run through.",
     "fibre":          "Slots into the back of the blind to form each fold.",
     "weight":         "Sits in the hem so the blind hangs straight.",
+    "tube":           "The barrel the blind rolls onto, cut to your window width.",
+    "mechanism":      "The chain driven end that raises and lowers the blind.",
+    "base-bar":       "Weights the bottom of a roller blind so it hangs true.",
+    "pin-end":        "The idle end the tube turns on, opposite the mechanism.",
+    "end-seal":       "Caps the tube and keeps the fabric square on it.",
+    "fabric":         "The blind itself, cut to the window.",
     "rod":            "The pole itself, cut to your window width.",
     "finial":         "The turned end that finishes the rod and keeps the rings on it.",
     "end-cup":        "Seats the end of the rod against the wall where a bracket would show.",

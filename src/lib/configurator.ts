@@ -56,7 +56,7 @@ export interface BuildSystem {
    * mount was set to, changing only the sentence underneath, which is the kind
    * of wrong that is only found at the counter with the wrong box open.
    *
-   * A system may have only one. `#15 bendable` and `KS` are ceiling only on the
+   * A system may have only one. `#10 bendable` and `KS` are ceiling only on the
    * shelf, so choosing wall on those falls back rather than showing nothing.
    */
   brackets: Partial<Record<Mount, BuildPart>>
