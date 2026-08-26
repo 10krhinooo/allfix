@@ -21,6 +21,10 @@ import type { Tier } from "@/lib/tiers"
 export interface Session {
   signedIn: boolean
   name?: string
+  /** The account's address, and the one a reference is sent to. */
+  email?: string
+  /** Off the default address, so a form has a number to ring back on. */
+  phone?: string
   role?: string
   tier: Tier
   rate: number

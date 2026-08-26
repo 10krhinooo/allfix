@@ -170,3 +170,16 @@ export function saveProfile(seed: Seed, profile: Profile) {
 export function useProfile(seed: Seed, fallback: Profile): Profile {
   return useBook(seed).profile ?? fallback
 }
+
+/**
+ * The same, for a page that holds no seed.
+ *
+ * `useProfile` takes one because the account's own screens render the seeded
+ * records before the store is touched, and must not flash them away. A form on
+ * the storefront has no seed to fall back to and does not need one: either the
+ * customer has edited their details, in which case this is what they last said,
+ * or they have not and the session's own answer stands.
+ */
+export function useSavedProfile(): Profile | null {
+  return useSyncExternalStore(subscribe, read, () => EMPTY).profile ?? null
+}
