@@ -1,7 +1,9 @@
 "use client"
 
-import { useState, type ReactNode } from "react"
+import { useEffect, useRef, useState, type ReactNode } from "react"
 import { WhatsAppIcon } from "@/components/ui"
+import { SendingAs } from "@/components/enquiry/SendingAs"
+import { useContact } from "@/lib/contact-client"
 import { sendEnquiry, enquiryMessage } from "@/lib/enquiry"
 import type { EnquiryDraft, EnquiryKind } from "@/lib/enquiry"
 
@@ -21,6 +23,13 @@ import type { EnquiryDraft, EnquiryKind } from "@/lib/enquiry"
  * that exists in a chat thread exists on one phone, whoever is at the counter
  * cannot pick it up, and nothing counts it. So both paths compose the same
  * enquiry from the same fields, and the customer picks.
+ *
+ * The first three fields are skipped for somebody signed in. The shop is
+ * already holding their name, their number and where to write to, and asking
+ * for all three again is both a waste of the customer's time and a way of
+ * making the account look like it was for somebody else's benefit. What the
+ * enquiry will carry is shown instead, with a button that gives the fields back
+ * for a job at an address that is not theirs.
  */
 
 const FIELD = "w-full border border-rule bg-paper px-3 py-2.5 text-ink focus:outline-none"
@@ -70,6 +79,24 @@ export function EnquiryForm({
   const [sending, setSending] = useState(false)
   const [problem, setProblem] = useState<string | null>(null)
   const [reference, setReference] = useState<string | null>(null)
+
+  const { contact } = useContact()
+  const [own, setOwn] = useState(false)
+
+  // Once, and never over anything typed: the session is a fetch and can land
+  // after somebody has started filling the form in by hand.
+  const filled = useRef(false)
+  useEffect(() => {
+    if (filled.current || !contact) return
+    filled.current = true
+    setName(contact.name)
+    setPhone(contact.phone)
+    setEmail(contact.email)
+  }, [contact])
+
+  // The number is the whole reason this form is not just a WhatsApp link, so an
+  // account carrying none is asked for one exactly as a stranger is.
+  const known = contact !== null && contact.phone !== "" && !own
 
   const draft: EnquiryDraft = {
     kind,
@@ -127,6 +154,10 @@ export function EnquiryForm({
 
   return (
     <form className="max-w-xl space-y-5" onSubmit={(event) => event.preventDefault()}>
+      {known && contact ? (
+        <SendingAs contact={contact} onChange={() => setOwn(true)} />
+      ) : (
+        <>
       <label className="block">
         <span className="callout">Your name</span>
         <input
@@ -168,6 +199,8 @@ export function EnquiryForm({
           Leave it and we send your reference in writing. Leave it out and we will call instead.
         </span>
       </label>
+        </>
+      )}
 
       <label className="block">
         <span className="callout">{areaLabel}</span>

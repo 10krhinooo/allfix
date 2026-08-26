@@ -35,6 +35,25 @@ test.describe("booking a visit", () => {
     await expect(page.getByText(/Nothing is in the diary yet/)).toBeVisible()
   })
 
+  test("a signed in customer books without retyping who they are", async ({ page }) => {
+    // The counter still gets a name and a number on the enquiry. It just does
+    // not get them by asking somebody who signed in a moment ago.
+    await signIn(page, WHO.customer)
+    await page.goto("/book")
+
+    await expect(page.getByText("Sending as")).toBeVisible()
+    await expect(page.getByText("0733 265 741")).toBeVisible()
+    await expect(page.getByLabel("Your name")).toHaveCount(0)
+
+    await page.getByLabel("Area or town").fill("Kasarani")
+    await page.getByRole("button", { name: /Book/i }).first().click()
+
+    await expect(page.getByText("We have your request.")).toBeVisible()
+    await expect(page.getByText(/AF-\d+/)).toBeVisible()
+    // Rung back on the number the account carries, without it being typed.
+    await expect(page.getByText(/0733 265 741/).first()).toBeVisible()
+  })
+
   test("a booking without a phone number is refused, and keeps what was typed", async ({ page }) => {
     await page.goto("/book")
     await page.getByLabel("Your name").fill("Grace Mutiso")

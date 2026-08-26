@@ -1,7 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { WhatsAppIcon } from "@/components/ui"
+import { SendingAs } from "@/components/enquiry/SendingAs"
+import { useContact } from "@/lib/contact-client"
 import { sendEnquiry } from "@/lib/enquiry"
 import type { EnquiryDraft } from "@/lib/enquiry"
 
@@ -13,6 +15,13 @@ import type { EnquiryDraft } from "@/lib/enquiry"
  * stays folded away until somebody chooses it: a configurator that opens with
  * two empty contact fields under it reads as a signup form, and the point of
  * the screen is the parts list above.
+ *
+ * For somebody signed in it asks for nothing. Working out a window takes long
+ * enough that the list underneath is the whole point of the visit, and ending
+ * it by typing a name and a number the shop is already holding, on the screen
+ * after the one where they proved who they were, is how a finished list becomes
+ * an abandoned one. The details are shown rather than assumed, and a button
+ * gives them back as fields when this list is going to somebody else.
  */
 export function SendList({
   summary,
@@ -32,6 +41,29 @@ export function SendList({
   const [sending, setSending] = useState(false)
   const [problem, setProblem] = useState<string | null>(null)
   const [reference, setReference] = useState<string | null>(null)
+
+  const { contact } = useContact()
+  const [own, setOwn] = useState(false)
+
+  /*
+   * Filled once, and never over anything typed.
+   *
+   * The session is a fetch, so it can land after somebody has already started
+   * typing into the fields, and overwriting a number half entered would be
+   * worse than never having offered one.
+   */
+  const filled = useRef(false)
+  useEffect(() => {
+    if (filled.current || !contact) return
+    filled.current = true
+    setName(contact.name)
+    setPhone(contact.phone)
+    setEmail(contact.email)
+  }, [contact])
+
+  // A number is what the counter rings back on, so an account without one is
+  // asked for it exactly as a stranger is.
+  const known = contact !== null && contact.phone !== "" && !own
 
   const draft: EnquiryDraft = { kind: "parts", name, phone, email, area: "", summary, detail, system }
 
@@ -81,6 +113,10 @@ export function SendList({
 
       {open && (
         <div className="border border-rule bg-panel px-5 py-4">
+          {known && contact ? (
+            <SendingAs contact={contact} onChange={() => setOwn(true)} />
+          ) : (
+          <>
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="block">
               <span className="callout">Your name</span>
@@ -115,6 +151,8 @@ export function SendList({
               className="mt-1.5 w-full border border-rule bg-paper px-3 py-2 text-sm text-ink focus:outline-none"
             />
           </label>
+          </>
+          )}
 
           {problem && (
             <p role="alert" className="mt-3 text-sm text-oxblood">
