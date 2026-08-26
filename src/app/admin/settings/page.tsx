@@ -24,5 +24,5 @@ export default async function SettingsPage() {
   const desk = await readDesk()
   if (!desk || !capabilities(desk.role).settings) notFound()
 
-  return <Settings settings={await readSettings()} />
+  return <Settings settings={await readSettings(true)} />
 }

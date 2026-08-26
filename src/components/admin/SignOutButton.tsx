@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { markDesk } from "@/lib/admin/hint"
+import { forget } from "@/lib/tier-client"
 
 /**
  * Signing out, from wherever somebody happens to be.
@@ -37,6 +38,9 @@ export function SignOutButton({
         setBusy(true)
         await fetch("/api/auth/logout", { method: "POST" })
         markDesk(false)
+        // The same fact, told to the other listener: this document's cached
+        // answer from `/api/session` is now about the wrong person.
+        forget()
         router.replace("/sign-in")
         router.refresh()
       }}

@@ -77,9 +77,59 @@ export interface EmailSettings {
   sends: Record<Notice, boolean>
 }
 
+/**
+ * How long a signed in account may do nothing before it is signed out.
+ *
+ * Neither social nor email, so it is a group of its own rather than a field
+ * bent into one of theirs. It is the whole shop's in the same way the sending
+ * address is: it decides what happens to every account, not to one part.
+ *
+ * One number today, and the shape is picked so it can become two. A shopper
+ * left on a product page and a member of staff left on the counter's console
+ * are not obviously the same risk, and if twenty minutes reads as hostile to
+ * customers the answer is a second field here rather than a different design.
+ */
+export interface SessionSettings {
+  idleMinutes: number
+}
+
+export const DEFAULT_SESSION: SessionSettings = { idleMinutes: 20 }
+
+/** Named rather than derived, so the console can print the line to add. */
+export const SESSION_ENV = { idleMinutes: "ALLFIX_SESSION_IDLE_MINUTES" } as const
+
+/**
+ * The floor and the ceiling, and why they are where they are.
+ *
+ * Below five minutes the window starts to expire people mid-task: reading a
+ * long order, typing an address, taking a phone call at the counter. Above
+ * eight hours it is not an inactivity timeout, it is the fourteen day cap
+ * spelled differently, and somebody has misunderstood the field.
+ */
+export const IDLE_MIN = 5
+export const IDLE_MAX = 480
+
+/**
+ * A window is kept only if it is a whole number of minutes inside the bounds.
+ *
+ * The same contract as `socialLink()`: `undefined` for anything unusable rather
+ * than a throw or a silent substitution, so the form, the service and the
+ * action all agree on what is valid without any of them deciding alone. Out of
+ * range is refused here and clamped by the caller that has somewhere to clamp
+ * to, because a value quietly replaced by a different one is the thing this
+ * repository keeps being careful about.
+ */
+export function idleMinutes(raw: string | number | undefined | null): number | undefined {
+  if (raw === undefined || raw === null || raw === "") return undefined
+  const value = typeof raw === "number" ? raw : Number(raw.trim())
+  if (!Number.isInteger(value)) return undefined
+  return value >= IDLE_MIN && value <= IDLE_MAX ? value : undefined
+}
+
 export interface ShopSettings {
   social: Partial<Record<SocialKind, string>>
   email: EmailSettings
+  session: SessionSettings
   /** Where these came from, so a screen can say so rather than implying a database. */
   source: "service" | "environment"
 }

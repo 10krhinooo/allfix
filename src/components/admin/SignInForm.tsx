@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { markDesk } from "@/lib/admin/hint"
+import { forget } from "@/lib/tier-client"
 import { RULE, Field } from "@/components/auth/Sheet"
 
 /**
@@ -69,6 +70,9 @@ export function SignInForm({
       // the pre-paint script never runs and the storefront header would keep
       // offering the door to somebody who has just walked through it.
       markDesk(true)
+      // The same fact, told to the other listener: this document's cached
+      // answer from `/api/session` is now about the wrong person.
+      forget()
 
       // The fallback is the least privileged desk, not the console: this is
       // one door for four roles now, and guessing high would bounce.

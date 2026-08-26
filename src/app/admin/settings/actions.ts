@@ -3,7 +3,15 @@
 import { updateTag } from "next/cache"
 import { readDesk } from "@/lib/admin/guard"
 import { capabilities } from "@/lib/admin/roles"
-import { SOCIAL_KINDS, type EmailSettings, type SocialKind } from "@/lib/settings"
+import {
+  DEFAULT_SESSION,
+  IDLE_MAX,
+  IDLE_MIN,
+  idleMinutes,
+  SOCIAL_KINDS,
+  type EmailSettings,
+  type SocialKind,
+} from "@/lib/settings"
 import { saveSettings, type SaveResult } from "@/lib/settings-service"
 
 /**
@@ -22,6 +30,13 @@ import { saveSettings, type SaveResult } from "@/lib/settings-service"
 export async function save(next: {
   social: Partial<Record<SocialKind, string>>
   email: EmailSettings
+  /*
+   * As the form holds it, which is a string while somebody is still typing.
+   * Normalising is this function's job rather than the caller's: the form is
+   * the only caller today and it will not be the only caller for ever, and a
+   * control that trusts its input to be pre-cleaned is not a control.
+   */
+  session: { idleMinutes: string | number }
 }): Promise<SaveResult> {
   const desk = await readDesk()
   if (!desk || !capabilities(desk.role).settings) {
@@ -36,7 +51,28 @@ export async function save(next: {
     if (value) social[kind] = value
   }
 
-  const result = await saveSettings({ social, email: next.email })
+  /*
+   * The window is refused rather than clamped, and refused here rather than
+   * only in the form. Clamping would save a number the owner did not type and
+   * show them a tick for it, and this is a control: somebody who meant five
+   * minutes and typed five hundred should be told, not quietly given eight.
+   */
+  const window = idleMinutes(next.session?.idleMinutes)
+  if (window === undefined) {
+    return {
+      ok: false,
+      message:
+        `The inactivity window has to be a whole number of minutes between ${IDLE_MIN} and ` +
+        `${IDLE_MAX}. Nothing was saved. Leave it at ${DEFAULT_SESSION.idleMinutes} if you are ` +
+        "not sure.",
+    }
+  }
+
+  const result = await saveSettings({
+    social,
+    email: next.email,
+    session: { idleMinutes: window },
+  })
   /*
    * `updateTag` rather than `revalidateTag`, which in Next 16 serves the stale
    * copy while the fresh one is fetched. That is the right behaviour for a

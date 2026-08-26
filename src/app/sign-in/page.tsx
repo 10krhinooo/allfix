@@ -32,9 +32,9 @@ export const metadata: Metadata = {
 export default async function SignInPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string; reset?: string }>
+  searchParams: Promise<{ next?: string; reset?: string; idle?: string }>
 }) {
-  const { next, reset } = await searchParams
+  const { next, reset, idle } = await searchParams
   const desk = await readDesk()
 
   // Already through the door. Handled here rather than in the proxy matcher,
@@ -58,6 +58,16 @@ export default async function SignInPage({
         </span>
       }
     >
+      {idle && !reset && (
+        <p
+          role="status"
+          className="mt-5 border-l-2 border-brass bg-brass-soft px-3 py-2 text-sm leading-relaxed text-ink"
+        >
+          You were signed out because the account had been idle for a while. Sign in and
+          we will put you back where you were.
+        </p>
+      )}
+
       {reset && (
         <p
           role="status"

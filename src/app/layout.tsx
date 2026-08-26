@@ -4,6 +4,7 @@ import { SHOP, SITE } from "@/lib/format"
 import { HINT } from "@/lib/admin/hint"
 import { heroGateScript } from "@/lib/motion"
 import { Painted } from "@/components/Painted"
+import { IdleWatch } from "@/components/IdleWatch"
 import "./globals.css"
 
 /**
@@ -110,6 +111,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             what tells the page curtain that an arrival is a navigation and not a
             page load, including an arrival out of the console. */}
         <Painted />
+        <IdleWatch />
         {children}
       </body>
     </html>

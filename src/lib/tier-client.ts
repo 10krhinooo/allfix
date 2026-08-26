@@ -24,9 +24,13 @@ export interface Session {
   role?: string
   tier: Tier
   rate: number
+  /** How long before inactivity ends this session, in ms. Zero when signed out. */
+  idleInMs: number
+  /** The whole inactivity window, in ms. Zero when signed out. */
+  idleWindowMs: number
 }
 
-const SIGNED_OUT: Session = { signedIn: false, tier: "retail", rate: 0 }
+const SIGNED_OUT: Session = { signedIn: false, tier: "retail", rate: 0, idleInMs: 0, idleWindowMs: 0 }
 
 let pending: Promise<Session> | null = null
 let known: Session | null = null
@@ -41,6 +45,26 @@ function load(): Promise<Session> {
       return session
     })
   return pending
+}
+
+/**
+ * Forget what this document was told, so the next asker goes and finds out.
+ *
+ * The cache above is per document and was never invalidated, which was fine
+ * only for as long as signing in and out meant loading one. It does not: both
+ * finish with `router.replace`, so no document is parsed, and this module goes
+ * on answering with whatever it learned on the page somebody arrived at. Signing
+ * in therefore left `known` saying signed out for the rest of the visit, which
+ * showed a trade account retail prices until they happened to reload, and would
+ * have stopped the inactivity watcher ever arming at all.
+ *
+ * The sibling of `forget()` in `src/lib/rate-limit.ts`, and unlike that one it
+ * is not only for tests. Call it wherever `markDesk()` is called; the two are
+ * the same fact told to two different listeners.
+ */
+export function forget() {
+  known = null
+  pending = null
 }
 
 export function useSession(): { session: Session; ready: boolean } {
