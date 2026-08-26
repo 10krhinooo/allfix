@@ -24,7 +24,7 @@ export default async function ResetPage({
   return (
     <Sheet
       label="New password"
-      stageLine="Nine rail systems, and the fittings that match them."
+      stageLine="Every rail system we stock, and the fittings that match them."
       title="Set a new password."
       lead="Pick something you will remember. Length beats punctuation."
     >

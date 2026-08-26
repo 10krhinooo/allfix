@@ -161,8 +161,8 @@ export function AuthStage({ line }: { line: string }) {
           ))}
         </ol>
         <p className="mt-5 max-w-[34ch] text-sm leading-relaxed text-stage-ink/60">
-          Nine rail systems, and the fittings that actually match them. This is how the trade tells
-          them apart: look down the cut end and read the shape.
+          Every rail system we stock, and the fittings that actually match them. This is how the
+          trade tells them apart: look down the cut end and read the shape.
         </p>
       </div>
     </aside>

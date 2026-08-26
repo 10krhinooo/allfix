@@ -78,7 +78,7 @@ function touchEvery(windowMs: number) {
  *
  * The hint cookie, which the pre-paint script in the root layout already reads,
  * rather than `useSession()`. Gating on the hook would put a `/api/session`
- * fetch on all 154 prerendered product pages for the benefit of visitors who are
+ * fetch on all 188 prerendered product pages for the benefit of visitors who are
  * not signed in and never will be during that visit. Forging the hint only
  * arms a timer against a session the forger does not have.
  */

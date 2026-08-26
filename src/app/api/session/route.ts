@@ -7,7 +7,7 @@ import { tierFor, rateFor } from "@/lib/tiers"
  *
  * A product page is built once for everybody and served from the edge, which is
  * the right shape for a catalogue and the wrong shape for "show this customer
- * their own rate". Reading the cookie in the page would make all 154 of them
+ * their own rate". Reading the cookie in the page would make all 188 of them
  * dynamic to change one line of type. So the page stays static and the rate is
  * fetched, once per browser, by the components that show money.
  *

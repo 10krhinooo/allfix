@@ -102,7 +102,7 @@ export function deskComponents(rows: DeskRow[]) {
  * The rail carries the number outstanding on each screen, and that number has
  * to be worked out the same way the screen itself works it out, through
  * `currentPrice`, or the badge and the page disagree. So the chrome gets the
- * four fields that decision reads rather than the whole worksheet: 154 rows of
+ * four fields that decision reads rather than the whole worksheet: 188 rows of
  * names, groups and image paths have no business in the layout's payload when
  * three of the fields decide everything.
  */
