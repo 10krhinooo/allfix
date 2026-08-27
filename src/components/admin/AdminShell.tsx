@@ -3,6 +3,7 @@
 import { capabilities, type Capabilities } from "@/lib/admin/roles"
 import type { Desk } from "@/lib/admin/session"
 import { deskEnquiries, type BadgeRow, type DeskEnquiry } from "@/lib/admin/rows"
+import type { DeskOrder } from "@/lib/admin/orders-service"
 import { currentPrice, isSellable } from "@/lib/admin/pricing"
 import { useAdmin } from "@/lib/admin/store"
 import { DeskProvider } from "@/components/admin/identity"
@@ -24,7 +25,7 @@ import { ICONS } from "@/components/admin/icons"
 interface NavItem extends ConsoleNav {
   needs?: keyof Capabilities
   /** Which outstanding count belongs on this row, if any. */
-  count?: "parts" | "enquiries"
+  count?: "parts" | "enquiries" | "orders"
 }
 
 /**
@@ -49,6 +50,14 @@ const NAV: NavItem[] = [
     hint: "Prices, and what is unphotographed",
     icon: ICONS.parts,
     count: "parts",
+  },
+  {
+    href: "/admin/orders",
+    label: "Orders",
+    hint: "Every order, and the way to take one that did not come through the site",
+    icon: ICONS.orders,
+    needs: "orders",
+    count: "orders",
   },
   {
     href: "/admin/enquiries",
@@ -78,6 +87,7 @@ export function AdminShell({
   findable,
   badges,
   queue,
+  orders,
   children,
 }: {
   desk: Desk
@@ -85,6 +95,8 @@ export function AdminShell({
   badges: BadgeRow[]
   /** The shop's own enquiries, or null when no service could be asked. */
   queue: DeskEnquiry[] | null
+  /** Every order, or null when no service could be asked. */
+  orders: DeskOrder[] | null
   children: React.ReactNode
 }) {
   const allowed = capabilities(desk.role)
@@ -98,6 +110,10 @@ export function AdminShell({
    */
   const outstanding = {
     parts: badges.filter((row) => !isSellable(currentPrice(row, state.prices))).length,
+    // Orders still to pack or send. Collected and cancelled are finished, and a
+    // badge that counts finished work never goes down.
+    orders: (orders ?? []).filter((order) => order.stage !== "collected" && order.stage !== "cancelled")
+      .length,
     enquiries: (queue ?? deskEnquiries(state.inbox)).filter(
       (enquiry) => (state.enquiries[enquiry.id] ?? "new") !== "closed",
     ).length,
