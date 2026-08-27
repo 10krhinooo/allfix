@@ -85,10 +85,126 @@ export const SEEDED_LOGINS: SeededLogin[] = PEOPLE.map((person) => ({
 }))
 
 export type SignIn =
-  | { ok: true; person: Person }
+  | { ok: true; person: Person; service?: ServiceSession }
   | { ok: false; status: 401 | 403; message: string }
 
-export function signInWith(email: string, password: string): SignIn {
+/**
+ * The session the service issued, held on the customer's behalf.
+ *
+ * The storefront and the service each had a notion of who was signed in and
+ * they were not the same notion. This one's cookie was minted and signed here,
+ * over a roster in `desk.ts`; the service has never seen it and never issued
+ * anything the storefront could show back. So every server to server call was
+ * anonymous, and an order placed by a signed in customer was refused with "We
+ * need a name and a phone number to deliver this and to call you about it",
+ * which they had given when they registered. A guest could buy. A customer
+ * could not.
+ *
+ * The token is the service's own opaque session, sealed inside this server's
+ * cookie rather than handed to the browser. It never leaves the server, and the
+ * browser holds exactly what it held before: one signed HttpOnly cookie.
+ */
+export interface ServiceSession {
+  token: string
+  tier: "retail" | "trade"
+}
+
+const API = process.env.ALLFIX_API_URL ?? ""
+
+/** The service names every role an account holds. The desk shows one. */
+const RANK: Person["role"][] = ["ADMIN", "STAFF", "TRADE", "CUSTOMER"]
+
+const POST_FOR: Record<Person["role"], string> = {
+  ADMIN: "Owner",
+  STAFF: "Counter",
+  TRADE: "Trade account",
+  CUSTOMER: "Customer",
+}
+
+function strongest(roles: unknown): Person["role"] {
+  const held = Array.isArray(roles) ? roles.map(String) : []
+  return RANK.find((role) => held.includes(role)) ?? "CUSTOMER"
+}
+
+/**
+ * The service's own session cookie, off the response it just set.
+ *
+ * Read rather than forwarded. Passing the whole Set-Cookie through would put a
+ * second session cookie in the customer's browser on a different domain and to
+ * no purpose: nothing in the browser ever calls the service directly except the
+ * enquiry form, which needs no session at all.
+ */
+function sessionFrom(response: Response): string | null {
+  const header = response.headers.get("set-cookie") ?? ""
+  return /(?:^|,\s*)allfix_session=([^;,\s]+)/.exec(header)?.[1] ?? null
+}
+
+export async function signInWith(email: string, password: string): Promise<SignIn> {
+  if (API) return await signInAtTheService(email, password)
+  return seeded(email, password)
+}
+
+/**
+ * The real door, where there is one.
+ *
+ * The refusals are the service's own words rather than a translation of its
+ * status codes. It distinguishes an unverified address from a suspended account
+ * from a wrong password, and it has already decided how much of that is safe to
+ * say; restating it here would be a second copy of a security judgement, drifting
+ * from the first.
+ */
+async function signInAtTheService(email: string, password: string): Promise<SignIn> {
+  let response: Response
+  try {
+    response = await fetch(`${API}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email.trim(), password }),
+      cache: "no-store",
+    })
+  } catch {
+    return {
+      ok: false,
+      status: 403,
+      message: `We cannot reach the shop's records just now. Call us on ${SHOP.phone}.`,
+    }
+  }
+
+  const body: Record<string, unknown> | null = await response.json().catch(() => null)
+
+  if (!response.ok) {
+    return {
+      ok: false,
+      status: response.status === 403 ? 403 : 401,
+      message: typeof body?.message === "string" ? body.message : REFUSED,
+    }
+  }
+
+  const token = sessionFrom(response)
+  if (!token) {
+    // Signed in with nothing to prove it afterwards. Better refused here than
+    // let through to a checkout that cannot say who is checking out.
+    return { ok: false, status: 403, message: REFUSED }
+  }
+
+  const role = strongest(body?.roles)
+  return {
+    ok: true,
+    person: {
+      email: String(body?.email ?? email).toLowerCase(),
+      name: String(body?.displayName ?? email),
+      role,
+      // `post` is the roster's own word for what somebody is here to do, and the
+      // service has no equivalent and no reason to. The People screen reads it,
+      // and that screen shows the roster.
+      post: POST_FOR[role],
+      active: true,
+    },
+    service: { token, tier: role === "TRADE" ? "trade" : "retail" },
+  }
+}
+
+function seeded(email: string, password: string): SignIn {
   const wanted = email.trim().toLowerCase()
   const person = PEOPLE.find((candidate) => candidate.email.toLowerCase() === wanted)
 

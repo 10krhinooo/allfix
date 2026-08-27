@@ -40,14 +40,14 @@ export async function POST(request: Request) {
   const email = typeof body.email === "string" ? body.email : ""
   const password = typeof body.password === "string" ? body.password : ""
 
-  const result = signInWith(email, password)
+  const result = await signInWith(email, password)
   if (!result.ok) {
     return NextResponse.json({ message: result.message }, { status: result.status })
   }
 
   let sealed: string
   try {
-    sealed = await seal(result.person)
+    sealed = await seal(result.person, result.service)
   } catch (error) {
     // Only the missing key is answered here. Anything else out of `seal()` is a
     // WebCrypto failure with nothing to do with configuration, and reporting it

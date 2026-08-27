@@ -322,7 +322,7 @@ export function Pill({
     tone === "todo"
       ? "border-oxblood/30 bg-oxblood/5 text-oxblood"
       : tone === "waiting"
-        ? "border-brass/40 bg-brass-soft text-brass"
+        ? "border-brass/40 bg-brass-soft text-brass-deep"
         : "border-rule bg-panel text-slate"
 
   return (
