@@ -92,18 +92,66 @@ test.describe("browsing by what you already own", () => {
 
     // The URL mirrors the state through history.replaceState rather than a
     // navigation, and it is debounced, so it arrives shortly after the click.
-    await expect(page).toHaveURL(/family=rod/, { timeout: 10_000 })
+    await expect(page).toHaveURL(/category=rod/, { timeout: 10_000 })
   })
 
   test("a shared shop link opens on the same view", async ({ page }) => {
-    await page.goto("/shop?family=rod&sort=price-asc")
-    await expect(page).toHaveURL(/family=rod/)
+    await page.goto("/shop?category=rod&sort=price-asc")
+    await expect(page).toHaveURL(/category=rod/)
     await expect(page.locator("h1")).toBeVisible()
+  })
+
+  test("a link that named a family before there were categories still works", async ({ page }) => {
+    // These are on the home page, on every rod product page and in the
+    // WooCommerce redirect table, and the shop advertises its filtered views as
+    // shareable URLs. They have to keep opening on what they always opened on.
+    await page.goto("/shop?family=rod")
+    await expect(page.locator("h1")).toContainText(/rod/i)
+  })
+
+  test("each category is a page of its own, and an invented one is not", async ({ page }) => {
+    for (const [path, heading] of [
+      ["/shop/rail", /rail/i],
+      ["/shop/blind", /blind/i],
+      ["/shop/rod", /rod/i],
+    ] as const) {
+      const response = await page.goto(path)
+      expect(response?.status()).toBe(200)
+      await expect(page.locator("h1")).toContainText(heading)
+    }
+
+    const missing = await page.goto("/shop/biscuits")
+    expect(missing?.status()).toBe(404)
+  })
+
+  test("a category page keeps its own address rather than falling back to /shop", async ({ page }) => {
+    await page.goto("/shop/rod")
+    const filters = page.getByRole("button", { name: /^Filters/ })
+    if (await filters.isVisible()) await filters.click()
+
+    // Ticking something inside the category writes the facet without moving the
+    // page, so the canonical URL a search engine was given still holds.
+    const buyable = page.locator("label:visible").filter({ hasText: /Ready to buy/ }).first()
+    await buyable.click()
+    await expect(page).toHaveURL(/\/shop\/rod\?/, { timeout: 10_000 })
+    await expect(page).not.toHaveURL(/category=/)
   })
 
   test("an unknown filter value is dropped rather than emptying the grid", async ({ page }) => {
     await page.goto("/shop?system=not-a-system")
     await expect(page.getByText(/nothing/i)).toHaveCount(0)
+  })
+
+  test("a part type the category does not have is not offered against it", async ({ page }) => {
+    // Twenty four of the thirty component types are rail only and six are rod
+    // only. The panel used to offer all thirty whatever was chosen, so "Rods"
+    // and "Tracks 11" sat side by side and the second returned nothing.
+    await page.goto("/shop/rod")
+    const filters = page.getByRole("button", { name: /^Filters/ })
+    if (await filters.isVisible()) await filters.click()
+
+    await expect(page.locator("label:visible").filter({ hasText: /^Finials/ })).toHaveCount(1)
+    await expect(page.locator("label:visible").filter({ hasText: /^Tracks/ })).toHaveCount(0)
   })
 })
 

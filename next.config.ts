@@ -19,13 +19,18 @@ import type { NextConfig } from "next"
 const WOOCOMMERCE_REDIRECTS: { source: string; destination: string }[] = [
   { source: "/curtain-rails", destination: "/systems" },
   { source: "/motorised-rails", destination: "/systems/motorised" },
-  { source: "/curtain-rods", destination: "/shop?family=rod" },
-  { source: "/finials", destination: "/shop?part=finial" },
-  { source: "/rings", destination: "/shop?part=ring" },
-  { source: "/tie-backs", destination: "/shop?part=tie-back" },
-  { source: "/end-cups", destination: "/shop?part=end-cup" },
-  { source: "/rail-accessories", destination: "/shop?family=rail" },
-  { source: "/rods-accessories", destination: "/shop?family=rod" },
+  // These used to land on `/shop` with a query string. A category is a page of
+  // its own now, canonical and in the sitemap, so an indexed URL that ranked
+  // for "curtain rods" arrives somewhere a search engine treats as a page
+  // rather than as a filtered view of another one. The part filters still
+  // carry their facet, because a finial is a part type and not a category.
+  { source: "/curtain-rods", destination: "/shop/rod" },
+  { source: "/finials", destination: "/shop/rod?part=finial" },
+  { source: "/rings", destination: "/shop/rod?part=ring" },
+  { source: "/tie-backs", destination: "/shop/rod?part=tie-back" },
+  { source: "/end-cups", destination: "/shop/rod?part=end-cup" },
+  { source: "/rail-accessories", destination: "/shop/rail" },
+  { source: "/rods-accessories", destination: "/shop/rod" },
 ]
 
 /**

@@ -5,12 +5,15 @@ import { useSearchParams } from "next/navigation"
 import { ShopCard } from "@/components/shop/ShopCard"
 import {
   activeCount,
+  CATEGORIES,
   EMPTY_QUERY,
+  facetsFor,
   filterItems,
   parseQuery,
   PRICE_BANDS,
   SORTS,
   toParams,
+  type Category,
   type Facet,
   type ShopData,
   type ShopQuery,
@@ -31,13 +34,19 @@ const PAGE_SIZE = 24
  * change. Reading the URL once on mount is what makes a shared link open on the
  * same view.
  */
-export function ShopBrowser({ data }: { data: ShopData }) {
+export function ShopBrowser({ data, category }: { data: ShopData; category?: Category }) {
   const params = useSearchParams()
   // The URL is the opening state, read once. After that React owns it, so the
   // filters stay instant and a shared link still opens on the same view.
-  const [query, setQuery] = useState<ShopQuery>(() =>
-    parseQuery(new URLSearchParams(params.toString()), data),
-  )
+  //
+  // A category page opens on its own category, and the query string cannot
+  // argue with it: the path is the stronger statement of the two, and a
+  // `/shop/rod?category=rail` that showed rails would be a page contradicting
+  // its own address.
+  const [query, setQuery] = useState<ShopQuery>(() => {
+    const read = parseQuery(new URLSearchParams(params.toString()), data)
+    return category ? { ...read, category } : read
+  })
   const [drawer, setDrawer] = useState(false)
   const [page, setPage] = useState(() => {
     const n = Number(params.get("page"))
@@ -47,6 +56,9 @@ export function ShopBrowser({ data }: { data: ShopData }) {
   const top = useRef<HTMLDivElement>(null)
 
   const results = useMemo(() => filterItems(data.items, query), [data.items, query])
+  // Counts answer the panel as it currently stands, so a number beside a box is
+  // what ticking it would give rather than what the whole catalogue holds.
+  const facets = useMemo(() => facetsFor(data.items, data, query), [data, query])
   const active = activeCount(query)
 
   const pages = Math.max(1, Math.ceil(results.length / PAGE_SIZE))
@@ -64,11 +76,18 @@ export function ShopBrowser({ data }: { data: ShopData }) {
     const id = setTimeout(() => {
       const next = toParams(query)
       if (current > 1) next.set("page", String(current))
+      // A category page owns its category through the path, so repeating it in
+      // the query would leave `/shop/rod?category=rod` in the address bar and
+      // two places saying the same thing. Change the category and the browser
+      // leaves that page for `/shop`, which is where a mixed view belongs.
+      const onOwnPage = category && query.category === category
+      if (onOwnPage) next.delete("category")
+      const base = onOwnPage ? `/shop/${category}` : "/shop"
       const search = next.toString()
-      window.history.replaceState(window.history.state, "", search ? `/shop?${search}` : "/shop")
+      window.history.replaceState(window.history.state, "", search ? `${base}?${search}` : base)
     }, 250)
     return () => clearTimeout(id)
-  }, [query, current])
+  }, [query, current, category])
 
   // Any change to the filters returns to the first page: staying on page 5 of a
   // result set that just shrank to two pages is how a filter looks broken.
@@ -80,6 +99,15 @@ export function ShopBrowser({ data }: { data: ShopData }) {
     setQuery((q) => ({
       ...q,
       [key]: q[key].includes(value) ? q[key].filter((v) => v !== value) : [...q[key], value],
+    }))
+    setPage(1)
+  }
+  const toggleDiameter = (value: number) => {
+    setQuery((q) => ({
+      ...q,
+      diameters: q.diameters.includes(value)
+        ? q.diameters.filter((v) => v !== value)
+        : [...q.diameters, value],
     }))
     setPage(1)
   }
@@ -95,47 +123,50 @@ export function ShopBrowser({ data }: { data: ShopData }) {
 
   const heading =
     query.ranges.length === 1
-      ? `${label(data.rangeFacets, query.ranges[0])} curtain rods`
+      ? `${label(facets.ranges, query.ranges[0])} curtain rods`
       : query.systems.length === 1
-        ? `Parts that fit a ${label(data.systemFacets, query.systems[0])} rail`
-        : query.family === "rod"
-          ? "Curtain rods"
-          : query.family === "rail"
-            ? "Curtain rails and parts"
-            : "Every part we stock"
+        ? query.category === "blind"
+          ? `${label(facets.blinds, query.systems[0])} parts`
+          : `Parts that fit a ${label(facets.systems, query.systems[0])} rail`
+        : query.category
+          ? (CATEGORIES.find((c) => c.id === query.category)?.label ?? "Every part we stock")
+          : "Every part we stock"
 
   const filters = (
     <div className="space-y-7">
-      <Group title="Type">
+      <Group title="What is above the window">
         <Radio
           label="Everything"
-          group="family"
+          group="category"
           count={data.items.length}
-          checked={!query.family}
-          onChange={() => patch({ family: null, systems: [], ranges: [] })}
+          checked={!query.category}
+          onChange={() => patch({ category: null, systems: [], ranges: [], diameters: [] })}
         />
-        {data.familyFacets.map((f) => (
+        {facets.categories.map((f) => (
           <Radio
             key={f.slug}
             label={f.label}
-            group="family"
+            group="category"
             count={f.count}
-            checked={query.family === f.slug}
+            checked={query.category === f.slug}
             onChange={() =>
               patch({
-                family: query.family === f.slug ? null : f.slug,
-                // A family switch clears the other family's finish or system.
-                systems: f.slug === "rod" ? [] : query.systems,
-                ranges: f.slug === "rail" ? [] : query.ranges,
+                category: query.category === f.slug ? null : (f.slug as Category),
+                // Each category has its own second axis, and holding one from
+                // the category you just left guarantees an empty grid: nothing
+                // is both a #20 track part and an antique brass rod.
+                systems: [],
+                ranges: [],
+                diameters: [],
               })
             }
           />
         ))}
       </Group>
 
-      {query.family !== "rod" && (
+      {(!query.category || query.category === "rail") && (
         <Group title="Rail system">
-          {data.systemFacets.map((f) => (
+          {facets.systems.map((f) => (
             <Check
               key={f.slug}
               label={f.label}
@@ -147,23 +178,54 @@ export function ShopBrowser({ data }: { data: ShopData }) {
         </Group>
       )}
 
-      {query.family !== "rail" && (
-        <Group title="Rod finish">
-          {data.rangeFacets.map((f) => (
+      {(!query.category || query.category === "blind") && (
+        <Group title="Blind">
+          {facets.blinds.map((f) => (
             <Check
               key={f.slug}
               label={f.label}
               count={f.count}
-              swatch={f.swatch}
-              checked={query.ranges.includes(f.slug)}
-              onChange={() => toggle("ranges", f.slug)}
+              checked={query.systems.includes(f.slug)}
+              onChange={() => toggle("systems", f.slug)}
             />
           ))}
         </Group>
       )}
 
+      {(!query.category || query.category === "rod") && (
+        <>
+          <Group title="Rod finish">
+            {facets.ranges.map((f) => (
+              <Check
+                key={f.slug}
+                label={f.label}
+                count={f.count}
+                swatch={f.swatch}
+                checked={query.ranges.includes(f.slug)}
+                onChange={() => toggle("ranges", f.slug)}
+              />
+            ))}
+          </Group>
+
+          {/* A finial made for a 25mm pole will not go on a 19mm one, so the
+              bore matters as much as the finish. Parts with no bore of their
+              own, a bracket say, are never filtered out by it. */}
+          <Group title="Rod size">
+            {facets.diameters.map((f) => (
+              <Check
+                key={f.slug}
+                label={f.label}
+                count={f.count}
+                checked={query.diameters.includes(Number(f.slug))}
+                onChange={() => toggleDiameter(Number(f.slug))}
+              />
+            ))}
+          </Group>
+        </>
+      )}
+
       <Group title="Part">
-        {data.partFacets.map((f) => (
+        {facets.parts.map((f) => (
           <Check
             key={f.slug}
             label={f.label}

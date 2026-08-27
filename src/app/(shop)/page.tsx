@@ -155,7 +155,7 @@ export default function Home() {
           </li>
 
           <li>
-            <Link href="/shop?family=rod" className="flex h-full flex-col bg-paper p-6 transition-colors hover:bg-brass-soft">
+            <Link href="/shop/rod" className="flex h-full flex-col bg-paper p-6 transition-colors hover:bg-brass-soft">
               <p className="callout">{ranges.length} finishes</p>
               <p className="mt-2 font-display text-xl font-semibold tracking-tight">Curtain rods</p>
               <p className="mt-2 text-sm leading-relaxed text-slate">

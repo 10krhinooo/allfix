@@ -10,12 +10,43 @@
 import {
   imageFor,
   products,
-  systems,
+  railSystems,
+  blindSystems,
   ranges,
   components,
   type Product,
 } from "@/lib/catalogue"
 import { sellable } from "@/lib/commerce"
+
+/**
+ * What is above the window, which is what a customer knows before anything else.
+ *
+ * This replaces a two way rail/rod split that stopped describing the shelf the
+ * moment the August sheet arrived. A third of what was filed under "rails" is
+ * now blinds, and a blind is not a rail: it takes no runners, it is quoted by
+ * the metre with its fittings included rather than sold as parts, and somebody
+ * shopping for one has nothing to say about a bracket. Leaving them mixed meant
+ * a customer with a #20 track wading past roller blind tubes.
+ *
+ * Rods stay where they were. Curtain-side parts, the tapes and hooks and
+ * buckles, stay with rails: they are bought to dress a curtain on a track, and
+ * a system filter is expected to keep showing them, which is the promise
+ * `fitsSystems` makes everywhere else in the shop.
+ */
+export type Category = "rail" | "blind" | "rod"
+
+export const CATEGORIES: { id: Category; label: string; blurb: string }[] = [
+  { id: "rail", label: "Rails", blurb: "Tracks, and everything that fits one" },
+  { id: "blind", label: "Blinds", blurb: "Roman, roller and zebra" },
+  { id: "rod", label: "Rods", blurb: "Poles and finials, by finish" },
+]
+
+const BLIND_SLUGS = new Set(blindSystems().map((s) => s.slug))
+
+function categoryOf(product: Product): Category {
+  if (product.family === "rod") return "rod"
+  return product.system && BLIND_SLUGS.has(product.system) ? "blind" : "rail"
+}
 
 export interface ShopSwatch {
   label: string
@@ -24,6 +55,7 @@ export interface ShopSwatch {
 
 export interface ShopItem {
   slug: string
+  category: Category
   name: string
   sku: string | null
   componentLabel: string
@@ -51,12 +83,25 @@ export interface Facet {
   swatch?: string
 }
 
+/**
+ * The taxonomy, without counts.
+ *
+ * Counts used to be computed here, once, over the whole catalogue, and then
+ * rendered beside every checkbox whatever else was ticked. So "Rods" and
+ * "Tracks 11" sat side by side and the second returned nothing, because no rod
+ * is a track. A count that does not answer the question on screen is worse than
+ * no count. `facetsFor` works them out against the live query instead, in the
+ * browser, where the filtering already happens.
+ */
 export interface ShopData {
   items: ShopItem[]
-  familyFacets: Facet[]
-  systemFacets: Facet[]
-  rangeFacets: Facet[]
-  partFacets: Facet[]
+  /** Rail systems only. The blinds have their own list below. */
+  systems: Omit<Facet, "count">[]
+  blinds: Omit<Facet, "count">[]
+  ranges: Omit<Facet, "count">[]
+  parts: Omit<Facet, "count">[]
+  /** Rod bores in millimetres. A finial in the wrong bore does not fit. */
+  diameters: number[]
 }
 
 function toItem(product: Product): ShopItem {
@@ -66,6 +111,7 @@ function toItem(product: Product): ShopItem {
     sku: product.sku,
     componentLabel: product.componentLabel,
     component: product.component,
+    category: categoryOf(product),
     family: product.family,
     system: product.system,
     range: product.range,
@@ -83,32 +129,19 @@ function toItem(product: Product): ShopItem {
   }
 }
 
-/** Everything the client browser needs, built once on the server. */
+/** The taxonomy the browser needs, built once on the server. */
 export function shopData(): ShopData {
   const items = products.map(toItem)
-  const count = (predicate: (item: ShopItem) => boolean) => items.filter(predicate).length
 
   return {
     items,
-    familyFacets: [
-      { slug: "rail", label: "Rails", count: count((i) => i.family === "rail") },
-      { slug: "rod", label: "Rods", count: count((i) => i.family === "rod") },
-    ],
-    systemFacets: systems.map((s) => ({
-      slug: s.slug,
-      label: s.name,
-      count: count((i) => i.fitsSystems.includes(s.slug)),
-    })),
-    rangeFacets: ranges.map((r) => ({
-      slug: r.slug,
-      label: r.name,
-      swatch: r.swatch,
-      count: count((i) => i.range === r.slug),
-    })),
-    partFacets: components
-      .map((c) => ({ slug: c.slug, label: c.name, count: count((i) => i.component === c.slug) }))
-      .filter((c) => c.count > 0)
-      .sort((a, b) => a.label.localeCompare(b.label)),
+    systems: railSystems().map((s) => ({ slug: s.slug, label: s.name })),
+    blinds: blindSystems().map((s) => ({ slug: s.slug, label: s.name })),
+    ranges: ranges.map((r) => ({ slug: r.slug, label: r.name, swatch: r.swatch })),
+    parts: components.map((c) => ({ slug: c.slug, label: c.name })),
+    diameters: [...new Set(items.map((i) => i.diameter).filter((d): d is number => d !== null))].sort(
+      (a, b) => a - b,
+    ),
   }
 }
 
@@ -136,10 +169,12 @@ export const PRICE_BANDS: { id: string; label: string; min: number; max: number 
 ]
 
 export interface ShopQuery {
-  family: string | null
+  category: Category | null
   systems: string[]
   ranges: string[]
   parts: string[]
+  /** Rod bores, within a finish. A 25mm finial will not go on a 19mm pole. */
+  diameters: number[]
   price: string | null
   buyable: boolean
   q: string
@@ -147,10 +182,11 @@ export interface ShopQuery {
 }
 
 export const EMPTY_QUERY: ShopQuery = {
-  family: null,
+  category: null,
   systems: [],
   ranges: [],
   parts: [],
+  diameters: [],
   price: null,
   buyable: false,
   q: "",
@@ -162,13 +198,13 @@ export function parseQuery(params: URLSearchParams, data: ShopData): ShopQuery {
   const list = (key: string, allowed: Set<string>) =>
     (params.get(key) ?? "").split(",").map((v) => v.trim()).filter((v) => allowed.has(v))
 
-  const family = params.get("family")
   const sort = params.get("sort") as SortKey
   return {
-    family: family === "rail" || family === "rod" ? family : null,
-    systems: list("system", new Set(data.systemFacets.map((f) => f.slug))),
-    ranges: list("range", new Set(data.rangeFacets.map((f) => f.slug))),
-    parts: list("part", new Set(data.partFacets.map((f) => f.slug))),
+    category: readCategory(params),
+    systems: list("system", new Set([...data.systems, ...data.blinds].map((f) => f.slug))),
+    ranges: list("range", new Set(data.ranges.map((f) => f.slug))),
+    parts: list("part", new Set(data.parts.map((f) => f.slug))),
+    diameters: list("diameter", new Set(data.diameters.map(String))).map(Number),
     price: PRICE_BANDS.some((b) => b.id === params.get("price")) ? params.get("price") : null,
     buyable: params.get("buy") === "1",
     q: (params.get("q") ?? "").trim(),
@@ -176,13 +212,28 @@ export function parseQuery(params: URLSearchParams, data: ShopData): ShopQuery {
   }
 }
 
+/**
+ * The category, or the family somebody bookmarked before there was one.
+ *
+ * `?family=rail` and `?family=rod` are on the home page, on every product page
+ * and in the WooCommerce redirect table, and they are advertised as shareable
+ * URLs. They still mean what they meant: rod is rod, and rail is rail with the
+ * blinds now lifted out of it, which is closer to what anybody following that
+ * link wanted anyway.
+ */
+function readCategory(params: URLSearchParams): Category | null {
+  const asked = params.get("category") ?? params.get("family")
+  return CATEGORIES.some((c) => c.id === asked) ? (asked as Category) : null
+}
+
 /** Serialise a query back to URL params, omitting anything at its default. */
 export function toParams(query: ShopQuery): URLSearchParams {
   const params = new URLSearchParams()
-  if (query.family) params.set("family", query.family)
+  if (query.category) params.set("category", query.category)
   if (query.systems.length) params.set("system", query.systems.join(","))
   if (query.ranges.length) params.set("range", query.ranges.join(","))
   if (query.parts.length) params.set("part", query.parts.join(","))
+  if (query.diameters.length) params.set("diameter", query.diameters.join(","))
   if (query.price) params.set("price", query.price)
   if (query.buyable) params.set("buy", "1")
   if (query.q) params.set("q", query.q)
@@ -190,12 +241,79 @@ export function toParams(query: ShopQuery): URLSearchParams {
   return params
 }
 
+export interface Facets {
+  categories: Facet[]
+  systems: Facet[]
+  blinds: Facet[]
+  ranges: Facet[]
+  parts: Facet[]
+  diameters: Facet[]
+}
+
+/**
+ * Every count on the panel, worked out against what is already ticked.
+ *
+ * A facet is counted with its own dimension cleared, which is what stops
+ * choosing one rail system from showing every other one as zero: the question a
+ * count answers is "and how many if I also tick this", not "how many are left".
+ * Its own dimension is the only one cleared, so "Rods" and "Tracks" can never
+ * again sit side by side both claiming a number when together they are nothing.
+ *
+ * A part type with nothing behind it is dropped rather than shown as zero. That
+ * is the whole of the old fault: twenty four of the thirty component types are
+ * rail only and six are rod only, so more than half the list was always dead
+ * whichever way a customer had come in.
+ */
+export function facetsFor(items: ShopItem[], data: ShopData, query: ShopQuery): Facets {
+  const count = (q: ShopQuery, extra: (item: ShopItem) => boolean) =>
+    filterItems(items, q).filter(extra).length
+
+  const without = (keys: Partial<ShopQuery>) => ({ ...query, ...keys })
+
+  const noCategory = without({ category: null })
+  const noSystems = without({ systems: [] })
+  const noRanges = without({ ranges: [] })
+  const noParts = without({ parts: [] })
+  const noDiameters = without({ diameters: [] })
+
+  return {
+    categories: CATEGORIES.map((c) => ({
+      slug: c.id,
+      label: c.label,
+      count: count(noCategory, (i) => i.category === c.id),
+    })),
+    systems: data.systems.map((f) => ({
+      ...f,
+      count: count(noSystems, (i) => i.fitsSystems.includes(f.slug)),
+    })),
+    blinds: data.blinds.map((f) => ({
+      ...f,
+      count: count(noSystems, (i) => i.fitsSystems.includes(f.slug)),
+    })),
+    ranges: data.ranges.map((f) => ({
+      ...f,
+      count: count(noRanges, (i) => i.range === f.slug),
+    })),
+    parts: data.parts
+      .map((f) => ({ ...f, count: count(noParts, (i) => i.component === f.slug) }))
+      .filter((f) => f.count > 0),
+    diameters: data.diameters
+      .map((d) => ({
+        slug: String(d),
+        label: `${d} mm`,
+        count: count(noDiameters, (i) => i.diameter === d),
+      }))
+      .filter((f) => f.count > 0),
+  }
+}
+
 export function activeCount(query: ShopQuery): number {
   return (
-    (query.family ? 1 : 0) +
+    (query.category ? 1 : 0) +
     query.systems.length +
     query.ranges.length +
     query.parts.length +
+    query.diameters.length +
     (query.price ? 1 : 0) +
     (query.buyable ? 1 : 0) +
     (query.q ? 1 : 0)
@@ -207,10 +325,13 @@ export function filterItems(items: ShopItem[], query: ShopQuery): ShopItem[] {
   const needle = query.q.toLowerCase()
 
   const kept = items.filter((item) => {
-    if (query.family && item.family !== query.family) return false
+    if (query.category && item.category !== query.category) return false
     if (query.systems.length && !query.systems.some((s) => item.fitsSystems.includes(s))) return false
     if (query.ranges.length && !(item.range && query.ranges.includes(item.range))) return false
     if (query.parts.length && !query.parts.includes(item.component)) return false
+    // A part with no bore, a bracket say, goes on any pole and is never filtered out.
+    if (query.diameters.length && item.diameter !== null && !query.diameters.includes(item.diameter))
+      return false
     if (query.buyable && !item.buyable) return false
     if (band) {
       // A part with no price cannot sit in a price band. It is an "ask" item,

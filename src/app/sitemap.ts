@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next"
 import { products, systems } from "@/lib/catalogue"
 import { SITE } from "@/lib/format"
 import { services } from "@/lib/services"
+import { CATEGORIES } from "@/lib/shop"
 
 /**
  * The sitemap the old store never had.
@@ -28,6 +29,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: at("/terms"), changeFrequency: "yearly", priority: 0.2 },
   ]
 
+  // A category is a page rather than a filtered view of one. Rails have had
+  // eleven of these at `/systems/[slug]` all along; rods had none at all, so
+  // half the catalogue was reachable only by filtering and no search engine
+  // ever saw it.
+  const categoryRoutes: MetadataRoute.Sitemap = CATEGORIES.map((category) => ({
+    url: at(`/shop/${category.id}`),
+    changeFrequency: "weekly",
+    priority: 0.85,
+  }))
+
   const systemRoutes: MetadataRoute.Sitemap = systems.map((system) => ({
     url: at(`/systems/${system.slug}`),
     changeFrequency: "monthly",
@@ -48,6 +59,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     ...staticRoutes,
+    ...categoryRoutes,
     ...systemRoutes,
     ...serviceRoutes,
     ...productRoutes,
