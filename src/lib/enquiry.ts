@@ -66,6 +66,34 @@ function reference(count: number) {
   return `AF-${1040 + count}`
 }
 
+/**
+ * The draft, spelled the way the service reads it.
+ *
+ * The shop says `survey` and the service's enum says `SURVEY`, and this is the
+ * one line where those two vocabularies meet. It used to be a spread of the
+ * draft, which posted the shop's own spelling straight onto the wire; the first
+ * time an enquiry was sent at a real service every one of them came back 400,
+ * because Jackson will not read "survey" into a SURVEY. The customer was shown
+ * "Something went wrong at our end", which was true and no use to anybody.
+ *
+ * `orders-api.ts` has always spelled settlement the service's way rather than
+ * the shop's. This is the same seam doing the same job, and it names each field
+ * rather than spreading, because a spread posts whatever the draft grows next
+ * and that is exactly how the casing got out.
+ */
+function wireBody(draft: EnquiryDraft) {
+  return {
+    kind: draft.kind.toUpperCase(),
+    name: draft.name,
+    phone: draft.phone,
+    email: draft.email.trim() || null,
+    area: draft.area,
+    summary: draft.summary,
+    detail: draft.detail,
+    system: draft.system ?? null,
+  }
+}
+
 export async function sendEnquiry(draft: EnquiryDraft): Promise<SendResult> {
   const problem = problemWith(draft)
   if (problem) return { ok: false, message: problem }
@@ -76,7 +104,7 @@ export async function sendEnquiry(draft: EnquiryDraft): Promise<SendResult> {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ ...draft, email: draft.email.trim() || null }),
+        body: JSON.stringify(wireBody(draft)),
       })
       if (!response.ok) {
         const body = await response.json().catch(() => null)
