@@ -7,6 +7,14 @@ nobody shops for "a stopper", they own a #20 rail and need parts that fit it.
 The SKU prefix already encodes the system, so it is the reliable signal.
 """
 
+# `kind` separates the two things this table now holds. Everything here is
+# something the customer already has above a window, which is the axis the shop
+# browses on, but a track drawn on runners and a blind raised on a cord are not
+# the same product and very little that is true of one is true of the other. A
+# blind takes no runners, no stoppers and no tape; it is quoted by the metre with
+# its fittings included rather than sold as parts; and it has no cross section to
+# draw. Absent means `rail`, because a rail is what this table was for.
+#
 # Order matters: RL#20R_ must be tested before RL#20_, which is a prefix of it.
 SYSTEMS = [
     {
@@ -73,6 +81,7 @@ SYSTEMS = [
     },
     {
         "slug": "roman-blind",
+        "kind": "blind",
         "prefixes": ["RL#ROMAN_"],
         "name": "Roman blind",
         "shortName": "Roman",
@@ -86,6 +95,7 @@ SYSTEMS = [
     # until the counter quotes them.
     {
         "slug": "zebra-blind",
+        "kind": "blind",
         "curtainParts": False,
         "prefixes": ["RL#ZEBRA_"],
         "name": "Zebra blind",
@@ -95,6 +105,7 @@ SYSTEMS = [
     },
     {
         "slug": "roller-blind",
+        "kind": "blind",
         "curtainParts": False,
         "prefixes": ["RL#ROLLER_"],
         "name": "Roller blind",

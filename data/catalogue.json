@@ -10,6 +10,7 @@
       "skuPrefixes": [
         "RL#MOTOR_"
       ],
+      "kind": "rail",
       "partCount": 32,
       "components": [
         "belt",
@@ -37,6 +38,7 @@
       "skuPrefixes": [
         "RL#20R_"
       ],
+      "kind": "rail",
       "partCount": 20,
       "components": [
         "bracket",
@@ -59,6 +61,7 @@
       "skuPrefixes": [
         "RL#20_"
       ],
+      "kind": "rail",
       "partCount": 19,
       "components": [
         "bracket",
@@ -80,6 +83,7 @@
       "skuPrefixes": [
         "RL#28_"
       ],
+      "kind": "rail",
       "partCount": 21,
       "components": [
         "bracket",
@@ -101,6 +105,7 @@
       "skuPrefixes": [
         "RL#10_"
       ],
+      "kind": "rail",
       "partCount": 25,
       "components": [
         "bracket",
@@ -122,6 +127,7 @@
         "RL#17_",
         "RL#GROOVE_"
       ],
+      "kind": "rail",
       "partCount": 17,
       "components": [
         "bracket",
@@ -143,6 +149,7 @@
       "skuPrefixes": [
         "RL#KS_"
       ],
+      "kind": "rail",
       "partCount": 16,
       "components": [
         "bracket",
@@ -163,6 +170,7 @@
       "skuPrefixes": [
         "RL#DR_"
       ],
+      "kind": "rail",
       "partCount": 15,
       "components": [
         "buckle",
@@ -176,6 +184,7 @@
     },
     {
       "slug": "roman-blind",
+      "kind": "blind",
       "name": "Roman blind",
       "shortName": "Roman",
       "blurb": "The corded track a roman blind is built on.",
@@ -202,6 +211,7 @@
     },
     {
       "slug": "zebra-blind",
+      "kind": "blind",
       "curtainParts": false,
       "name": "Zebra blind",
       "shortName": "Zebra",
@@ -224,6 +234,7 @@
     },
     {
       "slug": "roller-blind",
+      "kind": "blind",
       "curtainParts": false,
       "name": "Roller blind",
       "shortName": "Roller",

@@ -1,7 +1,11 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { Breadcrumbs, JsonLd, WhatsAppIcon } from "@/components/ui"
-import { skuCount, systems } from "@/lib/catalogue"
+// `skuCount` counts orderable SKUs and `products` counts the pages the shop
+// lists, and they are 195 and 188. This link goes to `/shop`, which shows the
+// second, so it says the second: promising 195 parts and landing on 188 is a
+// small lie that a customer can check in one click.
+import { products, skuCount, systems } from "@/lib/catalogue"
 import { SHOP, whatsapp } from "@/lib/format"
 
 export const metadata: Metadata = {
@@ -181,7 +185,7 @@ export default function Trade() {
                 href="/shop"
                 className="flex items-center justify-between border border-rule px-5 py-4 transition-colors hover:bg-brass-soft"
               >
-                <span className="font-display font-semibold tracking-tight">All {skuCount} parts</span>
+                <span className="font-display font-semibold tracking-tight">All {products.length} parts</span>
                 <span className="callout">Faceted shop</span>
               </Link>
             </div>

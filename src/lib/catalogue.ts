@@ -69,11 +69,25 @@ export interface Product {
   variants?: Variant[]
 }
 
+export type SystemKind = "rail" | "blind"
+
 export interface System {
   slug: string
   name: string
   shortName: string
   blurb: string
+  /**
+   * A track drawn on runners, or a blind raised on a cord.
+   *
+   * Both answer the same question, what the customer already has above the
+   * window, which is why they share this table. Almost nothing else about them
+   * is shared: a blind takes no runners, no stoppers and no tape, it is quoted
+   * by the metre with its fittings included rather than sold as parts, and it
+   * has no cross section to draw. Anywhere those differ, ask this rather than
+   * naming a slug. The configurator named one and the other two walked straight
+   * past it.
+   */
+  kind: SystemKind
   flagship?: boolean
   skuPrefixes: string[]
   partCount: number
@@ -137,6 +151,16 @@ export const rods = products.filter((p) => p.family === "rod")
 
 export function getSystem(slug: string) {
   return systems.find((s) => s.slug === slug)
+}
+
+/** The tracks. What the configurator, and the rail browse axis, mean by a system. */
+export function railSystems() {
+  return systems.filter((s) => s.kind === "rail")
+}
+
+/** The blinds, which browse and sell differently enough to be asked for on their own. */
+export function blindSystems() {
+  return systems.filter((s) => s.kind === "blind")
 }
 
 export function getRange(slug: string) {

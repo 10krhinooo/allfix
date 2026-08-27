@@ -31,6 +31,17 @@ export interface ProfileSpec {
   belt?: boolean
   /** Cord holes through the top plate, for a roman blind track. */
   cords?: boolean
+  /**
+   * A roller tube rather than a channel, given as its diameter.
+   *
+   * A roller and a zebra blind are not extrusions and have no slot for a runner
+   * stem, so nothing above applies to them. What you look at on the end of one
+   * is a round tube with the fabric coming off it, and `layers` says how many
+   * come off: one on a roller, two on a zebra, which is the whole difference
+   * between them.
+   */
+  tube?: number
+  layers?: 1 | 2
 }
 
 export const PROFILES: Record<string, ProfileSpec> = {
@@ -45,6 +56,10 @@ export const PROFILES: Record<string, ProfileSpec> = {
   "double-rail": { width: 74, height: 34, wall: 4, slot: 13, twin: true },
   motorised:     { width: 62, height: 42, wall: 4, slot: 15, belt: true },
   "roman-blind": { width: 38, height: 26, wall: 3, slot: 11, cords: true },
+  // Added by the August sheet as systems of their own. Both roll rather than
+  // run, so they are drawn as tubes and the channel measurements do not apply.
+  "roller-blind": { width: 34, height: 34, wall: 2, slot: 0, tube: 34, layers: 1 },
+  "zebra-blind": { width: 34, height: 34, wall: 2, slot: 0, tube: 34, layers: 2 },
 }
 
 /**
@@ -97,6 +112,8 @@ export function Profile({ system, size = 120, animate = false, dimensioned = fal
   const top = (VIEW - spec.height) / 2 - (dimensioned ? 6 : 0)
   const bottom = top + spec.height
   const half = spec.width / 2
+
+  if (spec.tube) return <Tube system={system} spec={spec} size={size} animate={animate} className={className} />
 
   const sections = spec.twin
     ? [channel(cx - spec.width / 4, top, { ...spec, width: spec.width / 2 }),
@@ -155,6 +172,68 @@ export function Profile({ system, size = 120, animate = false, dimensioned = fal
           <line x1={cx + half} y1={bottom + 4} x2={cx + half} y2={bottom + 10} />
         </g>
       )}
+    </svg>
+  )
+}
+
+/**
+ * A blind on its tube, seen from the end.
+ *
+ * Same job as the channel drawings and the same stroke, so a picker showing both
+ * reads as one family: the tube, the fabric coming off the back of it, and on a
+ * zebra the second layer that makes it a zebra. Not dimensioned, because the
+ * diameter is not what anybody is choosing between here.
+ */
+function Tube({
+  system,
+  spec,
+  size,
+  animate,
+  className,
+}: {
+  system: string
+  spec: ProfileSpec
+  size: number
+  animate: boolean
+  className: string
+}) {
+  const VIEW = 100
+  const cx = VIEW / 2
+  const cy = VIEW / 2 - 8
+  const radius = (spec.tube ?? 34) / 2
+  const drop = cy + radius + 26
+
+  return (
+    <svg
+      viewBox={`0 0 ${VIEW} ${VIEW}`}
+      width={size}
+      height={size}
+      className={className}
+      role="img"
+      aria-label={`Cross-section of the ${system} tube, with the fabric hanging from it`}
+    >
+      <g
+        {...(animate ? { "data-trace": "" } : {})}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+      >
+        <circle cx={cx} cy={cy} r={radius} />
+        {/* The spindle the tube turns on. */}
+        <circle cx={cx} cy={cy} r={2.4} />
+        {/* The fabric leaves the back of the tube and hangs. A zebra hangs two. */}
+        {Array.from({ length: spec.layers ?? 1 }, (_, layer) => (
+          <line
+            key={layer}
+            x1={cx + radius - layer * 4}
+            y1={cy}
+            x2={cx + radius - layer * 4}
+            y2={drop}
+          />
+        ))}
+      </g>
     </svg>
   )
 }
