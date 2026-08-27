@@ -17,7 +17,7 @@
  * projection, so the 200 KB of specs never reaches the browser. Everything below
  * it is client-safe and depends only on that projection.
  */
-import { getComponent, systems, partsForSystem } from "@/lib/catalogue"
+import { getComponent, railSystems, partsForSystem } from "@/lib/catalogue"
 import { SHOP } from "@/lib/format"
 
 /** A physical role in a built rail, in assembly order. */
@@ -145,11 +145,14 @@ const ROLE_LABEL: Record<Role, string> = {
 
 /** The systems the configurator applies to, projected small for the client. */
 export function configuratorSystems(): BuildSystem[] {
-  return systems
-    // A roman blind is raised on a cord, not drawn on runners, so a width and
-    // panel count does not describe it. It stays out of the configurator and
-    // keeps its own system page.
-    .filter((system) => system.slug !== "roman-blind")
+  // A blind is raised on a cord rather than drawn on runners, so a width and a
+  // panel count does not describe one and a bill of materials counted per metre
+  // of run is nonsense against it. This asked for a roman blind by name until
+  // the August sheet added roller and zebra as systems of their own, and the two
+  // of them walked straight past it: a roller blind was being quoted ten runners
+  // to the metre, two stoppers and a joint every six metres, none of which it
+  // stocks. Ask what a system is rather than naming the ones that are not rails.
+  return railSystems()
     .map((system) => {
       const parts = partsForSystem(system.slug)
       const pick = (component: string): BuildPart | undefined => {

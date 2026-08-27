@@ -401,6 +401,9 @@ def build(prices, sheet):
         systems_out.append({
             **{k: v for k, v in system.items() if k != "prefixes"},
             "skuPrefixes": system["prefixes"],
+            # Stated on every system rather than only on the unusual ones, so a
+            # reader of the catalogue never has to know the default.
+            "kind": system.get("kind", "rail"),
             "partCount": len(parts),
             "components": sorted({p["component"] for p in parts}),
             "stockLengthM": stock_length_for(system["slug"]),

@@ -1,5 +1,6 @@
 import { test, describe } from "node:test"
 import assert from "node:assert/strict"
+import { systems } from "@/lib/catalogue"
 import {
   billOfMaterials,
   bomSummary,
@@ -153,5 +154,37 @@ describe("what the customer cannot ask for", () => {
     // still clamped, because 200 runners a metre is a typo.
     assert.equal(bom(systemBy("20"), { widthM: 2, runnersPerM: 14 }).qty("runner"), 28)
     assert.equal(bom(systemBy("20"), { widthM: 2, runnersPerM: 400 }).qty("runner"), 40)
+  })
+})
+
+describe("what the configurator applies to", () => {
+  test("no blind is offered, whatever it is called", () => {
+    const offered = configuratorSystems().map((s) => s.slug)
+    const blinds = systems.filter((s) => s.kind === "blind").map((s) => s.slug)
+
+    assert.ok(blinds.length >= 3, "the catalogue should carry the blinds")
+    for (const blind of blinds) {
+      assert.ok(!offered.includes(blind), `${blind} is a blind and should not be configurable`)
+    }
+  })
+
+  test("every rail is offered, so the filter narrows by kind and not by accident", () => {
+    const offered = configuratorSystems().map((s) => s.slug).sort()
+    const rails = systems.filter((s) => s.kind === "rail").map((s) => s.slug).sort()
+
+    assert.deepEqual(offered, rails)
+  })
+
+  test("a blind never reaches the maths, which counts runners it does not stock", () => {
+    // This is the fault the filter exists for. A roller blind was quoted ten
+    // runners to the metre, two stoppers and a joint every six metres, because
+    // the exclusion named the roman blind and the August sheet added two more.
+    for (const system of configuratorSystems()) {
+      assert.equal(
+        systems.find((s) => s.slug === system.slug)?.kind,
+        "rail",
+        `${system.slug} reached the bill of materials`,
+      )
+    }
   })
 })

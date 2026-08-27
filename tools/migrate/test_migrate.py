@@ -127,6 +127,31 @@ class TestCatalogue(unittest.TestCase):
             if product["universal"]:
                 self.assertEqual(set(product["fitsSystems"]), expected, product["name"])
 
+    def test_every_system_says_whether_it_is_a_rail_or_a_blind(self):
+        """
+        The catalogue holds both and they behave differently almost everywhere:
+        the configurator applies to one and not the other, and it asked for a
+        roman blind by name until the August sheet added two more blinds that
+        walked straight past. Every system states which it is, so the next thing
+        that has to tell them apart asks rather than guesses.
+        """
+        for system in CATALOGUE["systems"]:
+            self.assertIn(system["kind"], ("rail", "blind"), system["slug"])
+
+        blinds = {s["slug"] for s in CATALOGUE["systems"] if s["kind"] == "blind"}
+        self.assertEqual(blinds, {"roman-blind", "zebra-blind", "roller-blind"})
+
+    def test_a_blind_is_not_told_apart_by_whether_it_takes_curtain_parts(self):
+        """
+        The two flags look interchangeable and are not. A roman blind is a length
+        of corded track that a curtain-side part does fit, so it carries curtain
+        parts and is still a blind. Using one to answer the other's question puts
+        it back in the configurator.
+        """
+        roman = next(s for s in CATALOGUE["systems"] if s["slug"] == "roman-blind")
+        self.assertEqual(roman["kind"], "blind")
+        self.assertIn("roman-blind", curtain_side_systems())
+
     def test_every_system_has_parts(self):
         """A system with no parts behind it is the empty-shelf bug from the old site."""
         for system in CATALOGUE["systems"]:
