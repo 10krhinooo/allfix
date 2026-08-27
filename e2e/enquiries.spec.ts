@@ -138,11 +138,16 @@ test.describe("what the counter sees", () => {
     await page.waitForURL(/\/admin/)
     await page.goto("/admin/enquiries")
 
-    await expect(page.getByText(`${reference} through the site`)).toBeVisible()
-    await expect(page.getByText("wanjiru@example.com").first()).toBeVisible()
+    // Scoped to the card carrying the reference this run created. Against a real
+    // service the queue keeps everything every previous run filed, so anything
+    // matched across the whole page finds four Wanjirus and none of them
+    // provably the one just sent.
+    const card = page.locator("li", { hasText: reference }).first()
+    await expect(card.getByText(`${reference} through the site`)).toBeVisible()
+    await expect(card.getByText("wanjiru@example.com")).toBeVisible()
     // The counter can answer in writing where there is an address, and in the
     // customer's own channel where there is not.
-    await expect(page.getByRole("link", { name: /Reply by email to Wanjiru Kamau/ })).toBeVisible()
+    await expect(card.getByRole("link", { name: /Reply by email to Wanjiru Kamau/ })).toBeVisible()
   })
 
   test("the seeded enquiries carry no address and offer no email reply", async ({ page }) => {

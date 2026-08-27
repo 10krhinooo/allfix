@@ -1,4 +1,5 @@
 import { deskRows } from "@/lib/admin/rows"
+import { readEnquiries } from "@/lib/admin/enquiries-service"
 import { Counter } from "@/components/admin/Counter"
 
 /**
@@ -8,6 +9,6 @@ import { Counter } from "@/components/admin/Counter"
  * part, what it is, what it costs, what it fits and whether it has been
  * photographed.
  */
-export default function CounterPage() {
-  return <Counter rows={deskRows()} />
+export default async function CounterPage() {
+  return <Counter rows={deskRows()} queue={await readEnquiries()} />
 }

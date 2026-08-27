@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { deskEnquiries, type DeskRow } from "@/lib/admin/rows"
+import { deskEnquiries, type DeskEnquiry, type DeskRow } from "@/lib/admin/rows"
 import { useAdmin } from "@/lib/admin/store"
 import { useDesk } from "@/components/admin/identity"
 import { currentPrice, isSellable } from "@/lib/admin/pricing"
@@ -27,7 +27,7 @@ import {
  * Turnover and visitor counts would be more flattering and would tell the
  * person opening the shop nothing they can act on before lunch.
  */
-export function Counter({ rows }: { rows: DeskRow[] }) {
+export function Counter({ rows, queue }: { rows: DeskRow[]; queue: DeskEnquiry[] | null }) {
   const state = useAdmin()
   const desk = useDesk()
 
@@ -35,7 +35,9 @@ export function Counter({ rows }: { rows: DeskRow[] }) {
   const unshot = rows.filter((row) => !row.photographed)
   // The filed ones are real, sent through the site by somebody who used the
   // booking form rather than opening a chat. They count the same.
-  const enquiries = deskEnquiries(state.inbox)
+  // The same queue the rail badge and the queue screen count. Three screens
+  // counting the same enquiry from three places is how they come to disagree.
+  const enquiries = queue ?? deskEnquiries(state.inbox)
   const open = enquiries.filter((enquiry) => (state.enquiries[enquiry.id] ?? "new") !== "closed")
   const answered = enquiries.length - open.length
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { KIND_LABEL } from "@/lib/admin/desk"
-import { deskEnquiries } from "@/lib/admin/rows"
+import { deskEnquiries, type DeskEnquiry } from "@/lib/admin/rows"
 import type { EnquiryState } from "@/lib/admin/store"
 import { useAdmin, setEnquiry } from "@/lib/admin/store"
 import { SHOP, whatsapp, arrived, hours } from "@/lib/format"
@@ -32,11 +32,20 @@ const STATES: { value: EnquiryState; label: string }[] = [
   { value: "closed", label: "Closed" },
 ]
 
-export function Enquiries() {
+/**
+ * `queue` is the service's answer, and `null` means nobody could ask.
+ *
+ * The two are deliberately different. When the service is reachable its queue is
+ * the queue: no browser store, no seeded rows, because a counter looking at
+ * fabricated enquiries beside real ones cannot tell which is which. When it is
+ * not, the screen falls back to what this browser holds and says so, rather than
+ * showing an empty list to somebody whose whole job is that list.
+ */
+export function Enquiries({ queue }: { queue: DeskEnquiry[] | null }) {
   const state = useAdmin()
   const statusOf = (id: string) => state.enquiries[id] ?? "new"
 
-  const all = deskEnquiries(state.inbox)
+  const all = queue ?? deskEnquiries(state.inbox)
   const filed = all.filter((enquiry) => enquiry.reference)
   const open = all.filter((enquiry) => statusOf(enquiry.id) !== "closed")
   const surveys = all.filter((enquiry) => enquiry.kind === "survey" && statusOf(enquiry.id) !== "closed")
@@ -47,10 +56,10 @@ export function Enquiries() {
         title="Enquiries"
         lead="Quotes, site visits, trade accounts and parts, in the order they came in."
       >
-        <Note>
-          {filed.length > 0
-            ? `${filed.length} of these came through the site. A WhatsApp enquiry never reaches this screen.`
-            : "Enquiries sent through the site land here. A WhatsApp enquiry never reaches this screen."}
+        <Note tone={queue ? undefined : "warn"}>
+          {queue
+            ? "Read from the shop's own records. A WhatsApp enquiry never reaches this screen."
+            : "No enquiry service is reachable, so this is what was filed in this browser and cannot be seen from anywhere else."}
         </Note>
       </PageHead>
 
@@ -63,7 +72,7 @@ export function Enquiries() {
         />
         <Stat
           label="Through the site"
-          value={state.ready ? filed.length : "\u2014"}
+          value={queue ? filed.length : state.ready ? filed.length : "\u2014"}
           hint="A WhatsApp enquiry never reaches this screen."
         />
         <Stat label="Closed" value={all.length - open.length} />

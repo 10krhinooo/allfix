@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { AdminShell } from "@/components/admin/AdminShell"
 import type { Findable } from "@/components/admin/ConsoleSearch"
+import { readEnquiries } from "@/lib/admin/enquiries-service"
 import { requireConsole } from "@/lib/admin/guard"
 import { badgeRows, deskRows } from "@/lib/admin/rows"
 import { ENQUIRIES } from "@/lib/admin/desk"
@@ -34,6 +35,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   const rows = deskRows()
 
+  // One read for the whole console. The rail badge, Today and the queue screen
+  // all count enquiries, and counting them from two different places is how two
+  // screens come to disagree about the same enquiry with nothing to flag it.
+  const queue = await readEnquiries()
+  const searchable = queue ?? ENQUIRIES
+
   const findable: Findable[] = [
     ...rows.map((row) => ({
       ref: row.ref,
@@ -41,7 +48,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       href: `/admin/parts?q=${encodeURIComponent(row.ref)}`,
       kind: "part" as const,
     })),
-    ...ENQUIRIES.map((enquiry) => ({
+    ...searchable.map((enquiry) => ({
       ref: enquiry.id,
       name: enquiry.name,
       href: `/admin/enquiries#${enquiry.id}`,
@@ -50,7 +57,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   ]
 
   return (
-    <AdminShell desk={desk} findable={findable} badges={badgeRows(rows)}>
+    <AdminShell desk={desk} findable={findable} badges={badgeRows(rows)} queue={queue}>
       {children}
     </AdminShell>
   )
