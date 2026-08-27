@@ -1,0 +1,11 @@
+# The migration reads the client's workbook straight out of its own zip using
+# the standard library, deliberately, so rebuilding the catalogue needs nothing
+# installed. Photography is the one exception: images.py scales every shot to a
+# single master, squares it by padding with the shot's own edge colour and
+# compresses it to WebP, which is Pillow's work rather than something to hand
+# roll on top of zipfile.
+#
+# It was never written down, so `python3 -m unittest discover -s tools/migrate`
+# passed on the machine that had it and failed anywhere else with
+# ModuleNotFoundError on three of its eighteen tests.
+Pillow>=10,<13

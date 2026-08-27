@@ -44,6 +44,10 @@ jobs:
         with:
           python-version: "3.12"
 
+      # images.py needs Pillow. Nothing else in the migration needs anything.
+      - name: Migration dependencies
+        run: python3 -m pip install -r tools/migrate/requirements.txt
+
       # The catalogue migration owns its own correctness: a wrong SKU prefix
       # silently drops a part, which is the fault this project exists to fix.
       - name: Catalogue migration tests
