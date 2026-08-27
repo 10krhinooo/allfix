@@ -1,4 +1,13 @@
-import { products, systems, ranges, componentsInOrder, imageFor, skusOf } from "@/lib/catalogue"
+import {
+  products,
+  systems,
+  ranges,
+  getSystem,
+  getRange,
+  componentsInOrder,
+  imageFor,
+  skusOf,
+} from "@/lib/catalogue"
 import { ENQUIRIES, type Enquiry } from "@/lib/admin/desk"
 import type { FiledEnquiry } from "@/lib/admin/store"
 import type { Family, PriceBasis } from "@/lib/catalogue"
@@ -166,4 +175,38 @@ export function deskEnquiries(inbox: FiledEnquiry[]): DeskEnquiry[] {
     reference: entry.reference,
   }))
   return [...filed, ...ENQUIRIES]
+}
+
+/** A part the counter can put on an order, projected small for the form. */
+export interface OrderablePart {
+  sku: string
+  name: string
+  group: string
+  priceKes: number
+  basis: PriceBasis
+}
+
+/**
+ * What a counter may key onto an order.
+ *
+ * Only what has a price and a SKU. A part priced on request has no figure to
+ * charge and the service refuses to check one out, so offering it here would be
+ * a line that fails on save with somebody waiting at the counter. The same rule
+ * `BulkAdd` applies on a system page, and the same one the order endpoint
+ * applies on arrival.
+ */
+export function orderable(): OrderablePart[] {
+  return products
+    .filter((product) => product.sku && (product.priceKes ?? 0) > 0)
+    .map((product) => ({
+      sku: product.sku!,
+      name: product.name,
+      group:
+        getSystem(product.system ?? "")?.shortName ??
+        getRange(product.range ?? "")?.shortName ??
+        "Fits anything",
+      priceKes: product.priceKes!,
+      basis: product.priceBasis,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name))
 }

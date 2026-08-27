@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { AdminShell } from "@/components/admin/AdminShell"
 import type { Findable } from "@/components/admin/ConsoleSearch"
 import { readEnquiries } from "@/lib/admin/enquiries-service"
+import { readOrders } from "@/lib/admin/orders-service"
 import { requireConsole } from "@/lib/admin/guard"
 import { badgeRows, deskRows } from "@/lib/admin/rows"
 import { ENQUIRIES } from "@/lib/admin/desk"
@@ -38,7 +39,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   // One read for the whole console. The rail badge, Today and the queue screen
   // all count enquiries, and counting them from two different places is how two
   // screens come to disagree about the same enquiry with nothing to flag it.
-  const queue = await readEnquiries()
+  // Both read once here, for the same reason: the rail counts them and so do the
+  // screens, and counting the same thing from two places is how two screens come
+  // to disagree with nothing to flag it.
+  const [queue, orders] = await Promise.all([readEnquiries(), readOrders()])
   const searchable = queue ?? ENQUIRIES
 
   const findable: Findable[] = [
@@ -57,7 +61,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   ]
 
   return (
-    <AdminShell desk={desk} findable={findable} badges={badgeRows(rows)} queue={queue}>
+    <AdminShell desk={desk} findable={findable} badges={badgeRows(rows)} queue={queue} orders={orders}>
       {children}
     </AdminShell>
   )

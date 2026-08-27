@@ -24,13 +24,21 @@ export interface Capabilities {
    * what one part costs.
    */
   settings: boolean
+  /**
+   * Seeing every order, and taking one that did not come through the checkout.
+   *
+   * Counter work, so staff have it. This shop takes more orders over the counter
+   * and on WhatsApp than it takes online, and the person who answers the phone is
+   * the person who has to write it down.
+   */
+  orders: boolean
 }
 
 const CAPABILITIES: Record<Person["role"], Capabilities> = {
-  ADMIN: { console: true, people: true, prices: true, settings: true },
-  STAFF: { console: true, people: false, prices: true, settings: false },
-  TRADE: { console: false, people: false, prices: false, settings: false },
-  CUSTOMER: { console: false, people: false, prices: false, settings: false },
+  ADMIN: { console: true, people: true, prices: true, settings: true, orders: true },
+  STAFF: { console: true, people: false, prices: true, settings: false, orders: true },
+  TRADE: { console: false, people: false, prices: false, settings: false, orders: false },
+  CUSTOMER: { console: false, people: false, prices: false, settings: false, orders: false },
 }
 
 export function capabilities(role: Person["role"]): Capabilities {
