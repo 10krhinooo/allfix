@@ -7,34 +7,59 @@ Replaces `allfix.co.ke`, a WooCommerce store that could not take an order. Every
 its 67 products was priced 0 in USD, the browse pages were disconnected from the shop, and
 the catalogue carried no structured data at all.
 
-## The organising idea: shop by system, not by part
+## The organising idea: shop by what is above the window
 
 The old site browsed by component type (Brackets, Stoppers, Runners), which makes every
 customer solve compatibility themselves, and is why people buy a track and forget the
 stoppers. But the SKUs already encode the answer: `RL#20_004`, `RL#28_008`, `RL#KS_003`.
 
-So **rail system is the primary browse axis**. You arrive knowing you own a #20 rail, and
-the site shows you every part that fits it. Component type stays as a filter.
+So the top axis is what somebody already has above the window, which is the one thing they
+know before anything else: **a rail, a blind, or a rod**. Within rails you pick the system
+and get every part that fits it. Component type stays as a filter, never the way in.
 
-| System | SKU prefix | Parts |
-| --- | --- | --- |
-| Motorised | `RL#MOTOR_` | 16 |
-| #20 | `RL#20_` | 7 |
-| #20 with rubber | `RL#20R_` | 4 |
-| #28 | `RL#28_` | 7 |
-| #15 bendable | `RL#15_` | 5 |
-| #17 groove rubber | `RL#17_` | 3 |
-| KS | `RL#KS_` | 4 |
-| Double rail | `RL#DR_` | 2 |
-| Roman blind | `RL#ROMAN_` | 1 |
-| Curtain-side parts (fit any system) | `RL#ACC_` | 13 |
+Each is a page of its own at `/shop/rail`, `/shop/blind` and `/shop/rod`, prerendered and in
+the sitemap, because a category reachable only by filtering is a category no search engine
+ever sees. That was half the catalogue until recently: rails had eleven landing pages at
+`/systems/[slug]` and rods had none at all.
+
+**A blind is not a rail**, and the catalogue says so with `kind` on every system. They share
+an axis because they answer the same question, and almost nothing else is shared: a blind
+takes no runners, no stoppers and no tape, it is quoted by the metre with its fittings
+included rather than sold as parts, and it has no cross-section to draw. The configurator
+used to exclude the roman blind by name, and when the August sheet added two more blinds
+they walked straight past it and got quoted ten runners to the metre.
+
+| System | Kind | SKU prefix | Parts |
+| --- | --- | --- | --- |
+| Motorised | rail | `RL#MOTOR_` | 20 |
+| #20 with rubber | rail | `RL#20R_` | 8 |
+| #20 | rail | `RL#20_` | 7 |
+| #28 | rail | `RL#28_` | 9 |
+| #10 bendable | rail | `RL#10_` | 13 |
+| #17 groove rubber | rail | `RL#17_`, `RL#GROOVE_` | 5 |
+| KS | rail | `RL#KS_` | 4 |
+| Double rail | rail | `RL#DR_` | 3 |
+| Roman blind | blind | `RL#ROMAN_` | 11 |
+| Roller blind | blind | `RL#ROLLER_` | 12 |
+| Zebra blind | blind | `RL#ZEBRA_` | 10 |
+| Curtain-side parts | rail | `RL#ACC_`, `RL#RIPPLE_` | 12 |
+
+The bendable line was `#15` until the client renumbered it to `#10` in the August workbook.
+`/systems/15-bendable` redirects permanently, because the old URL is indexed and there is
+still a page doing its job.
+
+Curtain-side parts (tapes, hooks, buckles) fit every system **a curtain hangs on**, which is
+nine of the eleven rather than all of them. A roman blind is a blind and does carry a
+curtain; a roller blind does not, and listing a tape as fitting one would be the shop saying
+a part will work when it will not.
 
 ## Rods browse by finish, not by system
 
 Rods are the other half of the shop, and the old site did not carry a single one. They do
 not belong on the rail axis: nothing that fits a #20 fits a 28mm pole. What a rod customer
 matches on is finish first, then diameter, so finish is the browse axis and the bore filters
-within it.
+within it. A 25mm finial will not go on a 19mm pole, and parts with no bore of their own, a
+bracket say, are never filtered out by it.
 
 | Range | SKU prefix | Parts | Diameters |
 | --- | --- | --- | --- |
@@ -45,9 +70,11 @@ within it.
 
 ## The storefront
 
-Next.js (App Router) with Tailwind, TypeScript throughout. Until the Quarkus backend lands,
-`src/lib/catalogue.ts` reads the migrated catalogue directly and is the seam the API slots
-into later without a page changing.
+Next.js (App Router) with Tailwind, TypeScript throughout. The Quarkus service in
+`allfix-backend` owns accounts, orders, pricing and the enquiry queue; see
+[Talking to the service](#talking-to-the-service) for which seams are wired and what each
+falls back to. `src/lib/catalogue.ts` still reads the migrated catalogue directly, and is
+the one seam not yet moved.
 
 ```bash
 npm run dev      # start the storefront
@@ -59,7 +86,7 @@ npm run lint     # eslint
 | --- | --- |
 | `/` | Marketing front door, with a WhatsApp quote as the primary action |
 | `/systems`, `/systems/[slug]` | Browse by rail system, the primary axis, drawn in cross-section |
-| `/shop` | Faceted browser over every part, filtered in the client for an instant feel |
+| `/shop`, `/shop/[category]` | Faceted browser over every part, filtered in the client for an instant feel. Rails, blinds and rods each have their own page |
 | `/product/[slug]` | Gallery, variants, price, spec table, and the systems a part fits |
 | `/build` | The rail configurator: a window in, a bill of materials out |
 | `/services`, `/services/[slug]` | Installation, assembly, curtaining, motorisation, consultation |
@@ -129,8 +156,23 @@ download and trust.
 ## Tests
 
 ```bash
+npm test             # node --test over src/lib, no bundler and no dependency
 npm run test:e2e     # Playwright, desktop and a phone, against a production build
+npm run typecheck    # next typegen, then tsc --noEmit
+npm run lint         # eslint
+
+python3 -m unittest discover -s tools/migrate -t tools/migrate   # the catalogue migration
 ```
+
+**283 browser tests**, 104 unit tests and 20 migration tests, all run on every push and
+pull request by `.github/workflows/ci.yml`. The service runs its own 359 against a real
+PostgreSQL behind a 90% coverage gate.
+
+The unit layer is for the logic where a wrong answer is one character and a browser test is
+an expensive way to find it: the bill of materials, the price rules, the tier rules that
+mirror the service's `unitPriceFor`, the password meter, the rate limiter's arithmetic, the
+shop's filtering, and the wire shape of an enquiry. It runs on Node's own runner with type
+stripping, so there is no transform step to keep current.
 
 The interesting parts of this storefront cannot be checked any other way: a session is an
 HttpOnly cookie no script can plant, a basket is in localStorage the server never sees, and
@@ -167,6 +209,9 @@ So the door has two modes, and it says out loud which one it is in:
 
 ### The seeded accounts
 
+These are the door **without a service**. With `ALLFIX_API_URL` set the door is the
+service's, and these addresses open only if it has them too.
+
 Derived from `PEOPLE` in `src/lib/admin/desk.ts` rather than a second list, so the roster
 cannot fork. The last two are there to be refused: the refusals are the half of the model
 worth exercising while working on the screens. Trade is not refused, it signs in and is sent
@@ -186,14 +231,18 @@ used to enumerate the shop's customers.
 
 ### Configuration
 
-Both variables are server side and neither is `NEXT_PUBLIC_`, so neither reaches the
-browser. `.env.example` names them and carries a value for neither, which is why it is the
-one env file that is committed: copy it to `.env.local` and fill it in.
+`.env.example` names every variable and carries a value for none, which is why it is the
+one env file that is committed: copy it to `.env.local` and fill it in. Everything below is
+server side except where marked, and a server-side value never reaches the browser.
 
 | Variable | Effect if unset |
 | --- | --- |
 | `ALLFIX_SEED_PASSWORD` | The password is not checked, so any value opens a seeded account |
 | `ALLFIX_SESSION_SECRET` | In production, sign in is refused outright: there is no key, so no session can be signed and the door answers 503. Outside production the key is a stand-in generated per process, so restarting the server signs you out |
+| `ALLFIX_API_URL` | Orders, sign in, registration and settings fall back to local data and say plainly what they could not keep. Locally the service is on `http://localhost:8087` |
+| `ALLFIX_SERVICE_TOKEN` | The console's reads of the service go anonymous and come back 401, so settings and the enquiry queue silently fall back. It grants ADMIN: treat it as a password, at least 32 characters, distinct per environment, and it must match `allfix.service.token` on the service |
+| `NEXT_PUBLIC_API_URL` | **Reaches the browser.** The enquiry form files into this browser's own storage instead of the shop's records. It is the one call a browser makes to the service directly |
+| `ALLFIX_SESSION_IDLE_MINUTES` | Twenty. Anything that is not a whole number between 5 and 480 is ignored rather than substituted |
 
 `ALLFIX_SESSION_SECRET` fails closed rather than falling back, because a key committed here
 would be a key anybody could read, and signing with it is not signing. It must be at least
@@ -213,24 +262,62 @@ The gate is enforced twice, in `src/proxy.ts` before a route renders and again i
 Functions are not separate routes in the matcher chain, so a matcher typo would otherwise
 drop coverage silently.
 
+## Talking to the service
+
+The Quarkus service in `allfix-backend` owns accounts, orders, pricing, the enquiry queue
+and the shop's settings. Each seam is one file, and each says plainly what it could not keep
+rather than reporting a success it did not have.
+
+| Seam | Reads or writes | Without a service |
+| --- | --- | --- |
+| `src/lib/admin/accounts.ts` | `POST /api/auth/login` | The seeded roster in `desk.ts` |
+| `src/lib/orders-api.ts` | `POST /api/orders`, as the signed in customer | Priced locally and not persisted |
+| `src/lib/enquiry.ts` | `POST /api/enquiries` | Filed into this browser's storage |
+| `src/lib/admin/enquiries-service.ts` | `GET /api/enquiries` | The browser's own store, and the screen says so |
+| `src/lib/admin/registration.ts` | `POST /api/auth/register` and the reset pair | Says no account was created |
+| `src/lib/settings-service.ts` | `GET`/`PUT /api/admin/settings` | Reads the environment, refuses to save |
+| `src/lib/catalogue.ts` | not yet wired | Always the migrated `data/catalogue.json` |
+
+**There is one session, not two.** Signing in calls the service, and the session it issues
+is sealed inside this server's own cookie rather than handed to the browser: nothing in a
+browser calls the service directly except the enquiry form, which needs no session at all.
+That held token is what lets an order be placed *as* the customer. Before it existed the
+call was anonymous, the service saw neither an account nor a guest, and a registered
+customer was the one person who could not buy anything.
+
+**A price is never sent.** The tier is a property of an account, so there is no tier field
+on an order body and no price field either: the service resolves both from the account and
+the storefront's figure is display only.
+
 ## Deployment
 
 Hosted on Vercel, git-connected to this repo. `main` is the production branch and deploys to
 [allfix-vkimanga-8886s-projects.vercel.app](https://allfix-vkimanga-8886s-projects.vercel.app);
 every other branch gets its own preview URL.
 
+`.github/workflows/ci.yml` runs lint, types, the unit layer and the migration tests in about
+a minute, and the browser suite in its own job. Both repositories have one, and both gate a
+pull request.
+
 ## Migration
 
 `tools/migrate/` rebuilds the catalogue from two sources, both committed under
-`tools/migrate/raw/` so the migration is reproducible offline. They answer different
+`tools/migrate/raw/` so the migration is reproducible offline. It is reproducible in the
+strict sense: running it against an unchanged workbook rewrites `data/catalogue.json` byte
+for byte, which is what makes a catalogue diff worth reading. They answer different
 questions: the WooCommerce Store API export holds the rail parts and their photography but
 no usable price, and the client's product workbook holds the money, the unit each price is
 quoted in, and the entire rod line.
 
 ```bash
+python3 -m pip install -r tools/migrate/requirements.txt   # Pillow, for the photography only
 python3 tools/migrate/migrate.py --images
 python3 -m unittest discover -s tools/migrate -t tools/migrate
 ```
+
+The catalogue is read out of the workbook zip with the standard library, deliberately, so a
+rebuild needs nothing installed. `images.py` is the one exception and the only reason there
+is a requirements file at all.
 
 The workbook is the price of record. `--prices data/price-list.csv` still overrides it per
 SKU, so a correction can be made without waiting on a new workbook.
@@ -246,28 +333,48 @@ What it does:
 - collapses declared colour and material duplicates into variants. The six buckle colours
   were six separate products
 - resolves `fitsSystems` for every part
-- squares and compresses the photography as shot, background included: 62 images, 18 KB
+- squares and compresses the photography as shot, background included: 49 images, 18 KB
   average, down from 70 to 120 KB unoptimised JPEG. Nothing is cropped or cut out, and the
   square is padded with the shot's own edge colour so the pad is invisible
 - adds the stock the old site never listed: the 74 rod SKUs, 25 rail SKUs including most of
   the roman blind system, and a seventh buckle colour that joins the existing group
+- refuses to place a SKU whose prefix it does not recognise, and says which. It used to skip
+  them silently, which is how the August workbook's 42 new parts were dropped while the run
+  still reported success
 
-Result: **154 products across 161 SKUs**, 80 rail and 74 rod.
+Result: **188 products across 195 SKUs**, 114 rail and 74 rod.
+
+### The service reads the same catalogue
+
+`allfix-backend/tools/seed/` holds a committed copy of `data/catalogue.json` and generates
+the SQL that seeds it, so both halves are built from the one workbook. They drifted once,
+when the August sheet was migrated here and never there: the service served 154 products
+against this shop's 188, still called the bendable line `#15`, and had never heard of a
+roller blind. Switching the catalogue seam on at that point would have rolled the shop back
+a third of its range.
+
+A catalogue change reaches the service as a migration until it is deployed, and through the
+service's own importer (upload, preview, apply, audited) after that.
 
 ## Prices
 
 Prices could not be recovered from the old store, which quoted everything at zero. They come
-instead from the client's workbook, which prices 138 of the 154 products.
+instead from the client's workbook, which prices 156 of the 188 products.
 
 Two things about that workbook drive the data model:
 
 - **A price says what it buys.** Track is quoted per metre, tie backs per pair, and there are
   box and roll prices too. A bare figure would misprice both a 400 per metre track and a 300
   per pair tie back, so `priceBasis` is carried on every product and rendered with the money.
-- **Some rows price in words.** Nine roman blind fittings read "Included in the cost of the
-  track per mtr", and the double rail track quotes a metre rate alongside a full length. Those
-  are pricing rules, not numbers. They are carried verbatim as `priceNote` and the part stays
-  unpriced, because a wrong number here is worse than no number.
+- **Some rows price in words.** Twenty nine blind fittings read "Included in the cost of the
+  track per mtr", which is how a blind is sold: one line by the metre with its fittings in
+  it. Those are pricing rules, not numbers. They are carried verbatim as `priceNote` and the
+  part stays unpriced, because a wrong number here is worse than no number.
 
-Seven products are still genuinely unpriced, so the storefront shows "price on request" for
+Three products are still genuinely unpriced, so the storefront shows "price on request" for
 them rather than inventing a figure. Stock is not quoted at all, so it stays untracked.
+
+**49 of the 188 are photographed.** Only the parts that came off the old site have a shot;
+the rod line and everything the workbook added are waiting on one, and each carries the shot
+name the sheet asks for so the shoot list is already in the data. A part with no photograph
+renders a placeholder and never a broken image.
