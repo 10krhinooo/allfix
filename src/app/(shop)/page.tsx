@@ -41,10 +41,6 @@ const QUOTE = whatsapp(
 const SURVEY = whatsapp(
   "Hello AllFix, I am interested in motorised curtains and would like a site survey.",
 )
-const TRADE = whatsapp(
-  "Hello AllFix, I would like to open a trade account. I am a:",
-)
-
 export default function Home() {
   const flagship = systems.find((s) => s.flagship)
 
@@ -309,12 +305,16 @@ export default function Home() {
               Open an account for 20% off list, bulk quantity entry, and a proforma invoice you can
               settle by bank transfer instead of paying at checkout.
             </p>
-            <a
-              href={TRADE}
+            {/* `/trade` is the page written for this click: the rate, what an
+                account gets, and the application. Sending it to WhatsApp
+                instead asked somebody to start a conversation to read a page
+                the shop had already written. */}
+            <Link
+              href="/trade"
               className="mt-6 inline-block rounded-sm border border-ink px-6 py-3 text-sm font-medium transition-colors hover:bg-ink hover:text-paper"
             >
               Open a trade account
-            </a>
+            </Link>
           </div>
 
           <div className="border border-rule p-6">

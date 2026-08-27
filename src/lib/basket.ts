@@ -35,14 +35,41 @@ export interface BasketPart {
 export function basketCatalogue(): Record<string, BasketPart> {
   const table: Record<string, BasketPart> = {}
   for (const product of products) {
-    if (!product.sku) continue
-    table[product.sku] = {
-      sku: product.sku,
-      slug: product.slug,
-      name: product.name,
-      priceKes: product.priceKes,
-      priceBasis: product.priceBasis,
-      image: imageFor(product),
+    if (product.sku) {
+      table[product.sku] = {
+        sku: product.sku,
+        slug: product.slug,
+        name: product.name,
+        priceKes: product.priceKes,
+        priceBasis: product.priceBasis,
+        image: imageFor(product),
+      }
+    }
+
+    /*
+     * Every variant is indexed under its own code as well.
+     *
+     * A variant is an orderable part: it has a SKU, its own price, and
+     * sometimes its own basis, and a metal tape hook at 150 a box is a
+     * different thing from a plastic one at 300 each. Two products in the
+     * catalogue have no SKU at all and exist only as their variants, so
+     * skipping those left the only code a customer could add to the basket
+     * with nothing behind it: the line could not resolve a name, a price or a
+     * picture, and the checkout would have refused it as unknown.
+     *
+     * The label goes in the name because that is the whole of what the customer
+     * chose. "Curtain tape hooks" on its own does not say which they bought.
+     */
+    for (const variant of product.variants ?? []) {
+      if (!variant.sku) continue
+      table[variant.sku] = {
+        sku: variant.sku,
+        slug: product.slug,
+        name: `${product.name}, ${variant.label.toLowerCase()}`,
+        priceKes: variant.priceKes,
+        priceBasis: variant.priceBasis,
+        image: imageFor(product, variant),
+      }
     }
   }
   return table

@@ -3,6 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { AddToCart } from "@/components/cart/AddToCart"
+import { PickVariant, type Pickable } from "@/components/cart/PickVariant"
 import { TradeRate } from "@/components/TradeRate"
 import { Breadcrumbs, Button, JsonLd, WhatsAppIcon } from "@/components/ui"
 import { ProductCard } from "@/components/ProductCard"
@@ -17,7 +18,7 @@ import {
   products,
   type Product,
 } from "@/lib/catalogue"
-import { priceLine, inStock } from "@/lib/commerce"
+import { priceLine, inStock, sellable } from "@/lib/commerce"
 import { price, SHOP, whatsapp } from "@/lib/format"
 
 export function generateStaticParams() {
@@ -90,6 +91,26 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   if (!product) notFound()
 
   const line = priceLine(product)
+
+  /*
+   * The variants a customer has to choose between before anything can go in the
+   * basket. Only a group with no SKU of its own qualifies: it is not a part, it
+   * is a set of parts, and the price on the card is whichever of them is
+   * cheapest. Formatted here rather than in the client component so the basis
+   * travels with the figure, which is the difference between 150 a box and 150
+   * each.
+   */
+  const choosable: Pickable[] = product.sku
+    ? []
+    : (product.variants ?? [])
+        .filter((variant) => variant.sku)
+        .map((variant) => ({
+          sku: variant.sku,
+          label: variant.label,
+          swatch: variant.swatch,
+          priceLabel: price(variant.priceKes, variant.priceBasis) ?? "on request",
+          buyable: sellable(variant),
+        }))
   const photo = imageFor(product)
   const component = getComponent(product.component)
   const range = product.range ? getRange(product.range) : undefined
@@ -165,9 +186,18 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <p className="mt-5 leading-relaxed text-slate">{product.summary}</p>
           )}
 
-          {/* Variants are shown as a list rather than a picker: choosing one is a
-              cart concern, and there is no cart until the backend lands. */}
-          {product.variants && product.variants.length > 1 && (
+          {/* A group with no SKU of its own is only sold as one of its variants,
+              so the choice is the thing that makes it orderable. It used to be
+              a read-only list beside a basket button gated on the group's SKU,
+              which meant no button at all. */}
+          {choosable.length > 0 && (
+            <PickVariant options={choosable} axis={product.variantAxis ?? "Options"} />
+          )}
+
+          {/* Everything else shows its variants as a list, because the group
+              itself is orderable and the finish is a detail rather than a
+              decision the basket needs. */}
+          {!choosable.length && product.variants && product.variants.length > 1 && (
             <div className="mt-7">
               <p className="callout">{product.variantAxis ?? "Options"}</p>
               <ul className="mt-3 flex flex-wrap gap-2">
