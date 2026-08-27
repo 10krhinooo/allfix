@@ -114,7 +114,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           { href: "/", label: "Home" },
           { href: "/shop", label: "All parts" },
           ...(system ? [{ href: `/systems/${system.slug}`, label: system.name }] : []),
-          ...(range ? [{ href: `/shop?range=${range.slug}`, label: range.name }] : []),
+          ...(range ? [{ href: `/shop/rod?range=${range.slug}`, label: range.name }] : []),
           { label: product.name },
         ]}
       />
@@ -236,7 +236,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           {range && (
             <p className="mt-7 border-t border-rule pt-5 text-sm leading-relaxed text-slate">
               Part of the{" "}
-              <Link href={`/shop?range=${range.slug}`} className="text-oxblood underline underline-offset-4">
+              <Link href={`/shop/rod?range=${range.slug}`} className="text-oxblood underline underline-offset-4">
                 {range.name}
               </Link>{" "}
               rod range
