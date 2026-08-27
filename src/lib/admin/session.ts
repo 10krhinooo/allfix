@@ -1,4 +1,5 @@
 import { PEOPLE, type Person } from "@/lib/admin/desk"
+import type { ServiceSession } from "@/lib/admin/accounts"
 import { DEFAULT_SESSION, SESSION_ENV, idleMinutes } from "@/lib/settings"
 
 /**
@@ -56,6 +57,26 @@ interface Payload {
   seen: number
   /** The window it was sealed under, in ms, so the gate needs no settings read. */
   idle: number
+  /**
+   * Who this is, when the service said so rather than `desk.ts`.
+   *
+   * Absent on a seeded session, where the roster is the answer and re-reading it
+   * on every request is the point: a role withdrawn there takes effect at once
+   * rather than when a fortnight old cookie happens to expire.
+   *
+   * Present once a real service is answering, because it has accounts this
+   * server has never heard of and looking them up in a hardcoded list would
+   * refuse every one. `svc` is the service's own opaque session, held here on
+   * the customer's behalf and forwarded on calls made for them, which is what
+   * lets the service know who is ordering. It is inside the sealed payload and
+   * never reaches the browser.
+   */
+  who?: {
+    name: string
+    role: Person["role"]
+    svc: string
+    tier: "retail" | "trade"
+  }
 }
 
 /**
@@ -201,13 +222,16 @@ async function sign(payload: Payload): Promise<string> {
   return `${body}.${encode(new Uint8Array(signature))}`
 }
 
-export async function seal(person: Person): Promise<string> {
+export async function seal(person: Person, service?: ServiceSession): Promise<string> {
   const now = Date.now()
   return sign({
     email: person.email,
     exp: now + MAX_AGE * 1000,
     seen: now,
     idle: configuredIdle(),
+    who: service
+      ? { name: person.name, role: person.role, svc: service.token, tier: service.tier }
+      : undefined,
   })
 }
 
@@ -287,13 +311,17 @@ export async function open(token: string | undefined): Promise<Desk | null> {
   const payload = await verified(token)
   if (!payload) return null
 
-  const person = PEOPLE.find((candidate) => candidate.email === payload.email)
-  if (!person || !person.active) return null
+  // The service's answer where there is one, and the roster otherwise. Not both:
+  // an account the service knows about is not in `PEOPLE` and never will be, so
+  // falling through to the roster would refuse every real customer.
+  const who = payload.who
+  const person = who ? null : PEOPLE.find((candidate) => candidate.email === payload.email)
+  if (!who && (!person || !person.active)) return null
 
   return {
-    email: person.email,
-    name: person.name,
-    role: person.role,
+    email: payload.email,
+    name: who?.name ?? person!.name,
+    role: who?.role ?? person!.role,
     idleInMs: Math.max(0, payload.seen + payload.idle - Date.now()),
     idleWindowMs: payload.idle,
   }
@@ -317,4 +345,21 @@ export function cookieOptions(maxAge: number = MAX_AGE) {
 /** The hint's attributes: the same lifetime, and deliberately not HttpOnly. */
 export function hintOptions(maxAge: number = MAX_AGE) {
   return { ...cookieOptions(maxAge), httpOnly: false }
+}
+
+/**
+ * The service session this cookie is holding, for a call made on the customer's
+ * behalf. Null on a seeded session, and null when there is no service at all.
+ *
+ * Separate from `open()` because they answer different questions and only one of
+ * them is a secret. `open()` is what a page renders a name and a role from; this
+ * is a credential, so it is asked for by name at the one or two call sites that
+ * genuinely act as the customer, rather than travelling on every `Desk`.
+ */
+export async function heldSession(
+  token: string | undefined,
+): Promise<{ svc: string; tier: "retail" | "trade" } | null> {
+  const payload = await verified(token)
+  if (!payload?.who) return null
+  return { svc: payload.who.svc, tier: payload.who.tier }
 }

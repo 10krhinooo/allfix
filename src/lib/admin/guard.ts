@@ -1,6 +1,6 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
-import { COOKIE, open, type Desk } from "@/lib/admin/session"
+import { COOKIE, heldSession, open, type Desk } from "@/lib/admin/session"
 import { capabilities } from "@/lib/admin/roles"
 
 /**
@@ -27,4 +27,17 @@ export async function requireConsole(): Promise<Desk> {
   const desk = await readDesk()
   if (!desk || !capabilities(desk.role).console) redirect("/sign-in?next=%2Fadmin")
   return desk
+}
+
+/**
+ * The service session this request's cookie is holding, for a call made on the
+ * customer's behalf rather than on this server's.
+ *
+ * Deliberately not part of `Desk`. A desk is what a page renders a name and a
+ * role from and is passed around freely; this is a credential, so it is asked
+ * for by name at the one or two places that genuinely act as the customer.
+ */
+export async function readHeld() {
+  const jar = await cookies()
+  return heldSession(jar.get(COOKIE)?.value)
 }

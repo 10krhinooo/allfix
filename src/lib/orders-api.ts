@@ -153,7 +153,19 @@ function priceLocally(request: PlaceRequest, tier: Tier): PlaceResult {
  * service resolves it from the account for itself. A tier travelling in a
  * request is a request setting its own price by another name.
  */
-export async function placeOrder(request: PlaceRequest, tier: Tier = "retail"): Promise<PlaceResult> {
+export async function placeOrder(
+  request: PlaceRequest,
+  tier: Tier = "retail",
+  /**
+   * The service session this order is being placed on, when a customer is
+   * signed in. Without it the service sees an anonymous caller and refuses,
+   * because `/api/orders` reads the guest block only when there is no session
+   * and a signed in checkout deliberately sends none: an account already says
+   * who it is. Two notions of "signed in" that had never met is what made a
+   * registered customer the one person who could not buy anything.
+   */
+  held?: string,
+): Promise<PlaceResult> {
   const checked = priceLocally(request, tier)
   if (!checked.ok) return checked
   if (!API) return checked
@@ -161,7 +173,10 @@ export async function placeOrder(request: PlaceRequest, tier: Tier = "retail"): 
   try {
     const response = await fetch(`${API}/api/orders`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(held ? { Cookie: `allfix_session=${held}` } : {}),
+      },
       body: JSON.stringify(request),
       cache: "no-store",
     })

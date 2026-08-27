@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { check, tooMany } from "@/lib/rate-limit"
-import { readDesk } from "@/lib/admin/guard"
+import { readDesk, readHeld } from "@/lib/admin/guard"
 import { placeOrder, type PlaceLine, type Settlement } from "@/lib/orders-api"
 import { tierFor } from "@/lib/tiers"
 
@@ -95,6 +95,9 @@ export async function POST(request: Request) {
     // there is no account to look a tier up on, which is the same answer the
     // service gives itself.
     tierFor(desk?.role),
+    // The service session this cookie holds, so the order is placed as the
+    // customer rather than by an anonymous server on their behalf.
+    (await readHeld())?.svc,
   )
 
   if (!result.ok) {
