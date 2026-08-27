@@ -35,6 +35,11 @@ export default async function OrdersPage() {
         <EmptyState
           title="No orders yet"
           body="When you buy something, it appears here and you can follow it from the counter to your door."
+          action={
+            <Link href="/shop" className="text-sm font-medium text-oxblood hover:underline">
+              Browse the shop
+            </Link>
+          }
         />
       ) : (
         <div className="space-y-4">

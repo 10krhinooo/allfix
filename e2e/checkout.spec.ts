@@ -161,3 +161,42 @@ test.describe("buying something", () => {
     await expect(page.getByRole("radio", { name: /Proforma/ })).toHaveCount(0)
   })
 })
+
+test.describe("a part sold only as one of its finishes", () => {
+  // Curtain buckles and tape hooks have no SKU of their own: they are a group
+  // of seven finishes and two materials, each a part with its own code. The
+  // page showed a price and a read-only list and then no basket button at all,
+  // because the button was gated on a SKU the group does not have. Two things
+  // the shop stocks, both priced, could not be bought.
+  test("can be put in the basket once a finish is chosen", async ({ page }) => {
+    await page.goto("/product/curtain-buckles")
+    await expect(page.getByText(/KES/).first()).toBeVisible()
+
+    // Nothing is preselected, so the way in is the prompt rather than a button.
+    await expect(page.getByRole("button", { name: "Add to basket" })).toHaveCount(0)
+
+    // The input is visually hidden behind a styled swatch, which is the point
+    // of the pattern, so the label is what a person actually clicks.
+    await page.locator("label:visible").filter({ hasText: /^Gold/ }).first().click()
+    await page.getByRole("button", { name: "Add to basket" }).click()
+
+    await page.goto("/cart")
+    await expect(page.getByText(/curtain buckles, gold/i)).toBeVisible()
+  })
+
+  test("the finish chosen is the one that goes in, at its own price", async ({ page }) => {
+    // A metal hook is 150 a box and a plastic one is 300 each. Defaulting to
+    // whichever sorted first would put a different thing in the basket than the
+    // person meant, at a different price, in a different unit.
+    await page.goto("/product/curtain-tape-hooks")
+    await page.locator("label:visible").filter({ hasText: /^Plastic/ }).first().click()
+    await page.getByRole("button", { name: "Add to basket" }).click()
+
+    await page.goto("/cart")
+    // The line names the finish, because "Curtain tape hooks" on its own does
+    // not say which of the two was bought, and it carries that finish's own
+    // price rather than the group's.
+    await expect(page.getByText(/curtain tape hooks, plastic/i)).toBeVisible()
+    await expect(page.getByText("KES 300").first()).toBeVisible()
+  })
+})

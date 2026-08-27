@@ -43,8 +43,10 @@ export default function Privacy() {
             <li>The messages you send us, including on WhatsApp.</li>
           </ul>
           <p className="mt-3">
-            We do not run accounts or take card details on this site. When online ordering and
-            payment are added, this policy will be updated before they go live.
+            If you open an account we hold the address you sign in with, your name and phone
+            number, the addresses you save for delivery, and the orders and enquiries you have
+            placed with us. We never see or store a card number: payment is settled by M-Pesa or
+            over the counter, and an M-Pesa prompt is confirmed by Safaricom rather than by us.
           </p>
         </section>
 

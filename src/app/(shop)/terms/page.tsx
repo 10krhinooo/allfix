@@ -48,10 +48,12 @@ export default function Terms() {
         <section>
           <h2 className="font-display text-lg font-semibold tracking-tight text-ink">Ordering</h2>
           <p className="mt-3">
-            You order over the counter, by phone, or over WhatsApp from a quote we have confirmed.
-            An order is placed when we confirm it and you agree the price, not when a page is
-            submitted. We may decline or cancel an order if an item is out of stock or a price was
-            shown in error, and we will tell you and refund anything already paid.
+            You order on this site, over the counter, by phone, or over WhatsApp from a quote we
+            have confirmed. An order placed on the site is priced by us rather than by the page:
+            the figure you are charged is worked out on our own system from the parts and
+            quantities you chose, so a price altered in a browser is ignored. We may decline or
+            cancel an order if an item is out of stock or a price was shown in error, and we will
+            tell you and refund anything already paid.
           </p>
         </section>
 

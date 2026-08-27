@@ -36,6 +36,11 @@ export default async function DocumentsPage() {
         <EmptyState
           title="Nothing issued yet"
           body="A receipt is issued when an order is paid, and a proforma when you ask for one before paying."
+          action={
+            <Link href="/account/orders" className="text-sm font-medium text-oxblood hover:underline">
+              See your orders
+            </Link>
+          }
         />
       ) : (
         <>

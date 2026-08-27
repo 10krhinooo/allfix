@@ -31,9 +31,12 @@ export default async function PeoplePage() {
         title="People"
         lead="Roles are granted, never claimed. Every account starts as a customer, and staff, trade and admin are given by somebody who already has them."
       >
+        {/* This used to name "account administration", which is not a screen
+            that exists and is not linked from anywhere. Naming a place nobody
+            can go is worse than saying plainly that the door is elsewhere. */}
         <Note>
-          Read only here. A role is granted from account administration, where the change is
-          audited against whoever made it.
+          Read only here. Granting or withdrawing a role is done on the service rather than on
+          this screen, so the change is audited against whoever made it.
         </Note>
       </PageHead>
 

@@ -334,12 +334,28 @@ export function Pill({
   )
 }
 
-/** Nothing to show, said in the console's terms rather than the shop's. */
-export function EmptyState({ title, body }: { title: string; body: string }) {
+/**
+ * Nothing to show, said in the console's terms rather than the shop's.
+ *
+ * `action` is the way out, and a screen a customer can land on should have one.
+ * A shopper with no orders reading "when you buy something, it appears here" is
+ * being told to go and find the shop themselves, from inside an account area
+ * that does not link to it.
+ */
+export function EmptyState({
+  title,
+  body,
+  action,
+}: {
+  title: string
+  body: string
+  action?: React.ReactNode
+}) {
   return (
     <div className="rounded-2xl border border-dashed border-rule py-14 text-center">
       <h3 className="font-display text-base font-semibold">{title}</h3>
       <p className="mx-auto mt-2 max-w-sm px-6 text-sm leading-relaxed text-slate">{body}</p>
+      {action && <div className="mt-5">{action}</div>}
     </div>
   )
 }
