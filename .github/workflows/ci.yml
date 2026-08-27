@@ -1,0 +1,87 @@
+# What has to be true before a change lands.
+#
+# The suites all existed before this file did and none of them ran anywhere but
+# a laptop, which makes a green tree an observation rather than a guarantee.
+# Two jobs rather than one: the cheap checks answer in about a minute and catch
+# most of what goes wrong, and the browser suite is left to take the time it
+# needs without holding up the answer.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A second push supersedes the first. Nothing here is worth finishing for a
+# commit that is already history.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Lint, types, unit and migration tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      # Type errors surfaced only at `next build` before this, which is the
+      # slowest possible place to find one.
+      - run: npm run typecheck
+
+      - run: npm test
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      # images.py needs Pillow. Nothing else in the migration needs anything.
+      - name: Migration dependencies
+        run: python3 -m pip install -r tools/migrate/requirements.txt
+
+      # The catalogue migration owns its own correctness: a wrong SKU prefix
+      # silently drops a part, which is the fault this project exists to fix.
+      - name: Catalogue migration tests
+        run: python3 -m unittest discover -s tools/migrate -t tools/migrate
+
+  e2e:
+    name: End to end
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # All three Playwright projects are Chromium. Installing the other two
+      # engines would double the setup for browsers nothing runs in.
+      - run: npx playwright install --with-deps chromium
+
+      # playwright.config.ts starts `next start`, which has nothing to serve
+      # without this. The config does not build for itself.
+      - run: npm run build
+
+      - run: npm run test:e2e
+
+      # Traces are retained on failure, and they are the only way to read a
+      # browser failure that did not happen on your own machine.
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7
+          if-no-files-found: ignore
