@@ -20,8 +20,17 @@ import { SITE } from "@/lib/format"
  * a page and pretending otherwise makes a sitemap of noise.
  */
 
-export const dynamicParams = false
-
+/*
+ * Deliberately not `dynamicParams = false`, which is what `/systems/[slug]`
+ * uses. With it, Next never runs this page for a param it did not prerender: it
+ * goes looking for a fallback, finds none, and throws NoFallbackError into the
+ * server log. The visitor still gets a 404, but the server has taken an internal
+ * error to produce it, and under the end to end suite that was enough to make an
+ * unrelated request to /shop fail on the next tick.
+ *
+ * Letting the page run and refuse itself is the same 404 with none of that, and
+ * the three real categories are still prerendered by generateStaticParams below.
+ */
 export function generateStaticParams() {
   return CATEGORIES.map((c) => ({ category: c.id }))
 }

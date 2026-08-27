@@ -2,7 +2,7 @@
 
 import { capabilities, type Capabilities } from "@/lib/admin/roles"
 import type { Desk } from "@/lib/admin/session"
-import { deskEnquiries, type BadgeRow } from "@/lib/admin/rows"
+import { deskEnquiries, type BadgeRow, type DeskEnquiry } from "@/lib/admin/rows"
 import { currentPrice, isSellable } from "@/lib/admin/pricing"
 import { useAdmin } from "@/lib/admin/store"
 import { DeskProvider } from "@/components/admin/identity"
@@ -77,11 +77,14 @@ export function AdminShell({
   desk,
   findable,
   badges,
+  queue,
   children,
 }: {
   desk: Desk
   findable: Findable[]
   badges: BadgeRow[]
+  /** The shop's own enquiries, or null when no service could be asked. */
+  queue: DeskEnquiry[] | null
   children: React.ReactNode
 }) {
   const allowed = capabilities(desk.role)
@@ -95,7 +98,7 @@ export function AdminShell({
    */
   const outstanding = {
     parts: badges.filter((row) => !isSellable(currentPrice(row, state.prices))).length,
-    enquiries: deskEnquiries(state.inbox).filter(
+    enquiries: (queue ?? deskEnquiries(state.inbox)).filter(
       (enquiry) => (state.enquiries[enquiry.id] ?? "new") !== "closed",
     ).length,
   }
