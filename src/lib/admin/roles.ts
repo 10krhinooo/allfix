@@ -32,13 +32,21 @@ export interface Capabilities {
    * the person who has to write it down.
    */
   orders: boolean
+  /**
+   * Counting a shelf and correcting a count.
+   *
+   * Staff, like orders and for the same reason: whoever is standing at the
+   * drawer is the only person who can say what is in it. What counts as low is
+   * the owner's and is checked separately, inside the screen.
+   */
+  stock: boolean
 }
 
 const CAPABILITIES: Record<Person["role"], Capabilities> = {
-  ADMIN: { console: true, people: true, prices: true, settings: true, orders: true },
-  STAFF: { console: true, people: false, prices: true, settings: false, orders: true },
-  TRADE: { console: false, people: false, prices: false, settings: false, orders: false },
-  CUSTOMER: { console: false, people: false, prices: false, settings: false, orders: false },
+  ADMIN: { console: true, people: true, prices: true, settings: true, orders: true, stock: true },
+  STAFF: { console: true, people: false, prices: true, settings: false, orders: true, stock: true },
+  TRADE: { console: false, people: false, prices: false, settings: false, orders: false, stock: false },
+  CUSTOMER: { console: false, people: false, prices: false, settings: false, orders: false, stock: false },
 }
 
 export function capabilities(role: Person["role"]): Capabilities {

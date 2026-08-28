@@ -3,6 +3,7 @@ import { AdminShell } from "@/components/admin/AdminShell"
 import type { Findable } from "@/components/admin/ConsoleSearch"
 import { readEnquiries } from "@/lib/admin/enquiries-service"
 import { readOrders } from "@/lib/admin/orders-service"
+import { readStock } from "@/lib/admin/stock-service"
 import { requireConsole } from "@/lib/admin/guard"
 import { badgeRows, deskRows } from "@/lib/admin/rows"
 import { ENQUIRIES } from "@/lib/admin/desk"
@@ -42,7 +43,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   // Both read once here, for the same reason: the rail counts them and so do the
   // screens, and counting the same thing from two places is how two screens come
   // to disagree with nothing to flag it.
-  const [queue, orders] = await Promise.all([readEnquiries(), readOrders()])
+  const [queue, orders, shelf] = await Promise.all([
+    readEnquiries(),
+    readOrders(),
+    // Only what is low, because the rail wants a count and not the shelf. Null
+    // where no service could be asked, which draws no badge rather than a zero.
+    readStock(true),
+  ])
   const searchable = queue ?? ENQUIRIES
 
   const findable: Findable[] = [
@@ -61,7 +68,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   ]
 
   return (
-    <AdminShell desk={desk} findable={findable} badges={badgeRows(rows)} queue={queue} orders={orders}>
+    <AdminShell
+      desk={desk}
+      findable={findable}
+      badges={badgeRows(rows)}
+      queue={queue}
+      orders={orders}
+      lowStock={shelf === null ? null : shelf.length}
+    >
       {children}
     </AdminShell>
   )

@@ -64,7 +64,17 @@ test("the desks are checked too, behind the door", async ({ page }) => {
   // A staff screen worked all day is worth as much care as a shop page, and it
   // is the one nobody outside the shop ever files a complaint about.
   await signIn(page, WHO.admin)
-  for (const path of ["/admin", "/admin/parts", "/admin/enquiries", "/admin/settings"]) {
+  // Orders was built in phase 3 and never added here, which is exactly how a
+  // sweep quietly stops covering the console: the list is hand kept, so a new
+  // screen is only checked if somebody remembers to name it.
+  for (const path of [
+    "/admin",
+    "/admin/parts",
+    "/admin/orders",
+    "/admin/stock",
+    "/admin/enquiries",
+    "/admin/settings",
+  ]) {
     await page.goto(path)
     const found = await violations(page)
     expect(found.map((one) => `${path}: ${one.id}`)).toEqual([])

@@ -25,7 +25,7 @@ import { ICONS } from "@/components/admin/icons"
 interface NavItem extends ConsoleNav {
   needs?: keyof Capabilities
   /** Which outstanding count belongs on this row, if any. */
-  count?: "parts" | "enquiries" | "orders"
+  count?: "parts" | "enquiries" | "orders" | "stock"
 }
 
 /**
@@ -60,6 +60,14 @@ const NAV: NavItem[] = [
     count: "orders",
   },
   {
+    href: "/admin/stock",
+    label: "Stock",
+    hint: "What is on the shelf, and what is running out",
+    icon: ICONS.stock,
+    needs: "stock",
+    count: "stock",
+  },
+  {
     href: "/admin/enquiries",
     label: "Enquiries",
     hint: "Quotes, surveys and trade",
@@ -88,6 +96,7 @@ export function AdminShell({
   badges,
   queue,
   orders,
+  lowStock,
   children,
 }: {
   desk: Desk
@@ -97,6 +106,14 @@ export function AdminShell({
   queue: DeskEnquiry[] | null
   /** Every order, or null when no service could be asked. */
   orders: DeskOrder[] | null
+  /**
+   * How many counted parts are at or below their threshold.
+   *
+   * A number rather than the rows, because the rail only ever draws the count
+   * and the rows are the screen's. Null when no service could be asked, which
+   * draws no badge at all: a zero there would say the shelves are fine.
+   */
+  lowStock: number | null
   children: React.ReactNode
 }) {
   const allowed = capabilities(desk.role)
@@ -114,6 +131,10 @@ export function AdminShell({
     // badge that counts finished work never goes down.
     orders: (orders ?? []).filter((order) => order.stage !== "collected" && order.stage !== "cancelled")
       .length,
+    // Counted parts at or below their threshold, from the same service the
+    // screen reads. Null draws nothing, because a zero would say every shelf is
+    // fine when the truth is that nobody could ask.
+    stock: lowStock ?? 0,
     enquiries: (queue ?? deskEnquiries(state.inbox)).filter(
       (enquiry) => (state.enquiries[enquiry.id] ?? "new") !== "closed",
     ).length,
