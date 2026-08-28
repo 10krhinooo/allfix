@@ -5,6 +5,7 @@ import { deskEnquiries, type DeskEnquiry, type DeskRow } from "@/lib/admin/rows"
 import { useAdmin } from "@/lib/admin/store"
 import { useDesk } from "@/components/admin/identity"
 import { currentPrice, isSellable } from "@/lib/admin/pricing"
+import type { PriceChange } from "@/lib/admin/catalogue-api"
 import { KIND_LABEL } from "@/lib/admin/desk"
 import { price, arrived, hours } from "@/lib/format"
 import {
@@ -27,11 +28,20 @@ import {
  * Turnover and visitor counts would be more flattering and would tell the
  * person opening the shop nothing they can act on before lunch.
  */
-export function Counter({ rows, queue }: { rows: DeskRow[]; queue: DeskEnquiry[] | null }) {
+export function Counter({
+  rows,
+  queue,
+  changes,
+}: {
+  rows: DeskRow[]
+  queue: DeskEnquiry[] | null
+  /** The shop's own price history, or null where no service could be asked. */
+  changes: PriceChange[] | null
+}) {
   const state = useAdmin()
   const desk = useDesk()
 
-  const unpriced = rows.filter((row) => !isSellable(currentPrice(row, state.prices)))
+  const unpriced = rows.filter((row) => !isSellable(currentPrice(row)))
   const unshot = rows.filter((row) => !row.photographed)
   // The filed ones are real, sent through the site by somebody who used the
   // booking form rather than opening a chat. They count the same.
@@ -43,7 +53,7 @@ export function Counter({ rows, queue }: { rows: DeskRow[]; queue: DeskEnquiry[]
 
   // Counted separately because they are not the same job. A part the client
   // priced in words has an answer already and needs a decision, not a figure.
-  const inProse = unpriced.filter((row) => currentPrice(row, state.prices).priceNote)
+  const inProse = unpriced.filter((row) => currentPrice(row).priceNote)
 
   return (
     <>
@@ -113,7 +123,7 @@ export function Counter({ rows, queue }: { rows: DeskRow[]; queue: DeskEnquiry[]
           ) : (
             <ul className="-mb-2">
               {unpriced.slice(0, 6).map((row) => {
-                const now = currentPrice(row, state.prices)
+                const now = currentPrice(row)
                 return (
                   <li key={row.slug} className="border-b border-rule last:border-b-0">
                     <Link
@@ -193,29 +203,29 @@ export function Counter({ rows, queue }: { rows: DeskRow[]; queue: DeskEnquiry[]
         </Card>
       </div>
 
-      {state.log.length > 0 && (
+      {changes && changes.length > 0 && (
         <Card className="mt-4">
           <CardHeader
             title="Price changes, newest first"
             hint="Who moved a figure, and what it was before."
           />
           <ul>
-            {state.log.slice(0, 8).map((entry) => (
+            {changes.map((entry) => (
               <li
                 key={`${entry.slug}-${entry.at}`}
                 className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-rule py-3 last:border-b-0"
               >
                 <span className="text-sm text-ink">
                   {entry.name}
-                  <span className="ml-3 font-mono text-[11px] text-mute">{entry.ref}</span>
+                  <span className="ml-3 font-mono text-[11px] text-mute">
+                    {entry.sku ?? entry.slug}
+                  </span>
                 </span>
                 <span className="font-mono text-xs text-slate">
-                  {price(entry.from.priceKes, entry.from.priceBasis) ?? "unpriced"}
+                  {price(entry.fromKes, entry.fromBasis) ?? "unpriced"}
                   <span className="mx-2 text-mute">to</span>
-                  <span className="text-ink">
-                    {price(entry.to.priceKes, entry.to.priceBasis) ?? "unpriced"}
-                  </span>
-                  <span className="ml-3 text-mute">{entry.by}</span>
+                  <span className="text-ink">{price(entry.toKes, entry.toBasis) ?? "unpriced"}</span>
+                  {entry.by && <span className="ml-3 text-mute">{entry.by}</span>}
                 </span>
               </li>
             ))}

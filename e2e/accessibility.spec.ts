@@ -70,6 +70,8 @@ test("the desks are checked too, behind the door", async ({ page }) => {
   for (const path of [
     "/admin",
     "/admin/parts",
+    "/admin/parts/new",
+    "/admin/parts/20-runners",
     "/admin/orders",
     "/admin/stock",
     "/admin/enquiries",

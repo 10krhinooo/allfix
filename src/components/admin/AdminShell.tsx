@@ -126,7 +126,7 @@ export function AdminShell({
    * with the page behind it is worse than no badge.
    */
   const outstanding = {
-    parts: badges.filter((row) => !isSellable(currentPrice(row, state.prices))).length,
+    parts: badges.filter((row) => !isSellable(currentPrice(row))).length,
     // Orders still to pack or send. Collected and cancelled are finished, and a
     // badge that counts finished work never goes down.
     orders: (orders ?? []).filter((order) => order.stage !== "collected" && order.stage !== "cancelled")

@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import type { DeskRow } from "@/lib/admin/rows"
-import type { PriceEdit } from "@/lib/admin/store"
+import type { PriceEdit } from "@/lib/admin/pricing"
 import { BASES, priceProblem, toPrice } from "@/lib/admin/pricing"
 import { Blank } from "@/components/admin/parts"
 
@@ -23,12 +23,10 @@ import { Blank } from "@/components/admin/parts"
 export function PriceRow({
   row,
   value,
-  edited,
   onSave,
 }: {
   row: DeskRow
   value: PriceEdit
-  edited: boolean
   onSave: (row: DeskRow, next: PriceEdit, reason: string | null) => void
 }) {
   const [draft, setDraft] = useState(value.priceKes === null ? "" : String(value.priceKes))
@@ -75,7 +73,7 @@ export function PriceRow({
   }
 
   return (
-    <li className={`border-b border-rule last:border-b-0 ${edited ? "bg-brass-soft/40" : ""}`}>
+    <li className="border-b border-rule last:border-b-0">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5 sm:px-5">
         <div className="min-w-0 flex-1">
           <button
@@ -178,6 +176,9 @@ export function PriceRow({
           </div>
 
           <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate">
+            <Link href={`/admin/parts/${row.slug}`} className="callout hover:text-ink">
+              Alter this part
+            </Link>
             <Link href={`/product/${row.slug}`} className="callout hover:text-ink">
               See it on the shop
             </Link>

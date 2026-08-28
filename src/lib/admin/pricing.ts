@@ -1,5 +1,4 @@
 import type { PriceBasis } from "@/lib/catalogue"
-import type { PriceEdit } from "@/lib/admin/store"
 
 /**
  * What the console will and will not accept as a price.
@@ -71,17 +70,25 @@ export function samePrice(a: PriceEdit, b: PriceEdit) {
  * made on the worksheet shows on the counter's totals in the same breath. When
  * the backend lands, the override disappears and this returns the row.
  */
-export function currentPrice(
-  row: { slug: string; priceKes: number | null; priceBasis: PriceBasis; priceNote: string | null },
-  prices: Record<string, PriceEdit>,
-): PriceEdit {
-  return (
-    prices[row.slug] ?? {
-      priceKes: row.priceKes,
-      priceBasis: row.priceBasis,
-      priceNote: row.priceNote,
-    }
-  )
+/**
+ * A part's pricing block, as three fields rather than a row.
+ *
+ * There used to be an overlay of unsaved edits held in this browser and this
+ * function chose between it and the catalogue. There is no overlay any more: a
+ * price is saved to the service or it is not saved, so the row is the answer.
+ */
+export interface PriceEdit {
+  priceKes: number | null
+  priceBasis: PriceBasis
+  priceNote: string | null
+}
+
+export function currentPrice(row: {
+  priceKes: number | null
+  priceBasis: PriceBasis
+  priceNote: string | null
+}): PriceEdit {
+  return { priceKes: row.priceKes, priceBasis: row.priceBasis, priceNote: row.priceNote }
 }
 
 export function isSellable(edit: PriceEdit) {
