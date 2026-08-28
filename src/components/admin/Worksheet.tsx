@@ -157,7 +157,7 @@ export function Worksheet({
         priceKes: next.priceKes,
         priceBasis: next.priceBasis,
         priceNote: next.priceNote,
-        tradePriceKes: row.tradePriceKes ?? null,
+        tradePriceKes: next.tradePriceKes,
         reason,
       })
       if (!answer.ok) setProblem(`${row.ref}: ${answer.message}`)
@@ -203,15 +203,16 @@ export function Worksheet({
             : `${unpriced} of ${rows.length} parts cannot be sold, because nobody has priced them yet. A part left blank shows "price on request" on the shop and can still be asked about.`
         }
       >
-        <div className="flex flex-wrap items-center gap-4">
-          <Link
-            href="/admin/parts/new"
-            className="rounded-sm bg-terra px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-terra-deep"
-          >
-            Add a part
-          </Link>
-          <Note>Every change is recorded against your name, with what it replaced.</Note>
-        </div>
+        {/* The audit note used to sit here beside the button. PageHead is
+            justify-between, so the pair was right-justified as a block and the
+            button was pushed in toward the middle of the screen. It belongs
+            with the price inputs it is about, further down. */}
+        <Link
+          href="/admin/parts/new"
+          className="rounded-sm bg-terra px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-terra-deep"
+        >
+          Add a part
+        </Link>
       </PageHead>
 
       <Stats>
@@ -303,6 +304,10 @@ export function Worksheet({
           {copied ? ", shot list copied" : ""}
         </p>
       </Toolbar>
+
+      <div className="mb-4">
+        <Note>Every change is recorded against your name, with what it replaced.</Note>
+      </div>
 
       {visible.length === 0 ? (
         <EmptyState

@@ -65,6 +65,7 @@ export function PriceRow({
         priceKes: toPrice(draft),
         priceBasis: value.priceBasis,
         priceNote: note.trim() || null,
+        tradePriceKes: value.tradePriceKes,
         ...over,
       },
       reason.trim() || null,
@@ -80,15 +81,37 @@ export function PriceRow({
             type="button"
             onClick={() => setOpen(!open)}
             aria-expanded={open}
-            className="block max-w-full text-left"
+            className="group flex max-w-full items-start gap-2 text-left"
           >
-            <span className="block truncate text-sm font-medium text-ink">{row.name}</span>
-            <span className="mt-0.5 flex flex-wrap items-baseline gap-x-3">
-              <span className="font-mono text-[11px] text-mute">{row.ref}</span>
-              <span className="text-xs text-slate">{row.group}</span>
-              <span className="text-xs text-mute">{row.componentLabel}</span>
-              {row.skus > 1 && <span className="text-xs text-mute">{row.skus} SKUs</span>}
-              {!row.photographed && <span className="text-xs text-brass">no photo</span>}
+            {/* The row opens, and nothing said so: the name was styled as a
+                heading and the only way to the part screen was inside. */}
+            <svg
+              viewBox="0 0 12 12"
+              aria-hidden="true"
+              className={`mt-1 h-3 w-3 shrink-0 text-mute motion-safe:transition-transform ${
+                open ? "rotate-90" : ""
+              }`}
+            >
+              <path
+                d="M4.5 2.5 8 6l-3.5 3.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-medium text-ink group-hover:underline group-hover:underline-offset-2">
+                {row.name}
+              </span>
+              <span className="mt-0.5 flex flex-wrap items-baseline gap-x-3">
+                <span className="font-mono text-[11px] text-mute">{row.ref}</span>
+                <span className="text-xs text-slate">{row.group}</span>
+                <span className="text-xs text-mute">{row.componentLabel}</span>
+                {row.skus > 1 && <span className="text-xs text-mute">{row.skus} SKUs</span>}
+                {!row.photographed && <span className="text-xs text-brass">no photo</span>}
+              </span>
             </span>
           </button>
         </div>
@@ -176,10 +199,18 @@ export function PriceRow({
           </div>
 
           <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate">
-            <Link href={`/admin/parts/${row.slug}`} className="callout hover:text-ink">
+            {/* These were callouts, which is the drawing-label voice: the only
+                two navigations in the drawer read as captions. */}
+            <Link
+              href={`/admin/parts/${row.slug}`}
+              className="text-xs font-medium text-oxblood hover:underline"
+            >
               Alter this part
             </Link>
-            <Link href={`/product/${row.slug}`} className="callout hover:text-ink">
+            <Link
+              href={`/product/${row.slug}`}
+              className="text-xs font-medium text-oxblood hover:underline"
+            >
               See it on the shop
             </Link>
             {row.imageName && (

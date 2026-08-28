@@ -4,7 +4,8 @@ import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { PartForm, type PartFormValues } from "@/components/admin/PartForm"
 import { Card, CardHeader, Note } from "@/components/admin/parts"
-import type { PartEdit, Saved } from "@/lib/admin/catalogue-api"
+import type { PartEdit, PriceEditWire, Saved } from "@/lib/admin/catalogue-api"
+import type { PriceEdit } from "@/lib/admin/pricing"
 
 /**
  * One part, and the two ways it can leave the catalogue.
@@ -19,17 +20,21 @@ import type { PartEdit, Saved } from "@/lib/admin/catalogue-api"
  */
 export function PartScreen({
   part,
+  price,
   prefixes,
   owner,
   onSave,
+  onPrice,
   onRetire,
   onRestore,
   onRemove,
 }: {
   part: PartFormValues & { slug: string; retiredAt?: string | null }
+  price: PriceEdit
   prefixes: { rails: string[]; rods: string[] }
   owner: boolean
   onSave: (slug: string, values: PartEdit) => Promise<Saved>
+  onPrice: (slug: string, block: PriceEditWire) => Promise<Saved>
   onRetire: (slug: string) => Promise<Saved>
   onRestore: (slug: string) => Promise<Saved>
   onRemove: (slug: string) => Promise<Saved>
@@ -57,8 +62,10 @@ export function PartScreen({
     <>
       <PartForm
         part={part}
+        price={price}
         prefixes={prefixes}
         onSave={(values) => onSave(part.slug, values)}
+        onPrice={onPrice}
       />
 
       <div className="mt-10 space-y-4">

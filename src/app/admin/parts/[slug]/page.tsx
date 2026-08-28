@@ -6,7 +6,8 @@ import { capabilities } from "@/lib/admin/roles"
 import { getProduct } from "@/lib/catalogue"
 import { readPart } from "@/lib/admin/catalogue-api"
 import { skuPrefixes } from "@/lib/admin/rows"
-import { remove, restore, retire, save } from "@/app/admin/parts/actions"
+import { currentPrice } from "@/lib/admin/pricing"
+import { price, remove, restore, retire, save } from "@/app/admin/parts/actions"
 
 export const metadata: Metadata = { title: "A part" }
 
@@ -41,9 +42,11 @@ export default async function PartPage({ params }: { params: Promise<{ slug: str
         imageName: product.imageName ?? undefined,
         retiredAt: held?.retiredAt ?? null,
       }}
+      price={currentPrice(product)}
       prefixes={await skuPrefixes()}
       owner={capabilities(desk.role).settings}
       onSave={save}
+      onPrice={price}
       onRetire={retire}
       onRestore={restore}
       onRemove={remove}
