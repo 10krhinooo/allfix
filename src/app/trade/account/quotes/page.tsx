@@ -29,7 +29,7 @@ export default async function TradeQuotesPage() {
    * each product never reaches the client. The same reasoning as the shop's own
    * browser, and the reason the list is five string fields.
    */
-  const pickable: Pickable[] = products
+  const pickable: Pickable[] = (await products())
     .filter((product) => product.sku)
     .map((product) => ({
       slug: product.slug,

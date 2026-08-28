@@ -41,11 +41,16 @@ export const CATEGORIES: { id: Category; label: string; blurb: string }[] = [
   { id: "rod", label: "Rods", blurb: "Poles and finials, by finish" },
 ]
 
-const BLIND_SLUGS = new Set(blindSystems().map((s) => s.slug))
-
-function categoryOf(product: Product): Category {
+/**
+ * Which of the three a part belongs to.
+ *
+ * The blind slugs are passed in rather than read here, because the catalogue is
+ * now a fetch and a module-scope read of it would be a promise nobody awaits.
+ * The caller has them already: `shopData` asks for the systems anyway.
+ */
+function categoryOf(product: Product, blindSlugs: Set<string>): Category {
   if (product.family === "rod") return "rod"
-  return product.system && BLIND_SLUGS.has(product.system) ? "blind" : "rail"
+  return product.system && blindSlugs.has(product.system) ? "blind" : "rail"
 }
 
 export interface ShopSwatch {
@@ -104,14 +109,14 @@ export interface ShopData {
   diameters: number[]
 }
 
-function toItem(product: Product): ShopItem {
+function toItem(product: Product, blindSlugs: Set<string>): ShopItem {
   return {
     slug: product.slug,
     name: product.name,
     sku: product.sku,
     componentLabel: product.componentLabel,
     component: product.component,
-    category: categoryOf(product),
+    category: categoryOf(product, blindSlugs),
     family: product.family,
     system: product.system,
     range: product.range,
@@ -130,15 +135,23 @@ function toItem(product: Product): ShopItem {
 }
 
 /** The taxonomy the browser needs, built once on the server. */
-export function shopData(): ShopData {
-  const items = products.map(toItem)
+export async function shopData(): Promise<ShopData> {
+  const [all, rails, blinds, finishes, kinds] = await Promise.all([
+    products(),
+    railSystems(),
+    blindSystems(),
+    ranges(),
+    components(),
+  ])
+  const blindSlugs = new Set(blinds.map((s) => s.slug))
+  const items = all.map((product) => toItem(product, blindSlugs))
 
   return {
     items,
-    systems: railSystems().map((s) => ({ slug: s.slug, label: s.name })),
-    blinds: blindSystems().map((s) => ({ slug: s.slug, label: s.name })),
-    ranges: ranges.map((r) => ({ slug: r.slug, label: r.name, swatch: r.swatch })),
-    parts: components.map((c) => ({ slug: c.slug, label: c.name })),
+    systems: rails.map((s) => ({ slug: s.slug, label: s.name })),
+    blinds: blinds.map((s) => ({ slug: s.slug, label: s.name })),
+    ranges: finishes.map((r) => ({ slug: r.slug, label: r.name, swatch: r.swatch })),
+    parts: kinds.map((c) => ({ slug: c.slug, label: c.name })),
     diameters: [...new Set(items.map((i) => i.diameter).filter((d): d is number => d !== null))].sort(
       (a, b) => a - b,
     ),

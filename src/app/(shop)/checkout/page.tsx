@@ -54,7 +54,7 @@ export default async function CheckoutPage() {
 
       <div className="mt-10">
         <Checkout
-          catalogue={basketCatalogue()}
+          catalogue={await basketCatalogue()}
           addresses={desk ? addressesFor(desk.email) : []}
           trade={desk?.role === "TRADE"}
           signedIn={Boolean(desk)}

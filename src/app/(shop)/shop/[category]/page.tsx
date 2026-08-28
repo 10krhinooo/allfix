@@ -81,7 +81,7 @@ export default async function ShopCategory({
   const known = CATEGORIES.find((c) => c.id === category)
   if (!known) notFound()
 
-  const data = shopData()
+  const data = await shopData()
   const copy = COPY[known.id]
 
   return (

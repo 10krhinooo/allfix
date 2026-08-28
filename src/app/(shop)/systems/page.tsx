@@ -13,7 +13,8 @@ export const metadata: Metadata = {
     "roller and zebra blinds.",
 }
 
-export default function Systems() {
+export default async function Systems() {
+  const all = await systems()
   return (
     <div className="shell py-12">
       <Breadcrumbs trail={[{ href: "/", label: "Home" }, { label: "Rail systems" }]} />
@@ -28,7 +29,7 @@ export default function Systems() {
 
       <TraceOnView>
         <ul className="auto-grid flush mt-10" style={{ ["--min" as string]: "22rem" }}>
-          {systems.map((system) => (
+          {all.map((system) => (
             <li key={system.slug}>
               <Link
                 href={`/systems/${system.slug}`}

@@ -22,14 +22,23 @@ import {
  * to Njugu Lane for one bracket.
  */
 
+/*
+ * Loaded once, up here, because the catalogue is a seam now rather than a file
+ * and every accessor behind it is async. Top level await keeps the cases below
+ * reading as tables rather than as a nest of promises, which is the whole point
+ * of a table driven test.
+ */
+const ALL_SYSTEMS = await configuratorSystems()
+const ALL = await systems()
+
 function systemBy(slug: string): BuildSystem {
-  const found = configuratorSystems().find((system) => system.slug === slug)
+  const found = ALL_SYSTEMS.find((system) => system.slug === slug)
   assert.ok(found, `the catalogue carries a ${slug} system`)
   return found
 }
 
 function bom(system: BuildSystem, input: Partial<BomInput> = {}) {
-  const lines = billOfMaterials(system, { ...defaultInput(), ...input }).lines
+  const lines = billOfMaterials(system, { ...defaultInput(system.rates), ...input }).lines
   return {
     lines,
     qty: (role: string) => lines.find((line) => line.role === role)?.qty,
@@ -97,7 +106,7 @@ describe("a span longer than a stock length", () => {
 
 describe("how the curtain draws", () => {
   test("a centre-opening pair takes a master carrier where the system has one", () => {
-    const system = configuratorSystems().find((one) => one.parts["master-carrier"])
+    const system = ALL_SYSTEMS.find((one) => one.parts["master-carrier"])
     if (!system) return
     assert.equal(bom(system, { panels: 2 }).qty("master-carrier"), 1)
     assert.equal(bom(system, { panels: 1 }).has("master-carrier"), false)
@@ -105,7 +114,7 @@ describe("how the curtain draws", () => {
 })
 
 describe("a motorised run", () => {
-  const system = configuratorSystems().find((one) => one.motorised)
+  const system = ALL_SYSTEMS.find((one) => one.motorised)
 
   test("carries a drive end, an idle end and a motor", () => {
     if (!system) return
@@ -122,9 +131,9 @@ describe("a motorised run", () => {
 
   test("and the whole list is marked as needing a survey", () => {
     if (!system) return
-    assert.equal(billOfMaterials(system, { ...defaultInput(), widthM: 4 }).onSurvey, true)
+    assert.equal(billOfMaterials(system, { ...defaultInput(system.rates), widthM: 4 }).onSurvey, true)
     assert.equal(
-      billOfMaterials(systemBy("20"), { ...defaultInput(), widthM: 4 }).onSurvey,
+      billOfMaterials(systemBy("20"), { ...defaultInput(systemBy("20").rates), widthM: 4 }).onSurvey,
       false,
     )
   })
@@ -142,9 +151,9 @@ describe("what the customer cannot ask for", () => {
   })
 
   test("panels are whole curtains, and at most four", () => {
-    assert.match(bomSummary(systemBy("20"), { ...defaultInput(), panels: 9 }), /centre-opening/)
+    assert.match(bomSummary(systemBy("20"), { ...defaultInput(systemBy("20").rates), panels: 9 }), /centre-opening/)
     assert.match(
-      bomSummary(systemBy("20"), { ...defaultInput(), panels: 1, mount: "wall" }),
+      bomSummary(systemBy("20"), { ...defaultInput(systemBy("20").rates), panels: 1, mount: "wall" }),
       /single-draw, wall mount/,
     )
   })
@@ -159,8 +168,8 @@ describe("what the customer cannot ask for", () => {
 
 describe("what the configurator applies to", () => {
   test("no blind is offered, whatever it is called", () => {
-    const offered = configuratorSystems().map((s) => s.slug)
-    const blinds = systems.filter((s) => s.kind === "blind").map((s) => s.slug)
+    const offered = ALL_SYSTEMS.map((s) => s.slug)
+    const blinds = ALL.filter((s) => s.kind === "blind").map((s) => s.slug)
 
     assert.ok(blinds.length >= 3, "the catalogue should carry the blinds")
     for (const blind of blinds) {
@@ -169,8 +178,8 @@ describe("what the configurator applies to", () => {
   })
 
   test("every rail is offered, so the filter narrows by kind and not by accident", () => {
-    const offered = configuratorSystems().map((s) => s.slug).sort()
-    const rails = systems.filter((s) => s.kind === "rail").map((s) => s.slug).sort()
+    const offered = ALL_SYSTEMS.map((s) => s.slug).sort()
+    const rails = ALL.filter((s) => s.kind === "rail").map((s) => s.slug).sort()
 
     assert.deepEqual(offered, rails)
   })
@@ -179,9 +188,9 @@ describe("what the configurator applies to", () => {
     // This is the fault the filter exists for. A roller blind was quoted ten
     // runners to the metre, two stoppers and a joint every six metres, because
     // the exclusion named the roman blind and the August sheet added two more.
-    for (const system of configuratorSystems()) {
+    for (const system of ALL_SYSTEMS) {
       assert.equal(
-        systems.find((s) => s.slug === system.slug)?.kind,
+        ALL.find((s) => s.slug === system.slug)?.kind,
         "rail",
         `${system.slug} reached the bill of materials`,
       )

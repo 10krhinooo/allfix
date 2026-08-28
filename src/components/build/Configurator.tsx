@@ -16,8 +16,6 @@ import {
   RUNNERS_MAX,
   BRACKETS_MIN,
   BRACKETS_MAX,
-  DEFAULT_RUNNERS_PER_M,
-  DEFAULT_BRACKETS_PER_M,
   cleanQuantity,
   withOverrides,
   QTY_MAX,
@@ -58,13 +56,18 @@ export function Configurator({
   signedIn: boolean
 }) {
   const [slug, setSlug] = useState(initialSlug || systems[0]?.slug || "")
-  const [input, setInput] = useState<BomInput>(initialInput ?? defaultInput)
-  const [overrides, setOverrides] = useState<QuantityOverrides>({})
 
   const system = useMemo(
     () => systems.find((candidate) => candidate.slug === slug) ?? systems[0],
     [systems, slug],
   )
+
+  // After `system`, because the rates the form opens on are the shop's own and
+  // they arrive on the projection rather than as a constant: the catalogue is a
+  // fetch now, and the browser has no way to ask it what a bracket rate is.
+  const [input, setInput] = useState<BomInput>(initialInput ?? (() => defaultInput(system.rates)))
+  const [overrides, setOverrides] = useState<QuantityOverrides>({})
+
   // Two steps on purpose. The rule runs first and keeps running, then the
   // customer's own quantities go over the top, so changing the width still
   // moves every line they have not spoken for.
@@ -208,7 +211,7 @@ export function Configurator({
                 onChange={(event) =>
                   setInput((prev) => ({
                     ...prev,
-                    runnersPerM: Number(event.target.value) || DEFAULT_RUNNERS_PER_M,
+                    runnersPerM: Number(event.target.value) || system.rates.runnersPerM,
                   }))
                 }
                 className="mt-1.5 w-full border border-rule bg-paper px-3 py-2 font-mono text-ink focus:outline-none"
@@ -226,7 +229,7 @@ export function Configurator({
                 onChange={(event) =>
                   setInput((prev) => ({
                     ...prev,
-                    bracketsPerM: Number(event.target.value) || DEFAULT_BRACKETS_PER_M,
+                    bracketsPerM: Number(event.target.value) || system.rates.bracketsPerM,
                   }))
                 }
                 className="mt-1.5 w-full border border-rule bg-paper px-3 py-2 font-mono text-ink focus:outline-none"
@@ -234,7 +237,7 @@ export function Configurator({
             </label>
           </div>
           <p className="mt-2 callout">
-            Counter default is {DEFAULT_RUNNERS_PER_M} runners and {DEFAULT_BRACKETS_PER_M} bracket
+            Counter default is {system.rates.runnersPerM} runners and {system.rates.bracketsPerM} bracket
             to the metre
           </p>
         </fieldset>

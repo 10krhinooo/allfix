@@ -18,7 +18,7 @@ export const metadata: Metadata = {
  * sale. What the server sends is the lookup that turns the SKUs in it into
  * names and prices, so the 200 KB catalogue never reaches the bundle.
  */
-export default function CartPage() {
+export default async function CartPage() {
   return (
     <div className="shell max-w-4xl py-12">
       <Breadcrumbs trail={[{ href: "/", label: "Home" }, { label: "Basket" }]} />
@@ -30,7 +30,7 @@ export default function CartPage() {
       </p>
 
       <div className="mt-10">
-        <CartLines catalogue={basketCatalogue()}>
+        <CartLines catalogue={await basketCatalogue()}>
           <Link
             href="/checkout"
             className="bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"

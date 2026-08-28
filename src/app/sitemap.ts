@@ -13,7 +13,7 @@ import { CATEGORIES } from "@/lib/shop"
  * product pages above the marketing and legal chrome, because those are the
  * pages worth ranking for a parts search.
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
   const at = (path: string): string => `${SITE}${path}`
 
@@ -39,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.85,
   }))
 
-  const systemRoutes: MetadataRoute.Sitemap = systems.map((system) => ({
+  const systemRoutes: MetadataRoute.Sitemap = (await systems()).map((system) => ({
     url: at(`/systems/${system.slug}`),
     changeFrequency: "monthly",
     priority: 0.8,
@@ -51,7 +51,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }))
 
-  const productRoutes: MetadataRoute.Sitemap = products.map((product) => ({
+  const productRoutes: MetadataRoute.Sitemap = (await products()).map((product) => ({
     url: at(`/product/${product.slug}`),
     changeFrequency: "weekly",
     priority: 0.7,

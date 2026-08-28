@@ -2,8 +2,6 @@ import {
   products,
   systems,
   ranges,
-  getSystem,
-  getRange,
   componentsInOrder,
   imageFor,
   skusOf,
@@ -56,11 +54,12 @@ export interface DeskCounts {
   unphotographed: number
 }
 
-export function deskRows(): DeskRow[] {
-  const systemName = new Map(systems.map((s) => [s.slug, s.shortName]))
-  const rangeName = new Map(ranges.map((r) => [r.slug, r.shortName]))
+export async function deskRows(): Promise<DeskRow[]> {
+  const [all, allSystems, allRanges] = await Promise.all([products(), systems(), ranges()])
+  const systemName = new Map(allSystems.map((s) => [s.slug, s.shortName]))
+  const rangeName = new Map(allRanges.map((r) => [r.slug, r.shortName]))
 
-  return products
+  return all
     .map((product) => ({
       ref: product.sku ?? product.slug,
       slug: product.slug,
@@ -98,9 +97,9 @@ export function deskCounts(rows: DeskRow[]): DeskCounts {
 }
 
 /** The component types, in assembly order, for the worksheet's filter. */
-export function deskComponents(rows: DeskRow[]) {
+export async function deskComponents(rows: DeskRow[]) {
   const used = new Set(rows.map((row) => row.component))
-  return componentsInOrder()
+  return (await componentsInOrder())
     .filter((component) => used.has(component.slug))
     .map((component) => ({ slug: component.slug, name: component.name }))
 }
@@ -195,15 +194,19 @@ export interface OrderablePart {
  * `BulkAdd` applies on a system page, and the same one the order endpoint
  * applies on arrival.
  */
-export function orderable(): OrderablePart[] {
-  return products
+export async function orderable(): Promise<OrderablePart[]> {
+  const [all, allSystems, allRanges] = await Promise.all([products(), systems(), ranges()])
+  const systemName = new Map(allSystems.map((s) => [s.slug, s.shortName]))
+  const rangeName = new Map(allRanges.map((r) => [r.slug, r.shortName]))
+
+  return all
     .filter((product) => product.sku && (product.priceKes ?? 0) > 0)
     .map((product) => ({
       sku: product.sku!,
       name: product.name,
       group:
-        getSystem(product.system ?? "")?.shortName ??
-        getRange(product.range ?? "")?.shortName ??
+        (product.system ? systemName.get(product.system) : null) ??
+        (product.range ? rangeName.get(product.range) : null) ??
         "Fits anything",
       priceKes: product.priceKes!,
       basis: product.priceBasis,

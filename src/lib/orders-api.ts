@@ -84,7 +84,7 @@ function reference(): string {
  * whole list of problems in one answer, and it is the only check there is on a
  * deployment the service has not been pointed at yet.
  */
-function priceLocally(request: PlaceRequest, tier: Tier): PlaceResult {
+async function priceLocally(request: PlaceRequest, tier: Tier): Promise<PlaceResult> {
   const problems: string[] = []
   const lines: PlacedLine[] = []
 
@@ -92,8 +92,10 @@ function priceLocally(request: PlaceRequest, tier: Tier): PlaceResult {
     return { ok: false, status: 400, message: "There is nothing in the basket." }
   }
 
+  const catalogue = await products()
+
   for (const line of request.lines) {
-    const product = products.find(
+    const product = catalogue.find(
       (candidate) => candidate.sku?.toLowerCase() === line.sku.toLowerCase(),
     )
     if (!product) {
@@ -166,7 +168,7 @@ export async function placeOrder(
    */
   held?: string,
 ): Promise<PlaceResult> {
-  const checked = priceLocally(request, tier)
+  const checked = await priceLocally(request, tier)
   if (!checked.ok) return checked
   if (!API) return checked
 
