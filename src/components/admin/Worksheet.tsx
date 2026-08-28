@@ -1,11 +1,11 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState, useTransition } from "react"
+import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import type { DeskRow } from "@/lib/admin/rows"
-import { useAdmin, setPrice } from "@/lib/admin/store"
-import type { PriceEdit } from "@/lib/admin/store"
-import { currentPrice, isSellable, samePrice } from "@/lib/admin/pricing"
+import { price as savePrice } from "@/app/admin/parts/actions"
+import { currentPrice, isSellable, samePrice, type PriceEdit } from "@/lib/admin/pricing"
 import {
   PageHead,
   Stats,
@@ -17,7 +17,6 @@ import {
   Toolbar,
 } from "@/components/admin/parts"
 import { PriceRow } from "@/components/admin/PriceRow"
-import { useDesk } from "@/components/admin/identity"
 
 /**
  * The worksheet.
@@ -41,7 +40,7 @@ import { useDesk } from "@/components/admin/identity"
  * what is missing, answers the question they actually have.
  */
 
-type Show = "all" | "unpriced" | "priced" | "words" | "edited" | "unshot" | "ready"
+type Show = "all" | "unpriced" | "priced" | "words" | "unshot" | "ready"
 
 /** Stable, so the memo below is not invalidated by a fresh empty set each render. */
 const EMPTY: ReadonlySet<string> = new Set()
@@ -51,7 +50,6 @@ const SHOWS: { value: Show; label: string }[] = [
   { value: "unshot", label: "No photograph" },
   { value: "words", label: "Priced in words" },
   { value: "ready", label: "Ready to sell" },
-  { value: "edited", label: "Changed here" },
   { value: "priced", label: "Priced" },
   { value: "all", label: "Everything" },
 ]
@@ -66,14 +64,14 @@ export function Worksheet({
   groups: string[]
 }) {
   const params = useSearchParams()
-  const state = useAdmin()
-  const desk = useDesk()
 
   const [show, setShow] = useState<Show>(() => readShow(params.get("show")))
   const [query, setQuery] = useState(() => params.get("q") ?? "")
   const [group, setGroup] = useState(() => params.get("group") ?? "")
   const [component, setComponent] = useState(() => params.get("part") ?? "")
   const [copied, setCopied] = useState(false)
+  const [busy, start] = useTransition()
+  const [problem, setProblem] = useState<string | null>(null)
 
   // The URL mirrors the view rather than driving it, the same arrangement the
   // shop's browser uses: typing must not run a navigation per keystroke, but a
@@ -118,12 +116,11 @@ export function Worksheet({
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase()
     return rows.filter((row) => {
-      const now = currentPrice(row, state.prices)
+      const now = currentPrice(row)
       if (heldNow.has(row.slug)) return true
       if (show === "unpriced" && isSellable(now)) return false
       if (show === "priced" && !isSellable(now)) return false
       if (show === "words" && (isSellable(now) || !now.priceNote)) return false
-      if (show === "edited" && !state.prices[row.slug]) return false
       if (show === "unshot" && row.photographed) return false
       if (show === "ready" && (!isSellable(now) || !row.photographed)) return false
       if (group && row.group !== group) return false
@@ -133,26 +130,38 @@ export function Worksheet({
       }
       return true
     })
-  }, [rows, state.prices, show, group, component, query, heldNow])
+  }, [rows, show, group, component, query, heldNow])
 
-  const unpriced = rows.filter((row) => !isSellable(currentPrice(row, state.prices))).length
+  const unpriced = rows.filter((row) => !isSellable(currentPrice(row))).length
   const unshot = rows.filter((row) => !row.photographed).length
-  const ready = rows.filter(
-    (row) => isSellable(currentPrice(row, state.prices)) && row.photographed,
-  ).length
-  const changed = Object.keys(state.prices).length
+  const ready = rows.filter((row) => isSellable(currentPrice(row)) && row.photographed).length
 
   function save(row: DeskRow, next: PriceEdit, reason: string | null) {
-    const from = currentPrice(row, state.prices)
     // An edit that changes nothing writes no history. A log full of no-ops is
     // one nobody reads, and a worksheet that saves on every blur will produce
     // them by the dozen.
-    if (samePrice(from, next)) return
+    if (samePrice(currentPrice(row), next)) return
+
     setHeld((previous) => ({
       filter,
       slugs: new Set(previous.filter === filter ? [...previous.slugs, row.slug] : [row.slug]),
     }))
-    setPrice(row, from, next, reason, desk.name)
+    setProblem(null)
+
+    start(async () => {
+      // The whole pricing block every time, including the fields nobody
+      // touched. The endpoint is a replacement rather than a patch, and
+      // deliberately so: clearing a price is a real edit, and a shape that
+      // could not say that would make it indistinguishable from leaving it be.
+      const answer = await savePrice(row.slug, {
+        priceKes: next.priceKes,
+        priceBasis: next.priceBasis,
+        priceNote: next.priceNote,
+        tradePriceKes: row.tradePriceKes ?? null,
+        reason,
+      })
+      if (!answer.ok) setProblem(`${row.ref}: ${answer.message}`)
+    })
   }
 
   /**
@@ -194,7 +203,15 @@ export function Worksheet({
             : `${unpriced} of ${rows.length} parts cannot be sold, because nobody has priced them yet. A part left blank shows "price on request" on the shop and can still be asked about.`
         }
       >
-        <Note>Every change is recorded against your name, with what it replaced.</Note>
+        <div className="flex flex-wrap items-center gap-4">
+          <Link
+            href="/admin/parts/new"
+            className="rounded-sm bg-oxblood px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-oxblood-deep"
+          >
+            Add a part
+          </Link>
+          <Note>Every change is recorded against your name, with what it replaced.</Note>
+        </div>
       </PageHead>
 
       <Stats>
@@ -210,14 +227,22 @@ export function Worksheet({
           hint="Listed, but with a placeholder where the shot goes."
         />
         <Stat label="Ready to sell" value={ready} hint="Priced and photographed." />
-        {/* A dash until localStorage has been read, so a zero on this tile always
-            means zero rather than "not asked yet". */}
         <Stat
-          label="Changed here"
-          value={state.ready ? changed : "\u2014"}
-          hint="Saved as you go."
+          label="Priced in words"
+          value={rows.filter((row) => !isSellable(currentPrice(row)) && row.priceNote).length}
+          hint="Quoted in prose on the sheet, so no figure to sell at."
         />
       </Stats>
+
+      {problem && (
+        <div className="mb-4">
+          <Card>
+            <p role="alert" className="text-sm text-oxblood">
+              {problem}
+            </p>
+          </Card>
+        </div>
+      )}
 
       <Toolbar>
         {/* Stacked on a phone and in one row from `sm`. Side by side at every
@@ -274,7 +299,7 @@ export function Worksheet({
 
         <p aria-live="polite" className="mt-2 font-mono text-[11px] text-mute">
           {visible.length} of {rows.length} parts
-          {changed > 0 ? `, ${changed} changed here` : ""}
+          {busy ? ", saving" : ""}
           {copied ? ", shot list copied" : ""}
         </p>
       </Toolbar>
@@ -291,8 +316,7 @@ export function Worksheet({
               <PriceRow
                 key={row.slug}
                 row={row}
-                value={currentPrice(row, state.prices)}
-                edited={Boolean(state.prices[row.slug])}
+                value={currentPrice(row)}
                 onSave={save}
               />
             ))}

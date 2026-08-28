@@ -1,5 +1,6 @@
 import { deskRows } from "@/lib/admin/rows"
 import { readEnquiries } from "@/lib/admin/enquiries-service"
+import { readPriceChanges } from "@/lib/admin/catalogue-api"
 import { Counter } from "@/components/admin/Counter"
 
 /**
@@ -10,5 +11,10 @@ import { Counter } from "@/components/admin/Counter"
  * photographed.
  */
 export default async function CounterPage() {
-  return <Counter rows={await deskRows()} queue={await readEnquiries()} />
+  const [rows, queue, changes] = await Promise.all([
+    deskRows(),
+    readEnquiries(),
+    readPriceChanges(),
+  ])
+  return <Counter rows={rows} queue={queue} changes={changes} />
 }

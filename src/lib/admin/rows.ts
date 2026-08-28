@@ -35,6 +35,13 @@ export interface DeskRow {
   priceKes: number | null
   priceBasis: PriceBasis
   priceNote: string | null
+  /**
+   * Carried even though the worksheet does not show it.
+   *
+   * The pricing endpoint is a replacement rather than a patch, so a save that
+   * left this out would clear a trade price nobody meant to touch.
+   */
+  tradePriceKes: number | null
   photographed: boolean
   /** The shot this part is waiting for, on everything not yet photographed. */
   imageName: string | null
@@ -74,6 +81,7 @@ export async function deskRows(): Promise<DeskRow[]> {
       priceKes: product.priceKes,
       priceBasis: product.priceBasis,
       priceNote: product.priceNote,
+      tradePriceKes: product.tradePriceKes,
       photographed: Boolean(product.image),
       imageName: product.imageName,
       image: imageFor(product),
@@ -212,4 +220,21 @@ export async function orderable(): Promise<OrderablePart[]> {
       basis: product.priceBasis,
     }))
     .sort((a, b) => a.name.localeCompare(b.name))
+}
+
+/**
+ * The code prefixes the shop actually files parts under.
+ *
+ * Read from the catalogue rather than written down here, because these are the
+ * exact strings the service matches a new code against. A hand kept copy would
+ * eventually tell somebody a code is fine that the service then refuses, which
+ * is the worst way to learn a rule.
+ */
+export async function skuPrefixes(): Promise<{ rails: string[]; rods: string[] }> {
+  const [allSystems, allRanges] = await Promise.all([systems(), ranges()])
+  const sort = (list: string[]) => [...new Set(list)].sort()
+  return {
+    rails: sort(allSystems.flatMap((system) => system.skuPrefixes ?? [])),
+    rods: sort(allRanges.flatMap((range) => range.skuPrefixes ?? [])),
+  }
 }
