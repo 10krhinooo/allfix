@@ -40,6 +40,14 @@ export const ICONS = {
       <path d="M4 8l8 4 8-4M12 12v8" />
     </>
   ),
+  // Shelves with something on them, which is what a count is about.
+  stock: (
+    <>
+      <path d="M3 4h18v16H3z" />
+      <path d="M3 10h18M3 15h18" />
+      <path d="M6 7h3M6 12.5h5M6 17.5h3" />
+    </>
+  ),
   quotes: (
     <>
       <path d="M6 3h8l4 4v14H6z" />
