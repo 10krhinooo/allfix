@@ -60,6 +60,32 @@ before a browser could reach the service at all.
 - The paper sales book, read in two phases with a checksum, refusing anything it would have
   had to guess at.
 
+### Phase 4, stock
+
+- A count is a real number now, and it is **counted in the part's own basis**: a track is
+  sold by the metre, so 24 of it means 24 metres. It was an integer, which meant a 2.5 metre
+  order had no correct answer and the importer was silently truncating 24.5 to 24.
+- **A null count is not a count of none.** Nobody has counted most of this catalogue, so an
+  uncounted part never moves, never runs low and never refuses an order. A part counted to
+  zero does refuse, and the refusal says how many there are.
+- Movements are a ledger, not just the number they leave behind. Cancelling gives back what
+  was taken rather than what the line says, which is the only way a part counted after an
+  order was placed does not gain stock it never lost.
+- `/admin/stock`, its own screen: what is counted, what is running low, and a figure somebody
+  can correct while standing at the shelf. Attributed to whoever typed it.
+- A daily digest to the shop's own address, one message listing everything under its
+  threshold. The first scheduled job in the service.
+
+Three faults were found next door while doing it, all the same class as the two the scan
+found: correct alone, broken at the join.
+
+- **Nine SKUs could not be ordered at all.** They belong to `variant` rows, and the checkout
+  only ever looked at products. Those are the two parts phase 1 made buyable.
+- **A sales book line naming anything the catalogue does not match could not be imported.**
+  Two NOT NULL columns refused it and the whole apply failed. Every test used a real product
+  code, so the branch had never once run.
+- **Creating a part could take a finish's code** and would then win every lookup for it.
+
 ### Along the way
 
 - **CI on both repositories**, which did not exist. It found two things on its first run: the
@@ -67,28 +93,12 @@ before a browser could reach the service at all.
   needed Pillow without saying so.
 - The service moved off port 8087 so 8080 is free for other work.
 
-**Where that leaves the suites:** storefront 104 unit, 289 browser, 20 migration; service
-375 tests behind a 90% coverage gate; schema at `V19`.
+**Where that leaves the suites:** storefront 104 unit, 297 browser, 20 migration; service
+414 tests behind a 90% coverage gate; schema at `V21`.
 
 ---
 
 ## Left to do
-
-### Phase 4, stock
-
-`Product.stock` exists on both sides, is seeded null for every row, is written only by the
-importer and read by nothing.
-
-1. Schema: a per-product threshold, and stock that moves. Decrement on an order, restore on
-   a cancellation, and a correction path for after a stock take, which is the
-   auto-decrement-with-a-hand-on-it that was asked for.
-2. The storefront already treats `stock: null` as unknown rather than zero
-   (`src/lib/commerce.ts`), and that distinction has to survive: nobody has counted most of
-   this shelf yet.
-3. Console: stock on the worksheet, a low-stock filter, a count on the rail.
-4. A low-stock notice by email as a daily digest. `SettingsService` iterates `Notice.values()`
-   so a new kind appears on the settings screen by itself, but a digest needs
-   `quarkus-scheduler`, which would be the first scheduled job in the service.
 
 ### Phase 5, the dashboard
 
@@ -105,6 +115,8 @@ right shape for it.
 4. Export as CSV from the service, and print-to-PDF for a sheet, which is the argument
    `PrintButton` already makes.
 
+It no longer depends on anything outstanding except the book itself.
+
 **This phase depends on the sales book being loaded.** Until the book is in, every figure a
 dashboard can show is a figure about the minority of the trade that arrived online, and that
 is worse than no figure because it looks like an answer.
@@ -117,13 +129,27 @@ build its rate constants, so an async seam ripples into every consumer and every
 that imports them synchronously.
 
 It is what makes a part created in the console appear on the shop, so it comes before any
-console screen that creates one, and after Phase 4 has said what stock a product carries.
+console screen that creates one. Phase 4 has now said what stock a product carries, so
+nothing else is in front of it.
+
+`/admin/stock` shows how much of this seam is really needed: it reads the service directly
+rather than through `catalogue.ts`, because a count is the service's and changes between two
+people looking at it. A part's name and price are not like that, which is why they can stay
+on the committed catalogue until this seam moves.
 
 ### The add-product console
 
 The service has had `POST /api/admin/products` and the three-step catalogue import since
 August; nothing in the storefront calls either. It waits on the read seam above, or a part
 created through it would not appear on the shop.
+
+### Pricing a finish
+
+Phase 4 made a finish orderable and left a gap behind it. `PricingService` prices products
+only, so an unpriced finish is a refused checkout with no console screen that can fix it, and
+`ProductPriceChange` keys on `product_id`, so auditing a variant price needs its own column
+before there is anywhere to record the change. Nine SKUs today, and the rod line will bring
+more.
 
 ---
 
