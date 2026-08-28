@@ -21,7 +21,9 @@ import {
  * end to end test.
  */
 
-const data = shopData()
+// Loaded once at module scope. The catalogue is a seam rather than a file now,
+// so this is a promise, and top level await keeps every case below synchronous.
+const data = await shopData()
 
 const query = (search: string) => parseQuery(new URLSearchParams(search), data)
 

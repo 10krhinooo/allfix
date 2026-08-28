@@ -95,6 +95,27 @@ test.describe("bulk entry on a system page", () => {
     await expect(line("RL#20_006").getByLabel("Qty")).toHaveValue("12")
   })
 
+  test("the confirmation takes itself away, and does not take the basket with it", async ({
+    page,
+  }) => {
+    // A confirmation is read once. Left up it stops being an answer to what
+    // somebody just did and becomes furniture, so the next add changes a line
+    // nobody is looking at. What it must not do is imply anything was undone.
+    await page.goto("/systems/20")
+    await page.getByRole("button", { name: /Open the list of/ }).click()
+    await page.getByLabel("How many #20 Runners").fill("3")
+    await page.getByRole("button", { name: /Add 1 part to the basket/ }).click()
+
+    const said = page.getByText("1 part is in your basket")
+    await expect(said).toBeVisible()
+    await expect(said).toBeHidden({ timeout: 9000 })
+
+    await page.goto("/cart")
+    await expect(
+      page.getByRole("listitem").filter({ hasText: "RL#20_004" }).getByLabel("Qty"),
+    ).toHaveValue("3")
+  })
+
   test("a blank row is not an order for one", async ({ page }) => {
     // Most rows on this list are meant to stay empty, so the button has nothing
     // to add until a quantity is typed.

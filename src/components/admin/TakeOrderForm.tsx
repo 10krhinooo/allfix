@@ -1,6 +1,7 @@
 "use client"
 
-import { useMemo, useState, useTransition } from "react"
+import { useCallback, useMemo, useState, useTransition } from "react"
+import { useFades } from "@/lib/notice"
 import { Card, CardHeader, Choices, Note } from "@/components/admin/parts"
 import { price } from "@/lib/format"
 import { CHANNELS, type Channel, type TakeOrder } from "@/lib/admin/orders-service"
@@ -55,6 +56,10 @@ export function TakeOrderForm({
   const [note, setNote] = useState("")
   const [busy, start] = useTransition()
   const [answer, setAnswer] = useState<{ ok: boolean; message: string } | null>(null)
+
+  // "Written down" is read once and then it is in the way. A refusal is not:
+  // it names the line the service would not take.
+  useFades(answer?.ok === true, useCallback(() => setAnswer(null), []))
 
   const found = useMemo(() => {
     const needle = search.trim().toLowerCase()

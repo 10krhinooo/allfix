@@ -35,7 +35,7 @@ export const metadata: Metadata = {
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const desk = await requireConsole()
 
-  const rows = deskRows()
+  const rows = await deskRows()
 
   // One read for the whole console. The rail badge, Today and the queue screen
   // all count enquiries, and counting them from two different places is how two

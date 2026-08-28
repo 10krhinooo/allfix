@@ -32,9 +32,9 @@ export interface BasketPart {
   image: string | null
 }
 
-export function basketCatalogue(): Record<string, BasketPart> {
+export async function basketCatalogue(): Promise<Record<string, BasketPart>> {
   const table: Record<string, BasketPart> = {}
-  for (const product of products) {
+  for (const product of await products()) {
     if (product.sku) {
       table[product.sku] = {
         sku: product.sku,

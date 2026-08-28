@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { Configurator } from "@/components/build/Configurator"
 import { Breadcrumbs } from "@/components/ui"
-import { configuratorSystems, inputFromParams } from "@/lib/configurator"
+import { configuratorSystems, inputFromParams, FALLBACK_RATES } from "@/lib/configurator"
 import { readDesk } from "@/lib/admin/guard"
 import { addressesFor, railsFor } from "@/lib/account"
 import { whatsapp } from "@/lib/format"
@@ -32,7 +32,7 @@ export default async function Build({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
-  const systems = configuratorSystems()
+  const systems = await configuratorSystems()
 
   // Read so a saved window can be added to the book this browser already holds.
   // Handing the save an empty seed would mark the whole book seeded and empty,
@@ -55,7 +55,13 @@ export default async function Build({
 
   // The rest of the measurement, for a saved rail reopened from an account. A
   // link that only carried the system would drop the window it was saved for.
-  const initialInput = inputFromParams(params)
+  // The shop's own rates, off whichever system this opened on, so a link with
+  // no measurement in it still opens on the counter's defaults rather than on
+  // figures this file has guessed.
+  const initialInput = inputFromParams(
+    params,
+    systems.find((system) => system.slug === initialSlug)?.rates ?? FALLBACK_RATES,
+  )
 
   return (
     <div className="shell py-12">

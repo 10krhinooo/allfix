@@ -28,7 +28,7 @@ export default async function OrdersPage() {
     <>
       <Orders orders={orders} onMove={move} />
       <div className="mt-10">
-        <TakeOrderForm parts={orderable()} onTake={take} />
+        <TakeOrderForm parts={await orderable()} onTake={take} />
       </div>
     </>
   )

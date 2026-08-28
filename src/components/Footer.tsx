@@ -16,6 +16,7 @@ import { readSettings } from "@/lib/settings-service"
  * when there is not, so the storefront stays prerendered either way.
  */
 export async function Footer() {
+  const rails = await systems()
   const { social } = await readSettings()
 
   return (
@@ -32,7 +33,7 @@ export async function Footer() {
         <div>
           <p className="callout">Rail systems</p>
           <ul className="mt-3 space-y-1.5">
-            {systems.slice(0, 6).map((system) => (
+            {rails.slice(0, 6).map((system) => (
               <li key={system.slug}>
                 <Link href={`/systems/${system.slug}`} className="text-sm text-slate hover:text-ink">
                   {system.name}

@@ -56,7 +56,8 @@ const schema = {
   seller: { "@type": "HardwareStore", name: SHOP.name },
 }
 
-export default function Trade() {
+export default async function Trade() {
+  const [allProducts, skus, allSystems] = await Promise.all([products(), skuCount(), systems()])
   return (
     <>
       <JsonLd schema={schema} />
@@ -74,7 +75,7 @@ export default function Trade() {
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/80">
             A trade account for fundis, curtain makers and fit-out contractors: the wholesale rate
-            across all {skuCount} SKUs, bulk entry, and a proforma invoice you settle by bank
+            across all {skus} SKUs, bulk entry, and a proforma invoice you settle by bank
             transfer.
           </p>
 
@@ -178,14 +179,14 @@ export default function Trade() {
                 href="/systems"
                 className="flex items-center justify-between border border-rule px-5 py-4 transition-colors hover:bg-brass-soft"
               >
-                <span className="font-display font-semibold tracking-tight">Browse {systems.length} systems</span>
+                <span className="font-display font-semibold tracking-tight">Browse {allSystems.length} systems</span>
                 <span className="callout">By rail profile</span>
               </Link>
               <Link
                 href="/shop"
                 className="flex items-center justify-between border border-rule px-5 py-4 transition-colors hover:bg-brass-soft"
               >
-                <span className="font-display font-semibold tracking-tight">All {products.length} parts</span>
+                <span className="font-display font-semibold tracking-tight">All {allProducts.length} parts</span>
                 <span className="callout">Faceted shop</span>
               </Link>
             </div>

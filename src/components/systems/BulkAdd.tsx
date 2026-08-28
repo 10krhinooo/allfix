@@ -1,6 +1,7 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
+import { useFades } from "@/lib/notice"
 import { addToCart, MAX_QUANTITY, useCart } from "@/lib/cart"
 import { price } from "@/lib/format"
 import { useTier } from "@/lib/tier-client"
@@ -40,6 +41,8 @@ export function BulkAdd({ parts, system }: { parts: BulkPart[]; system: string }
   const [open, setOpen] = useState(false)
   const [wanted, setWanted] = useState<Record<string, number>>({})
   const [added, setAdded] = useState<number | null>(null)
+
+  useFades(added !== null, useCallback(() => setAdded(null), []))
 
   const priced = useMemo(() => parts.filter((part) => (part.priceKes ?? 0) > 0), [parts])
   const onRequest = parts.length - priced.length

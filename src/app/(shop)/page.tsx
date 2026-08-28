@@ -41,8 +41,14 @@ const QUOTE = whatsapp(
 const SURVEY = whatsapp(
   "Hello AllFix, I am interested in motorised curtains and would like a site survey.",
 )
-export default function Home() {
-  const flagship = systems.find((s) => s.flagship)
+export default async function Home() {
+  const [allSystems, allRanges, allRails, allRods] = await Promise.all([
+    systems(),
+    ranges(),
+    rails(),
+    rods(),
+  ])
+  const flagship = allSystems.find((s) => s.flagship)
 
   return (
     <>
@@ -140,7 +146,7 @@ export default function Home() {
         <ul className="flush mt-8 grid grid-cols-1 md:grid-cols-3">
           <li>
             <Link href="/systems" className="flex h-full flex-col bg-paper p-6 transition-colors hover:bg-brass-soft">
-              <p className="callout">{systems.length} systems</p>
+              <p className="callout">{allSystems.length} systems</p>
               <p className="mt-2 font-display text-xl font-semibold tracking-tight">Curtain rails</p>
               <p className="mt-2 text-sm leading-relaxed text-slate">
                 Aluminium track from the slim #10 to the heavy #28, bendable for a bay,
@@ -152,7 +158,7 @@ export default function Home() {
 
           <li>
             <Link href="/shop/rod" className="flex h-full flex-col bg-paper p-6 transition-colors hover:bg-brass-soft">
-              <p className="callout">{ranges.length} finishes</p>
+              <p className="callout">{allRanges.length} finishes</p>
               <p className="mt-2 font-display text-xl font-semibold tracking-tight">Curtain rods</p>
               <p className="mt-2 text-sm leading-relaxed text-slate">
                 Poles in antique brass, black, copper and silver, with finials, rings and tie
@@ -278,7 +284,7 @@ export default function Home() {
 
         <div className="mt-9">
           <TraceOnView>
-            <SystemPicker list={systems} />
+            <SystemPicker list={allSystems} />
           </TraceOnView>
           <p className="mt-4 callout">
             Sections drawn to relative scale. Bring an offcut to the counter if you are unsure.
@@ -289,7 +295,7 @@ export default function Home() {
           href="/shop"
           className="mt-8 inline-block text-sm text-slate underline-offset-4 hover:text-ink hover:underline"
         >
-          Or browse all {rails.length + rods.length} parts
+          Or browse all {allRails.length + allRods.length} parts
         </Link>
       </section>
 

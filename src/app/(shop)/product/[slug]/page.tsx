@@ -21,8 +21,8 @@ import {
 import { priceLine, inStock, sellable } from "@/lib/commerce"
 import { price, SHOP, whatsapp } from "@/lib/format"
 
-export function generateStaticParams() {
-  return products.map((product) => ({ slug: product.slug }))
+export async function generateStaticParams() {
+  return (await products()).map((product) => ({ slug: product.slug }))
 }
 
 export const dynamicParams = false
@@ -33,7 +33,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const product = getProduct(slug)
+  const product = await getProduct(slug)
   if (!product) return {}
 
   const money = price(product.priceKes, product.priceBasis)
@@ -87,7 +87,7 @@ function productSchema(product: Product, photo: string | null) {
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const product = getProduct(slug)
+  const product = await getProduct(slug)
   if (!product) notFound()
 
   const line = priceLine(product)
@@ -112,9 +112,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           buyable: sellable(variant),
         }))
   const photo = imageFor(product)
-  const component = getComponent(product.component)
-  const range = product.range ? getRange(product.range) : undefined
-  const system = product.system ? getSystem(product.system) : undefined
+  const component = await getComponent(product.component)
+  const range = product.range ? await getRange(product.range) : undefined
+  const system = product.system ? await getSystem(product.system) : undefined
 
   const order = whatsapp(
     `Hello AllFix, I would like to order:\n${product.name}` +
@@ -124,7 +124,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   // What else fits the same rail, or matches the same finish. A part is rarely
   // bought alone: the reason the old store lost orders is that nothing told a
   // customer what went with what.
-  const siblings = (range ? partsForRange(range.slug) : system ? partsForSystem(system.slug) : [])
+  const siblings = (range ? await partsForRange(range.slug) : system ? await partsForSystem(system.slug) : [])
     .filter((other) => other.slug !== product.slug && other.component !== product.component)
     .slice(0, 6)
 

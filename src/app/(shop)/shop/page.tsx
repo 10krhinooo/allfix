@@ -19,8 +19,8 @@ export const metadata: Metadata = {
  * The old site's browse and shop were disconnected, which is the failure this
  * page exists to close: here every filtered view is a real, shareable URL.
  */
-export default function Shop() {
-  const data = shopData()
+export default async function Shop() {
+  const data = await shopData()
 
   return (
     <div className="shell py-12">

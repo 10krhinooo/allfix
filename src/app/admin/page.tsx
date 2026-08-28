@@ -10,5 +10,5 @@ import { Counter } from "@/components/admin/Counter"
  * photographed.
  */
 export default async function CounterPage() {
-  return <Counter rows={deskRows()} queue={await readEnquiries()} />
+  return <Counter rows={await deskRows()} queue={await readEnquiries()} />
 }

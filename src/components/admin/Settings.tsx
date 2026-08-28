@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useCallback, useState, useTransition } from "react"
+import { useFades } from "@/lib/notice"
 import Link from "next/link"
 import { save } from "@/app/admin/settings/actions"
 import { SHOP } from "@/lib/format"
@@ -52,6 +53,9 @@ export function Settings({ settings }: { settings: ShopSettings }) {
    */
   const [idle, setIdle] = useState(String(settings.session.idleMinutes))
   const [answer, setAnswer] = useState<{ ok: boolean; message: string } | null>(null)
+
+  // The tick goes; a refusal stays until the next attempt replaces it.
+  useFades(answer?.ok === true, useCallback(() => setAnswer(null), []))
   const [saving, startSaving] = useTransition()
 
   // Only what parses as a link is previewed, so a half typed address does not

@@ -14,8 +14,8 @@ import {
 } from "@/lib/catalogue"
 import { SHOP, whatsapp } from "@/lib/format"
 
-export function generateStaticParams() {
-  return systems.map((system) => ({ slug: system.slug }))
+export async function generateStaticParams() {
+  return (await systems()).map((system) => ({ slug: system.slug }))
 }
 
 /** Every system is known at build time, so an unknown slug is a 404, not a fetch. */
@@ -27,7 +27,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const system = getSystem(slug)
+  const system = await getSystem(slug)
   if (!system) return {}
 
   const title = `${system.name} curtain rail parts`
@@ -45,11 +45,11 @@ export async function generateMetadata({
 
 export default async function SystemPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const system = getSystem(slug)
+  const system = await getSystem(slug)
   if (!system) notFound()
 
-  const groups = partsForSystemByComponent(system.slug)
-  const skus = skuCountForSystem(system.slug)
+  const groups = await partsForSystemByComponent(system.slug)
+  const skus = await skuCountForSystem(system.slug)
 
   /*
    * A compact projection for the bulk list, the same arrangement `/shop` and the
@@ -77,7 +77,7 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
           catalogue data rather than a customer's typing, but a script tag is a
           script tag and the other seven pages on this site already go through
           the component that closes it. */}
-      <JsonLd schema={schema(system.slug)} />
+      <JsonLd schema={await schema(system.slug)} />
 
       {/* ---------------------------------------------------------- header */}
       <section className="drafting border-b border-rule">
@@ -244,9 +244,9 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
  * The ItemList is what lets a search engine understand that this page holds the
  * parts rather than describing them.
  */
-function schema(slug: string) {
-  const system = getSystem(slug)!
-  const parts = partsForSystemByComponent(slug).flatMap((group) => group.parts)
+async function schema(slug: string) {
+  const system = (await getSystem(slug))!
+  const parts = (await partsForSystemByComponent(slug)).flatMap((group) => group.parts)
 
   return {
     "@context": "https://schema.org",

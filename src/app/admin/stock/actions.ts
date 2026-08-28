@@ -1,9 +1,10 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
+import { revalidatePath, updateTag } from "next/cache"
 import { readDesk, readHeld } from "@/lib/admin/guard"
 import { capabilities } from "@/lib/admin/roles"
 import { countStock, setLowStockAt, type Counted } from "@/lib/admin/stock-service"
+import { CATALOGUE_TAG } from "@/lib/catalogue"
 
 /**
  * Counting a shelf, from the console.
@@ -33,7 +34,14 @@ export async function count(
   }
 
   const answer = await countStock(slug, counted, note, (await readHeld())?.svc)
-  if (answer.ok) revalidatePath("/admin/stock")
+  if (answer.ok) {
+    revalidatePath("/admin/stock")
+    // The shop reads the catalogue through a tagged fetch, and a count is part
+    // of it. updateTag rather than revalidateTag for the reason the settings
+    // screen already gives: stale-while-revalidate would show the person who
+    // just counted the shelf the figure they replaced.
+    updateTag(CATALOGUE_TAG)
+  }
   return answer
 }
 
@@ -51,6 +59,9 @@ export async function setThreshold(slug: string, lowStockAt: number | null): Pro
   }
 
   const answer = await setLowStockAt(slug, lowStockAt, (await readHeld())?.svc)
-  if (answer.ok) revalidatePath("/admin/stock")
+  if (answer.ok) {
+    revalidatePath("/admin/stock")
+    updateTag(CATALOGUE_TAG)
+  }
   return answer
 }

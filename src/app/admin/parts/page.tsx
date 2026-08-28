@@ -10,11 +10,11 @@ export const metadata: Metadata = { title: "Parts" }
  * `?show=unpriced` from the day's figures, and a shared or reloaded link has to
  * open on the same view.
  */
-export default function PartsPage() {
-  const rows = deskRows()
+export default async function PartsPage() {
+  const rows = await deskRows()
   return (
     <Suspense>
-      <Worksheet rows={rows} components={deskComponents(rows)} groups={deskGroups(rows)} />
+      <Worksheet rows={rows} components={await deskComponents(rows)} groups={deskGroups(rows)} />
     </Suspense>
   )
 }

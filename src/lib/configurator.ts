@@ -46,6 +46,14 @@ export interface BuildSystem {
   motorised: boolean
   /** Stock length a track is sold in, in metres. Longer runs need a joint. */
   stockLengthM: number
+  /**
+   * The counter's rules of thumb, read from the catalogue on the server.
+   *
+   * Carried on the system rather than imported, because the bill of materials
+   * is worked out in the browser as somebody drags the width, and the browser
+   * has no way to ask the shop what a bracket rate is.
+   */
+  rates: Rates
   parts: Partial<Record<Role, BuildPart>>
   /**
    * The bracket for each mount, which is a different part and a different SKU.
@@ -121,14 +129,49 @@ export interface Bom {
  * The fallbacks are the same figures and exist only so a catalogue built before
  * this change still produces a bill of materials.
  */
-function rate(component: string, per: "perMetre" | "minimum", fallback: number) {
-  return getComponent(component)?.[per] ?? fallback
+export interface Rates {
+  bracketsPerM: number
+  minBrackets: number
+  runnersPerM: number
+  stoppers: number
 }
 
-const BRACKETS_PER_M = rate("bracket", "perMetre", 1)
-const MIN_BRACKETS = rate("bracket", "minimum", 2)
-const RUNNERS_PER_M = rate("runner", "perMetre", 10)
-const STOPPERS = rate("stopper", "minimum", 2)
+/**
+ * The same figures, for a catalogue that has not got them.
+ *
+ * They were the literals this file used before the rates moved into the
+ * migration, and they stay only so a bill of materials is never empty.
+ */
+export const FALLBACK_RATES: Rates = {
+  bracketsPerM: 1,
+  minBrackets: 2,
+  runnersPerM: 10,
+  stoppers: 2,
+}
+
+/**
+ * Read once on the server and carried down on each system.
+ *
+ * These used to be module constants, which stopped being possible when the
+ * catalogue became a fetch: a module-scope read of it is a promise nobody
+ * awaits. They cannot simply become async either, because `billOfMaterials`
+ * runs in the browser as somebody drags the width slider. So the server reads
+ * them and puts them in the projection it already builds, which is the same
+ * arrangement this file uses for everything else the client needs.
+ */
+async function rates(): Promise<Rates> {
+  const [bracket, runner, stopper] = await Promise.all([
+    getComponent("bracket"),
+    getComponent("runner"),
+    getComponent("stopper"),
+  ])
+  return {
+    bracketsPerM: bracket?.perMetre ?? FALLBACK_RATES.bracketsPerM,
+    minBrackets: bracket?.minimum ?? FALLBACK_RATES.minBrackets,
+    runnersPerM: runner?.perMetre ?? FALLBACK_RATES.runnersPerM,
+    stoppers: stopper?.minimum ?? FALLBACK_RATES.stoppers,
+  }
+}
 
 const ROLE_LABEL: Record<Role, string> = {
   track: "Track",
@@ -144,7 +187,7 @@ const ROLE_LABEL: Record<Role, string> = {
 }
 
 /** The systems the configurator applies to, projected small for the client. */
-export function configuratorSystems(): BuildSystem[] {
+export async function configuratorSystems(): Promise<BuildSystem[]> {
   // A blind is raised on a cord rather than drawn on runners, so a width and a
   // panel count does not describe one and a bill of materials counted per metre
   // of run is nonsense against it. This asked for a roman blind by name until
@@ -152,9 +195,11 @@ export function configuratorSystems(): BuildSystem[] {
   // of them walked straight past it: a roller blind was being quoted ten runners
   // to the metre, two stoppers and a joint every six metres, none of which it
   // stocks. Ask what a system is rather than naming the ones that are not rails.
-  return railSystems()
-    .map((system) => {
-      const parts = partsForSystem(system.slug)
+  const [rails, shopRates] = await Promise.all([railSystems(), rates()])
+
+  return Promise.all(
+    rails.map(async (system) => {
+      const parts = await partsForSystem(system.slug)
       const pick = (component: string): BuildPart | undefined => {
         const part = parts.find((candidate) => candidate.component === component)
         return part ? { sku: part.sku ?? part.slug, name: part.name } : undefined
@@ -199,6 +244,7 @@ export function configuratorSystems(): BuildSystem[] {
           ["motor", "drive-unit", "belt"].includes(part.component),
         ),
         stockLengthM: system.stockLengthM,
+        rates: shopRates,
         brackets: { ceiling: bracketFor("ceiling"), wall: bracketFor("wall") },
         parts: {
           track: pick("track"),
@@ -213,7 +259,8 @@ export function configuratorSystems(): BuildSystem[] {
           belt: pick("belt"),
         },
       }
-    })
+    }),
+  )
 }
 
 function clamp(value: number, min: number, max: number) {
@@ -236,17 +283,13 @@ export const RUNNERS_MAX = 20
 export const BRACKETS_MIN = 1
 export const BRACKETS_MAX = 4
 
-/** The catalogue's rates, which is what the form opens on. */
-export const DEFAULT_RUNNERS_PER_M = RUNNERS_PER_M
-export const DEFAULT_BRACKETS_PER_M = BRACKETS_PER_M
-
-export function defaultInput(): BomInput {
+export function defaultInput(rates: Rates): BomInput {
   return {
     widthM: 2,
     panels: 2,
     mount: "ceiling",
-    runnersPerM: RUNNERS_PER_M,
-    bracketsPerM: BRACKETS_PER_M,
+    runnersPerM: rates.runnersPerM,
+    bracketsPerM: rates.bracketsPerM,
   }
 }
 
@@ -260,8 +303,8 @@ export function defaultInput(): BomInput {
 export function billOfMaterials(system: BuildSystem, input: BomInput): Bom {
   const width = clamp(input.widthM, WIDTH_MIN, WIDTH_MAX)
   const panels = clamp(Math.round(input.panels), 1, PANELS_MAX)
-  const runnersPerM = clamp(input.runnersPerM || RUNNERS_PER_M, RUNNERS_MIN, RUNNERS_MAX)
-  const bracketsPerM = clamp(input.bracketsPerM || BRACKETS_PER_M, BRACKETS_MIN, BRACKETS_MAX)
+  const runnersPerM = clamp(input.runnersPerM || system.rates.runnersPerM, RUNNERS_MIN, RUNNERS_MAX)
+  const bracketsPerM = clamp(input.bracketsPerM || system.rates.bracketsPerM, BRACKETS_MIN, BRACKETS_MAX)
   const centreOpen = panels >= 2
   const lines: BomLine[] = []
 
@@ -295,11 +338,11 @@ export function billOfMaterials(system: BuildSystem, input: BomInput): Bom {
     system.brackets.ceiling?.sku === system.brackets.wall?.sku
   line(
     "bracket",
-    Math.max(MIN_BRACKETS, Math.ceil(width * bracketsPerM)),
+    Math.max(system.rates.minBrackets, Math.ceil(width * bracketsPerM)),
     "",
     onlyOneMount
-      ? `${bracketsPerM} per metre, at least ${MIN_BRACKETS}. This system takes one bracket for both mounts`
-      : `${bracketsPerM} per metre, at least ${MIN_BRACKETS}. ${input.mount === "ceiling" ? "Ceiling" : "Wall"} fixed`,
+      ? `${bracketsPerM} per metre, at least ${system.rates.minBrackets}. This system takes one bracket for both mounts`
+      : `${bracketsPerM} per metre, at least ${system.rates.minBrackets}. ${input.mount === "ceiling" ? "Ceiling" : "Wall"} fixed`,
     bracket,
   )
 
@@ -319,7 +362,7 @@ export function billOfMaterials(system: BuildSystem, input: BomInput): Bom {
     line("master-carrier", 1, "", "Overlap arm for a centre-opening pair")
   }
 
-  line("stopper", STOPPERS, "", "One at each end")
+  line("stopper", system.rates.stoppers, "", "One at each end")
 
   if (system.motorised) {
     line("drive-unit", 1, "", "Motor end of the run")
@@ -386,8 +429,11 @@ export function bomMessage(system: BuildSystem, input: BomInput, bom: Bom) {
  * hand-edited or truncated link opens on a usable form instead of a stack
  * trace. That matches how `?system=` already treats a slug it does not know.
  */
-export function inputFromParams(params: Record<string, string | string[] | undefined>): BomInput {
-  const base = defaultInput()
+export function inputFromParams(
+  params: Record<string, string | string[] | undefined>,
+  rates: Rates,
+): BomInput {
+  const base = defaultInput(rates)
   const one = (key: string): string | undefined => {
     const value = params[key]
     return Array.isArray(value) ? value[0] : value
