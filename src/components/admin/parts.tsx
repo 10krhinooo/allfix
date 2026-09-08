@@ -256,6 +256,15 @@ export function Stat({
  * rather than wrapped, because a price that has wrapped under its SKU is no
  * longer in a column and cannot be compared with the price above it.
  */
+/**
+ * A table that may be wider than the card it sits in.
+ *
+ * The negative margin is what lets it reach the card's edge rather than sitting
+ * in a gutter, and it is why **the card holding one has to clip**: without
+ * `overflow-hidden` on the card the bleed runs out past the rounded corner and
+ * the right hand column reads as cut off. The worksheet had the clip and the
+ * stock screen did not, which is exactly how that looked.
+ */
 export function Table({ children }: { children: React.ReactNode }) {
   return (
     <div className="-mx-5 overflow-x-auto px-5">
