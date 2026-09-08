@@ -85,6 +85,41 @@ function persist() {
  * localStorage that is not there; doing it in the first snapshot would hand
  * React a different value before and after hydration and trip a mismatch.
  */
+/**
+ * Whether a stored row is an enquiry this build can draw.
+ *
+ * The `try` below catches a stored value that is not JSON. It does not catch
+ * the more likely thing, which is JSON that parses perfectly and is missing a
+ * field this build expects: `deskEnquiries` calls `.trim()` on the address and
+ * the area, so one row filed before those were required took the whole console
+ * to the error page, for every screen, until the browser was cleared by hand.
+ * The person it locks out is a member of staff standing at a counter, and what
+ * they lost was one enquiry rather than the console.
+ *
+ * So the shape is checked here, once, at the edge where the untrusted value
+ * comes in, rather than guarded again in every consumer. A row that fails is
+ * dropped and the rest are kept: this is a stand-in for a table the service
+ * will own, and losing one browser record is the cheap half of the trade.
+ */
+function usable(row: unknown): row is FiledEnquiry {
+  if (typeof row !== "object" || row === null) return false
+  const each = row as Record<string, unknown>
+  return (
+    typeof each.id === "string" &&
+    typeof each.reference === "string" &&
+    typeof each.at === "number" &&
+    typeof each.kind === "string" &&
+    // The four `deskEnquiries` reads off the record. Name and phone are what
+    // the counter rings back on, and the other two are trimmed.
+    typeof each.name === "string" &&
+    typeof each.phone === "string" &&
+    typeof each.email === "string" &&
+    typeof each.area === "string" &&
+    typeof each.summary === "string" &&
+    typeof each.detail === "string"
+  )
+}
+
 function hydrate() {
   if (hydrated) return
   hydrated = true
@@ -97,7 +132,7 @@ function hydrate() {
     state = {
       ready: true,
       enquiries: stored.enquiries ?? {},
-      inbox: stored.inbox ?? [],
+      inbox: Array.isArray(stored.inbox) ? stored.inbox.filter(usable) : [],
     }
   } catch {
     // A stored shape from an older build is not worth crashing the console
