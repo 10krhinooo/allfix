@@ -44,6 +44,8 @@ export interface Variant {
   tradePriceKes: number | null
   stock: number | null
   image: string | null
+  /** The finish's own photograph, when the shop has uploaded one. */
+  photoUrl?: string | null
   legacyUrl: string | null
 }
 
@@ -78,6 +80,13 @@ export interface Product {
   image: string | null
   /** The shot this part is waiting for, on everything not yet photographed. */
   imageName: string | null
+  /**
+   * The shop's own photograph, when somebody has uploaded one from the console.
+   *
+   * Separate from `image`, which is a dead WooCommerce link kept only as the
+   * signal that a shot exists under `public/products/`. This one is fetched.
+   */
+  photoUrl?: string | null
   legacyUrl: string | null
   variantAxis?: string
   variants?: Variant[]
@@ -450,6 +459,17 @@ export async function componentsInOrder() {
  */
 export function imageFor(product: Product, variant?: Variant) {
   const entry = variant ?? product
+
+  /*
+   * A photograph the shop uploaded wins, and it is an address rather than a
+   * signal. `image` below is the opposite: a dead WooCommerce URL kept only to
+   * mean "the migration shot this", which is then turned into a path under
+   * public/products from the SKU. Asked in the other order, a part photographed
+   * at the counter would be sent to a file that was never written.
+   */
+  const stored = entry.photoUrl ?? (variant ? product.photoUrl : null)
+  if (stored) return stored
+
   if (!entry.image) return null
   // A variant group has no SKU of its own, and the migration writes one file
   // per variant keyed by that variant's SKU. The group shows its lead, so the

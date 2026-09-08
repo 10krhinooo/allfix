@@ -24,6 +24,8 @@ export interface ConsolePart {
   summary: string | null
   description: string | null
   imageName: string | null
+  /** Where the shop's own photograph is, when somebody has uploaded one. */
+  photoUrl: string | null
   priceKes: number | null
   priceBasis: PriceBasis
   priceNote: string | null
@@ -57,6 +59,7 @@ export async function readPart(slug: string): Promise<ConsolePart | null> {
       summary: p.summary ?? null,
       description: p.description ?? null,
       imageName: p.imageName ?? null,
+      photoUrl: p.photoUrl ?? null,
       priceKes: p.priceKes ?? null,
       priceBasis: down(p.priceBasis),
       priceNote: p.priceNote ?? null,
@@ -142,6 +145,11 @@ export interface PartEdit {
   summary?: string
   description?: string
   imageName?: string
+  /**
+   * Where the photograph is. Absent leaves it alone and "" takes it down, the
+   * same rule the rest of this record follows and the service's own.
+   */
+  photoUrl?: string
   /** Only read when adding a rod, to work out what kind of part it is. */
   categories?: string
   specs?: { label: string; value: string }[]

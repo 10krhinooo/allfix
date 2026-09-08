@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Card, CardHeader, Note, PageHead, Section } from "@/components/admin/parts"
+import { PartPhoto } from "@/components/admin/PartPhoto"
 import type { PartEdit, Saved } from "@/lib/admin/catalogue-api"
 
 /**
@@ -85,6 +86,7 @@ export function PartForm({
   const [summary, setSummary] = useState(part?.summary ?? "")
   const [description, setDescription] = useState(part?.description ?? "")
   const [imageName, setImageName] = useState(part?.imageName ?? "")
+  const [photoUrl, setPhotoUrl] = useState(part?.photoUrl ?? "")
   const [categories, setCategories] = useState(part?.categories ?? "")
   const [busy, start] = useTransition()
   const [problem, setProblem] = useState<string | null>(null)
@@ -106,6 +108,13 @@ export function PartForm({
       if (summary.trim()) values.summary = summary.trim()
       if (description.trim()) values.description = description.trim()
       if (imageName.trim()) values.imageName = imageName.trim()
+      /*
+       * Sent only when it differs from what was already there, because absent
+       * means unchanged and "" means take the photograph down. Sending "" on
+       * every save of a part that never had one is harmless; sending it on a
+       * part that does would quietly unphotograph it.
+       */
+      if (photoUrl !== (part?.photoUrl ?? "")) values.photoUrl = photoUrl
       if (adding && isRod && categories.trim()) values.categories = categories.trim()
 
       const answer = await onSave(values)
@@ -238,6 +247,13 @@ export function PartForm({
                 />
               )}
             </Field>
+
+            <PartPhoto
+              sku={adding ? sku : (part?.sku ?? sku)}
+              photoUrl={photoUrl}
+              onChange={setPhotoUrl}
+              disabled={busy}
+            />
 
             <Field
               label="The shot it is waiting for"
