@@ -61,6 +61,17 @@ const DEFAULTS: Record<string, Limit> = {
    * for several tabs, and it still stops a loop hammering it.
    */
   touch: { hits: 60, seconds: 60 },
+  /*
+   * Photographs of parts, uploaded from the console.
+   *
+   * Generous because somebody cataloguing a delivery photographs a dozen parts
+   * in a sitting, and low enough that a stuck retry loop cannot fill a blob
+   * store nobody is watching. A bucket with no entry here is not rate limited at
+   * all: `limitFor` returns undefined and `check` waves it through, so naming a
+   * route in a handler without naming it here is a limit that silently is not
+   * one.
+   */
+  photo: { hits: 40, seconds: 300 },
 }
 
 /**
