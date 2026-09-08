@@ -3,6 +3,7 @@ import { Logo } from "@/components/Logo"
 import { MobileNav } from "@/components/MobileNav"
 import { BasketLink } from "@/components/cart/BasketLink"
 import { SHOP } from "@/lib/format"
+import { ratePercent } from "@/lib/tiers"
 
 const NAV = [
   { href: "/systems", label: "Rail systems" },
@@ -95,7 +96,14 @@ export function Header() {
           <span className="callout">
             Counter sales · {SHOP.street}, {SHOP.area}
           </span>
-          <span className="callout text-brass">Wholesale 20% off</span>
+          {/*
+            The rate comes from `tiers.ts` rather than being typed here, and it
+            is a link rather than a claim: it is the loudest promise the shop
+            makes and the page that explains it was a click nobody was offered.
+          */}
+          <Link href="/trade" className="callout text-brass hover:underline">
+            Wholesale {ratePercent("trade")} off
+          </Link>
         </div>
       </div>
     </header>

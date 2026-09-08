@@ -5,6 +5,7 @@ import { SystemPicker } from "@/components/SystemPicker"
 import { TraceOnView } from "@/components/TraceOnView"
 import { systems, ranges, rails, rods } from "@/lib/catalogue"
 import { SHOP, whatsapp } from "@/lib/format"
+import { ratePhrase } from "@/lib/tiers"
 
 /**
  * The marketing front door.
@@ -328,7 +329,7 @@ export default async function Home() {
               Fundis, curtain makers and fit-out contractors
             </h2>
             <p className="mt-3 leading-relaxed text-slate">
-              Open an account for 20% off list, bulk quantity entry, and a proforma invoice you can
+              Open an account for {ratePhrase("trade")}, bulk quantity entry, and a proforma invoice you can
               settle by bank transfer instead of paying at checkout.
             </p>
             {/* `/trade` is the page written for this click: the rate, what an

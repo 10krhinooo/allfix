@@ -47,7 +47,22 @@ export function rateFor(tier: Tier): number {
 
 /** The rate as it is spoken and printed: "20% off list". */
 export function ratePhrase(tier: Tier): string {
-  return `${Math.round(rateFor(tier) * 100)}% off list`
+  return `${ratePercent(tier)} off list`
+}
+
+/**
+ * Just the figure, for the copy that puts its own words around it.
+ *
+ * The shop advertises this rate in its header, on its front page, in the trade
+ * page's headline, its metadata and its structured data. Every one of those was
+ * the characters "20%", typed out, while this file was the stated single source
+ * of truth for what a trade account pays. Changing the rate would have left the
+ * shop publicly promising the old one in seven places, including two a search
+ * engine reads, and the promise on `/trade` is the one the backend's
+ * `unitPriceFor` was fixed to keep.
+ */
+export function ratePercent(tier: Tier): string {
+  return `${Math.round(rateFor(tier) * 100)}%`
 }
 
 /** Just enough of a part to price it. Anything with a price can be passed in. */
