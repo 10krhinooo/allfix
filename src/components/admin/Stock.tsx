@@ -197,7 +197,7 @@ export function Stock({
           }
         />
       ) : (
-        <Card padded={false}>
+        <Card padded={false} className="overflow-hidden">
           <Table>
             <thead>
               <tr>
