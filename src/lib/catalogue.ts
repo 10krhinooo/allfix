@@ -204,6 +204,29 @@ const API = process.env.ALLFIX_API_URL ?? ""
 export const CATALOGUE_TAG = "catalogue"
 
 /**
+ * Which catalogue the last read actually got.
+ *
+ * The fallback below is the only one in this codebase a person cannot see. An
+ * unreachable settings service leaves the footer bare and an unreachable order
+ * service draws an empty state, but a catalogue read that quietly falls back
+ * looks exactly like one that worked, and the only trace was a `console.warn`
+ * on a server nobody at the shop can read.
+ *
+ * Module scope, set by the read itself, so asking costs nothing and cannot
+ * cause a second fetch. It reports the last read this process made rather than
+ * the state of the world, which is the honest thing it can know, and
+ * "unasked" is a real answer: a process that has served nothing yet has not
+ * found out.
+ */
+export type CatalogueSource = "service" | "file" | "unasked"
+
+let lastSource: CatalogueSource = "unasked"
+
+export function catalogueSource(): CatalogueSource {
+  return lastSource
+}
+
+/**
  * How long a page may keep a catalogue nobody has changed.
  *
  * Long, because a save expires the tag outright and this is only the backstop
@@ -223,7 +246,10 @@ const REVALIDATE = 3600
  * shop showing an error. It is the same answer `readSettings` gives.
  */
 export async function catalogueData(): Promise<Catalogue> {
-  if (!API) return FILE
+  if (!API) {
+    lastSource = "file"
+    return FILE
+  }
 
   try {
     const [reference, parts] = await Promise.all([
@@ -246,6 +272,7 @@ export async function catalogueData(): Promise<Catalogue> {
       return FILE
     }
 
+    lastSource = "service"
     return counted(fromService(bundle, list))
   } catch (failure) {
     warn(String(failure))
@@ -264,6 +291,7 @@ export async function catalogueData(): Promise<Catalogue> {
  * that out, and this line is the only way they will.
  */
 function warn(why: string) {
+  lastSource = "file"
   console.warn(`[catalogue] reading the committed file instead of the service: ${why}`)
 }
 

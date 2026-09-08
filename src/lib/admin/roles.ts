@@ -40,13 +40,41 @@ export interface Capabilities {
    * the owner's and is checked separately, inside the screen.
    */
   stock: boolean
+  /**
+   * The platform itself: which secrets a deployment is missing, whether the
+   * schema is current, and what has failed lately.
+   *
+   * Admin only, and its own capability rather than folded into `settings`,
+   * because the two are different jobs on the same screen only by accident.
+   * Settings is what the shop says to its customers. This is whether the shop
+   * is working at all, and it names configuration values, which is the one
+   * thing on the console that should not be readable by whoever is covering
+   * the counter on a Saturday.
+   *
+   * A separate SYSTEM_ADMIN role would be the fuller answer and is not worth a
+   * fourth role here: this shop has one owner, and a role nobody is assigned is
+   * a gate nobody tests.
+   */
+  platform: boolean
 }
 
 const CAPABILITIES: Record<Person["role"], Capabilities> = {
-  ADMIN: { console: true, people: true, prices: true, settings: true, orders: true, stock: true },
-  STAFF: { console: true, people: false, prices: true, settings: false, orders: true, stock: true },
-  TRADE: { console: false, people: false, prices: false, settings: false, orders: false, stock: false },
-  CUSTOMER: { console: false, people: false, prices: false, settings: false, orders: false, stock: false },
+  ADMIN: {
+    console: true, people: true, prices: true, settings: true,
+    orders: true, stock: true, platform: true,
+  },
+  STAFF: {
+    console: true, people: false, prices: true, settings: false,
+    orders: true, stock: true, platform: false,
+  },
+  TRADE: {
+    console: false, people: false, prices: false, settings: false,
+    orders: false, stock: false, platform: false,
+  },
+  CUSTOMER: {
+    console: false, people: false, prices: false, settings: false,
+    orders: false, stock: false, platform: false,
+  },
 }
 
 export function capabilities(role: Person["role"]): Capabilities {

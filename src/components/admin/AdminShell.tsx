@@ -88,6 +88,13 @@ const NAV: NavItem[] = [
     icon: ICONS.settings,
     needs: "settings",
   },
+  {
+    href: "/admin/platform",
+    label: "Platform",
+    hint: "Whether the shop is actually working",
+    icon: ICONS.platform,
+    needs: "platform",
+  },
 ]
 
 export function AdminShell({

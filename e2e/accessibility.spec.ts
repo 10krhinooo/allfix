@@ -76,6 +76,7 @@ test("the desks are checked too, behind the door", async ({ page }) => {
     "/admin/stock",
     "/admin/enquiries",
     "/admin/settings",
+    "/admin/platform",
   ]) {
     await page.goto(path)
     const found = await violations(page)
