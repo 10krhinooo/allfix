@@ -40,7 +40,6 @@ test.describe("the counter console", () => {
       "/admin/parts",
       "/admin/enquiries",
       "/admin/people",
-      "/admin/platform",
       "/admin/profile",
     ]) {
       const response = await page.goto(path)
@@ -78,7 +77,7 @@ test.describe("the counter console", () => {
     await expect(page.getByRole("heading", { name: "Enquiries", level: 1 })).toBeVisible()
   })
 
-  test("the platform screen is the owner's, at the route and not only on the rail", async ({
+  test("the platform screen belongs to whoever keeps the service, and to nobody else", async ({
     page,
   }) => {
     // The same gate People and Settings have, and for a sharper version of the
@@ -87,10 +86,47 @@ test.describe("the counter console", () => {
     // Saturday should be reading off a screen. Not found rather than refused,
     // so a guess does not confirm the screen exists.
     await signIn(page, WHO.staff)
-    const refused = await page.goto("/admin/platform")
-    expect(refused?.status()).toBe(404)
-
+    expect((await page.goto("/admin/platform"))?.status()).toBe(404)
     await expect(page.getByRole("link", { name: /Platform/ })).toHaveCount(0)
+  })
+
+  test("the owner is refused the platform screen as well", async ({ page }) => {
+    // The assertion worth having: this is the one screen an ADMIN does not
+    // hold. Owning the shop and keeping the service running are the same job
+    // here only because nobody has been hired for the second one yet.
+    //
+    // Its own test rather than a second half of the one above, because signing
+    // in twice in one test does not work: `signIn` goes to /sign-in, and the
+    // proxy sends an account that already holds a session to its own desk, so
+    // the form never renders and the fill times out.
+    await signIn(page, WHO.admin)
+    expect((await page.goto("/admin/platform"))?.status()).toBe(404)
+    await expect(page.getByRole("link", { name: /Platform/ })).toHaveCount(0)
+  })
+
+  test("whoever keeps the service lands on it, and gets nothing else", async ({ page }) => {
+    await signIn(page, WHO.platform)
+    // Straight there, rather than to a dashboard of takings they have no use for.
+    await expect(page).toHaveURL(/\/admin\/platform$/)
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible()
+
+    // The shop's own screens are shut to them for the mirror of the reason the
+    // platform is shut to the owner: a migration number is not counter work and
+    // a price is not platform work.
+    // Parts and Enquiries are named here on purpose. Both used to be gated by
+    // the proxy's `console` check alone, which was the same question as "is
+    // this staff" until this role existed. One carries every price the shop
+    // charges and the other every customer's phone number.
+    for (const path of [
+      "/admin/parts",
+      "/admin/enquiries",
+      "/admin/people",
+      "/admin/settings",
+      "/admin/stock",
+      "/admin/orders",
+    ]) {
+      expect((await page.goto(path))?.status(), path).toBe(404)
+    }
   })
 
   test("signing out closes the door behind you", async ({ page }) => {

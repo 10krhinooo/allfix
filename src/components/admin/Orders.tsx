@@ -49,9 +49,18 @@ function finished(order: DeskOrder) {
 
 export function Orders({
   orders,
+  live,
   onMove,
 }: {
   orders: DeskOrder[] | null
+  /**
+   * Whether these came from the shop's own records.
+   *
+   * False means nobody could be asked and the orders below are stand-ins. Said
+   * out loud rather than implied, for the same reason as on the shelf screen: a
+   * stand-in order that reads as real is one somebody tries to pack.
+   */
+  live: boolean
   onMove: (reference: string, stage: OrderStage) => Promise<{ ok: boolean; message?: string }>
 }) {
   const [show, setShow] = useState<Show>("open")
@@ -101,6 +110,13 @@ export function Orders({
   return (
     <>
       <PageHead title="Orders" lead="Every order the shop has, however it arrived.">
+        {!live && (
+          <Note tone="warn">
+            No order service is reachable, so these are stand-in orders and not the shop&rsquo;s own.
+            Nothing moved here is kept. The real queue appears, and this note goes, the moment the
+            service answers.
+          </Note>
+        )}
         <Note>
           {all.length - online} of these were taken by somebody here rather than placed on the
           site. Before there was a way to key one in they were only in the book.

@@ -22,14 +22,17 @@ test.describe("stock", () => {
     await expect(page.getByRole("link", { name: /Stock/ })).toBeVisible()
   })
 
-  test("with no service it says nobody could ask, rather than showing an empty shelf", async ({
+  test("with no service it says so, over the top of the figures it is standing in with", async ({
     page,
   }) => {
+    // The screen draws stand-in counts so there is something to work against
+    // before the service is hosted. That is only safe while it also says the
+    // figures are not the shop's own: somebody reads a number here and decides
+    // whether to reorder, so the note is the part that has to be there.
     await signIn(page, WHO.staff)
     await page.goto("/admin/stock")
-    await expect(page.getByText("No stock service is reachable")).toBeVisible()
-    // And no figure anywhere, because every figure it could draw would be made up.
-    await expect(page.getByRole("table")).toHaveCount(0)
+    await expect(page.getByText(/No stock service is reachable/)).toBeVisible()
+    await expect(page.getByText(/Nothing typed here is kept/)).toBeVisible()
   })
 
   test("a customer never reaches it", async ({ page }) => {

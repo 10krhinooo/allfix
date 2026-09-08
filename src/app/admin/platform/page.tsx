@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import { readDesk } from "@/lib/admin/guard"
 import { capabilities } from "@/lib/admin/roles"
 import { readPlatform } from "@/lib/admin/reports-service"
+import { samplePlatform } from "@/lib/admin/sample"
 import { Platform } from "@/components/admin/Platform"
 
 export const metadata: Metadata = { title: "The platform" }
@@ -24,5 +25,7 @@ export default async function PlatformPage() {
   const desk = await readDesk()
   if (!desk || !capabilities(desk.role).platform) notFound()
 
-  return <Platform state={await readPlatform()} />
+  // As on the dashboard, and for the same reason: until the service is hosted a
+  // real read is empty. Replaced by real figures the moment there is a service.
+  return <Platform state={(await readPlatform()) ?? samplePlatform()} />
 }
