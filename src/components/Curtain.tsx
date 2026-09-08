@@ -124,6 +124,7 @@ export function Curtain() {
       ref={wrap}
       aria-hidden="true"
       className="curtain hero-curtain pointer-events-none absolute inset-0 z-20 overflow-hidden"
+      data-transition="hero"
     >
       {/* The track, drawn as the white aluminium section the shop actually sells. */}
       <div

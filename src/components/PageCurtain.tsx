@@ -115,6 +115,7 @@ export function PageCurtain() {
       ref={wrap}
       aria-hidden="true"
       className="curtain pointer-events-none fixed inset-0 z-[60] overflow-hidden"
+      data-transition="wipe"
     >
       <div className="curtain-leaf absolute inset-y-0 left-0 w-[50.5%]">
         <Runners side="left" />

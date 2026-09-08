@@ -79,6 +79,21 @@
   --stage-ink: #f4f2ee;
   --stage-mute: #9a94a3;
   --stage-brass: #d9bd57;
+  /*
+   * The focus ring, where the ground is the stage rather than the page.
+   *
+   * The ring is oxblood everywhere, which is 10.62:1 on paper and 1.92:1 on the
+   * stage. The stage is fixed dark in both themes and it is not decoration: the
+   * console's side rail is drawn on it, on all three desks, so this was every
+   * staff member's focus ring, all day, at a fifth of the contrast a ring is
+   * meant to have. Nothing caught it. A focus indicator is a non text control
+   * and wants 3:1 under WCAG 1.4.11, and axe does not measure an outline.
+   *
+   * The same oxblood the dark theme already lifts to, for the same reason, held
+   * warm so the ring stays the brand's red rather than becoming a second
+   * accent. 6.46:1 on the stage.
+   */
+  --stage-focus: #e0705f;
   --shot: #030303;
 
   /* The curtain itself, in the brand's own red. */
@@ -213,7 +228,7 @@ body {
 }
 
 :where(a, button, input, select, summary):focus-visible {
-  outline: 2px solid var(--oxblood);
+  outline: 2px solid var(--focus, var(--oxblood));
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -311,6 +326,12 @@ body {
   background: var(--stage);
   color: var(--stage-ink);
   --hairline: var(--stage-rule);
+  /*
+   * The ring, redirected the way the hairline above already is: the region says
+   * what it is and `:focus-visible` reads it, so a control moved onto the stage
+   * is right on arrival rather than having to be told.
+   */
+  --focus: var(--stage-focus);
 }
 
 .stage .callout { color: var(--stage-mute); }
