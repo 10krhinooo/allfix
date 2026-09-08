@@ -35,7 +35,14 @@ test.describe("the counter console", () => {
 
   test("every console screen opens for an admin", async ({ page }) => {
     await signIn(page, WHO.admin)
-    for (const path of ["/admin", "/admin/parts", "/admin/enquiries", "/admin/people", "/admin/profile"]) {
+    for (const path of [
+      "/admin",
+      "/admin/parts",
+      "/admin/enquiries",
+      "/admin/people",
+      "/admin/platform",
+      "/admin/profile",
+    ]) {
       const response = await page.goto(path)
       expect(response?.status(), path).toBe(200)
       await expect(page).toHaveURL(new RegExp(path.replace(/\//g, "\\/") + "$"))
@@ -69,6 +76,21 @@ test.describe("the counter console", () => {
 
     await page.goto("/admin/enquiries")
     await expect(page.getByRole("heading", { name: "Enquiries", level: 1 })).toBeVisible()
+  })
+
+  test("the platform screen is the owner's, at the route and not only on the rail", async ({
+    page,
+  }) => {
+    // The same gate People and Settings have, and for a sharper version of the
+    // same reason: this screen names which configuration values a deployment is
+    // missing, which is not something whoever is covering the counter on a
+    // Saturday should be reading off a screen. Not found rather than refused,
+    // so a guess does not confirm the screen exists.
+    await signIn(page, WHO.staff)
+    const refused = await page.goto("/admin/platform")
+    expect(refused?.status()).toBe(404)
+
+    await expect(page.getByRole("link", { name: /Platform/ })).toHaveCount(0)
   })
 
   test("signing out closes the door behind you", async ({ page }) => {

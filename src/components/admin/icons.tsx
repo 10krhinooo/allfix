@@ -65,6 +65,19 @@ export const ICONS = {
       <circle cx="15" cy="17" r="2" />
     </>
   ),
+  /*
+   * The platform: a spirit level.
+   *
+   * The shop's own tool for "is this actually right", which is the question the
+   * screen answers, and it is drawn in the same stroke weight as the rest.
+   */
+  platform: (
+    <>
+      <rect x="3" y="9" width="18" height="6" rx="1" />
+      <path d="M10.5 10.5v3M13.5 10.5v3" />
+      <circle cx="12" cy="12" r="1.2" />
+    </>
+  ),
   profile: (
     <>
       <circle cx="12" cy="8" r="3.5" />

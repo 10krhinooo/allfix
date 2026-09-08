@@ -1,20 +1,23 @@
-import { deskRows } from "@/lib/admin/rows"
-import { readEnquiries } from "@/lib/admin/enquiries-service"
-import { readPriceChanges } from "@/lib/admin/catalogue-api"
-import { Counter } from "@/components/admin/Counter"
+import { readDesk } from "@/lib/admin/guard"
+import { readSummary } from "@/lib/admin/reports-service"
+import { Dashboard } from "@/components/admin/Dashboard"
 
 /**
- * The catalogue is read on the server and handed down as a compact projection,
- * the same arrangement `/shop` uses: the 200 KB of specs and copy has no
- * business in a console bundle, and the counter only ever asks four things of a
- * part, what it is, what it costs, what it fits and whether it has been
- * photographed.
+ * What the shop did, on the screen somebody opens first.
+ *
+ * This used to count the catalogue: how many parts are unpriced, how many are
+ * unphotographed. That is real work and it is not what the person who owns the
+ * shop wants at eight in the morning, which is what came in yesterday and what
+ * is running out. The catalogue counts moved to the worksheet, which is where
+ * somebody acts on them.
+ *
+ * Never cached. A figure about this morning that was worked out last night is
+ * worse than no figure, because nothing on the screen says how old it is.
  */
+export const dynamic = "force-dynamic"
+
 export default async function CounterPage() {
-  const [rows, queue, changes] = await Promise.all([
-    deskRows(),
-    readEnquiries(),
-    readPriceChanges(),
-  ])
-  return <Counter rows={rows} queue={queue} changes={changes} />
+  const [desk, summary] = await Promise.all([readDesk(), readSummary()])
+
+  return <Dashboard summary={summary} name={desk?.name ?? "there"} />
 }
