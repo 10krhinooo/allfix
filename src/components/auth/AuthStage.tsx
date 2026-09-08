@@ -107,11 +107,11 @@ export function AuthStage({ line }: { line: string }) {
 
   return (
     <aside
-      className="stage relative hidden overflow-hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:justify-between"
+      className="deep relative hidden overflow-hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:justify-between"
     >
       {/* The brass rule the curtain runs off, the same one the home hero leaves
           behind as its track. */}
-      <div className="absolute inset-x-0 top-0 h-px bg-stage-brass/40" />
+      <div className="absolute inset-x-0 top-0 h-px bg-deep-brass/40" />
 
       <div className="px-12 pt-14">
         {/* The way back to the shop, and a real link: somebody who arrived on a
@@ -123,9 +123,9 @@ export function AuthStage({ line }: { line: string }) {
           title="Back to the shop"
           className="inline-block transition-opacity hover:opacity-70"
         >
-          <Logo height={40} on="dark" alt="AllFix By Kipekee, back to the shop" />
+          <Logo height={40} on="deep" alt="AllFix By Kipekee, back to the shop" />
         </Link>
-        <p className="mt-7 max-w-[22ch] font-display text-3xl font-semibold leading-tight text-stage-ink">
+        <p className="mt-7 max-w-[22ch] font-display text-3xl font-semibold leading-tight text-deep-ink">
           {line}
         </p>
       </div>
@@ -136,10 +136,10 @@ export function AuthStage({ line }: { line: string }) {
         className="relative flex flex-1 items-center justify-center px-12"
       >
         <div key={slug} className="flex flex-col items-center">
-          <div data-live className="text-stage-brass">
+          <div data-live className="text-deep-brass">
             <Profile system={slug} size={440} className="h-auto w-full max-w-[26rem]" />
           </div>
-          <p className="mt-8 font-mono text-xs uppercase tracking-[0.18em] text-stage-mute">
+          <p className="mt-8 font-mono text-xs uppercase tracking-[0.18em] text-deep-mute">
             {NAMES[slug] ?? slug} · section
           </p>
         </div>
@@ -155,12 +155,12 @@ export function AuthStage({ line }: { line: string }) {
             <li
               key={each}
               className={`h-1 w-6 transition-colors duration-500 ${
-                at === index ? "bg-stage-brass" : "bg-stage-rule"
+                at === index ? "bg-deep-brass" : "bg-deep-rule"
               }`}
             />
           ))}
         </ol>
-        <p className="mt-5 max-w-[34ch] text-sm leading-relaxed text-stage-ink/60">
+        <p className="mt-5 max-w-[34ch] text-sm leading-relaxed text-deep-ink/60">
           Every rail system we stock, and the fittings that actually match them. This is how the
           trade tells them apart: look down the cut end and read the shape.
         </p>

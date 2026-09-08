@@ -97,7 +97,7 @@ export function SendList({
       <div className="flex flex-wrap gap-3">
         <a
           href={whatsappText}
-          className="inline-flex items-center gap-2 rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+          className="inline-flex items-center gap-2 rounded-sm bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
         >
           <WhatsAppIcon /> Send this list on WhatsApp
         </a>
@@ -164,7 +164,7 @@ export function SendList({
             type="button"
             onClick={send}
             disabled={sending}
-            className="mt-4 rounded-sm bg-oxblood px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep disabled:cursor-not-allowed disabled:opacity-55"
+            className="mt-4 rounded-sm bg-terra px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terra-deep disabled:cursor-not-allowed disabled:opacity-55"
           >
             {sending ? "Sending" : "Send the list"}
           </button>

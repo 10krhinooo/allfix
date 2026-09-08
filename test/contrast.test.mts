@@ -29,28 +29,51 @@ import { palette, ratio } from "../tools/contrast.mjs"
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 
-const LIGHT = palette(":root")
-const DARK = palette(":root", ':root[data-theme="dark"]')
+/** One theme, so one palette. */
+const COLOURS = palette(":root")
 
 /** Small text, and the smallest text, against every ground it is drawn on. */
 const TEXT: [string, string, string][] = [
-  ["--ink", "--paper", "body text on the page"],
+  ["--ink", "--paper", "body text on the wall"],
   ["--ink", "--panel", "body text on a panel"],
   ["--slate", "--paper", "secondary text"],
+  ["--slate", "--panel", "secondary text on a panel"],
   // `.callout` is eleven pixels, the smallest type on the site and the least
   // forgiving, and it is drawn on both grounds.
-  ["--mute", "--paper", "the callout on the page"],
+  ["--mute", "--paper", "the callout on the wall"],
   ["--mute", "--panel", "the callout on a panel"],
-  // Brass is used as text, not only as illustration: a part number on the
-  // worksheet, the step numbers on the trade page, the flagship line.
+  // Brass is read as text, not only drawn as metal: a part number on the
+  // worksheet, the step numbers on the trade page, the flagship line. Plaster
+  // is darker than paper, so the metal in a sentence is not the metal in a
+  // drawing, and this pair is what keeps the two apart honestly.
   ["--brass", "--paper", "brass read as text"],
+  ["--brass", "--panel", "brass read as text on a panel"],
   // The console's Pill: eleven pixels of brass on the soft tint.
   ["--brass-deep", "--brass-soft", "the console pill"],
-  ["--oxblood", "--paper", "a refusal, and the actions"],
-  // The stage is fixed dark in both themes, so its own pairs are asserted once.
-  ["--stage-ink", "--stage", "text on the stage"],
-  ["--stage-mute", "--stage", "the callout on the stage"],
-  ["--stage-brass", "--stage", "brass on the stage"],
+  // Terracotta is one value doing two jobs, a fill under white and a line of
+  // text on the wall. Both directions are asserted, here and in FILLS below,
+  // because a value tuned for one drifts out of the other silently.
+  ["--terra", "--paper", "an action written as text"],
+  ["--terra-deep", "--paper", "an action being hovered"],
+  ["--oxblood", "--paper", "a refusal"],
+  ["--oxblood", "--panel", "a refusal on a panel"],
+  // The deep regions are fixed dark, so they carry their own pairs.
+  ["--deep-ink", "--deep", "text on a deep ground"],
+  ["--deep-mute", "--deep", "the callout on a deep ground"],
+  ["--deep-brass", "--deep", "brass on a deep ground"],
+  // The document, which is printed and so is fixed light whatever else is.
+  ["--sheet-ink", "--sheet", "a printed document"],
+  ["--sheet-mute", "--sheet", "the small print on one"],
+]
+
+/** Fills, judged by the white text they carry rather than by the fill itself. */
+const FILLS: [string, string][] = [
+  ["--terra", "a primary action"],
+  ["--terra-deep", "one being hovered"],
+  ["--oxblood", "a destructive action"],
+  ["--oxblood-deep", "one being hovered"],
+  ["--band", "the band on the trade page"],
+  ["--deep", "a deep region"],
 ]
 
 /**
@@ -62,66 +85,74 @@ const TEXT: [string, string, string][] = [
  * has existed.
  */
 const CONTROLS: [string, string, string][] = [
-  ["--focus-on-paper", "--paper", "the focus ring on the page"],
-  ["--stage-focus", "--stage", "the focus ring on the stage"],
+  ["--terra", "--paper", "the focus ring on the wall"],
+  ["--terra", "--panel", "the focus ring on a panel"],
+  ["--deep-focus", "--deep", "the focus ring on a deep ground"],
 ]
 
 function value(from: Map<string, string>, token: string): string {
-  // The ring on the page is oxblood, named here so the pair reads as what it
-  // is rather than as a colour that happens to be shared with the actions.
-  const name = token === "--focus-on-paper" ? "--oxblood" : token
-  const found = from.get(name)
-  assert.ok(found, `${name} is not declared in globals.css`)
+  const found = from.get(token)
+  assert.ok(found, `${token} is not declared in globals.css`)
   return found
 }
 
-for (const [name, colours] of [
-  ["the palette", LIGHT],
-  ["the palette a visitor who chose dark sees", DARK],
-] as const) {
-  describe(name, () => {
-    for (const [ink, ground, why] of TEXT) {
-      test(`${why} clears AA`, () => {
-        const measured = ratio(value(colours, ink), value(colours, ground))
-        assert.ok(
-          measured >= 4.5,
-          `${ink} on ${ground} is ${measured}:1, and small text wants 4.5:1`,
-        )
-      })
-    }
+describe("the palette", () => {
+  for (const [ink, ground, why] of TEXT) {
+    test(`${why} clears AA`, () => {
+      const measured = ratio(value(COLOURS, ink), value(COLOURS, ground))
+      assert.ok(
+        measured >= 4.5,
+        `${ink} on ${ground} is ${measured}:1, and small text wants 4.5:1`,
+      )
+    })
+  }
 
-    for (const [mark, ground, why] of CONTROLS) {
-      test(`${why} clears AA for a non text control`, () => {
-        const measured = ratio(value(colours, mark), value(colours, ground))
-        assert.ok(
-          measured >= 3,
-          `${mark} on ${ground} is ${measured}:1, and an indicator wants 3:1`,
-        )
-      })
-    }
-  })
-}
+  for (const [fill, why] of FILLS) {
+    test(`${why} carries white text`, () => {
+      const measured = ratio("#ffffff", value(COLOURS, fill))
+      assert.ok(measured >= 4.5, `white on ${fill} is ${measured}:1`)
+    })
+  }
 
-describe("the two grounds that are not interchangeable", () => {
+  for (const [mark, ground, why] of CONTROLS) {
+    test(`${why} clears AA for a non text control`, () => {
+      const measured = ratio(value(COLOURS, mark), value(COLOURS, ground))
+      assert.ok(
+        measured >= 3,
+        `${mark} on ${ground} is ${measured}:1, and an indicator wants 3:1`,
+      )
+    })
+  }
+})
+
+describe("the two dark grounds that are not interchangeable", () => {
   /**
-   * `--shot` is sampled from the photographs' own field and `--stage` is set to
-   * meet it, near but not equal. 56 of the 62 shots are white hardware on that
-   * field, and the match is what lets a full bleed photograph sit on the page
-   * with no rectangle around it. Anybody tidying the palette will see two
-   * near identical near blacks and want to collapse them, which would put a
-   * visible edge around every product tile in the catalogue.
+   * Two near blacks with different jobs, which is exactly the shape somebody
+   * tidying a palette wants to collapse.
+   *
+   * `--shot` is sampled from the photographs themselves: 56 of the 62 are white
+   * hardware on that field, and a tile drawn in it is what lets a photograph
+   * have no edge. `--deep` is the room with the light off it, and it is warm,
+   * because it is the shadow colour rather than a neutral black. Setting the
+   * photographs' field to the warm one puts a grey cast behind every product in
+   * the catalogue; setting the rooms to the cold one loses the warmth the whole
+   * direction is built on.
    */
-  test("the shot's field is its own token", () => {
+  test("the photographs' field is its own token", () => {
     assert.notEqual(
-      value(LIGHT, "--shot"),
-      value(LIGHT, "--stage"),
-      "the photographs' field and the stage are separately tuned, on purpose",
+      value(COLOURS, "--shot"),
+      value(COLOURS, "--deep"),
+      "a photograph's field and a deep region are separately tuned, on purpose",
     )
   })
 
-  test("and the two are close enough that no edge shows", () => {
-    const measured = ratio(value(LIGHT, "--shot"), value(LIGHT, "--stage"))
-    assert.ok(measured < 1.1, `they have drifted apart to ${measured}:1`)
+  test("and the photographs' field is the darker of the two", () => {
+    const shot = ratio(value(COLOURS, "--shot"), "#ffffff")
+    const deep = ratio(value(COLOURS, "--deep"), "#ffffff")
+    assert.ok(
+      shot > deep,
+      "the field a black shot sits on has gone lighter than the room, which shows as a halo",
+    )
   })
 })
 
@@ -143,11 +174,11 @@ describe("the ring is wired to the ground it is drawn on", () => {
     )
   })
 
-  test("the stage sets one", () => {
+  test("a deep region sets one", () => {
     assert.match(
       css,
-      /\.stage\s*{[^}]*--focus:\s*var\(--stage-focus\)/,
-      "the stage does not redirect the ring, so it falls back to the page's",
+      /\.deep\s*{[^}]*--focus:\s*var\(--deep-focus\)/,
+      "a deep region does not redirect the ring, so it falls back to the wall's",
     )
   })
 })
@@ -155,7 +186,7 @@ describe("the ring is wired to the ground it is drawn on", () => {
 describe("the band carries white text", () => {
   // Fixed in both themes for exactly this reason, so it is asserted once.
   test("white on the band clears AA", () => {
-    const measured = ratio("#ffffff", value(LIGHT, "--band"))
+    const measured = ratio("#ffffff", value(COLOURS, "--band"))
     assert.ok(measured >= 4.5, `white on the band is ${measured}:1`)
   })
 })

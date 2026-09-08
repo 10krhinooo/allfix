@@ -57,7 +57,7 @@ export default function Services() {
           <div className="mt-9 flex flex-wrap items-center gap-4">
             <a
               href={QUOTE}
-              className="inline-flex items-center gap-2 rounded-sm bg-oxblood px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+              className="inline-flex items-center gap-2 rounded-sm bg-terra px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
             >
               <WhatsAppIcon /> Get a free quote
             </a>
@@ -145,7 +145,7 @@ export default function Services() {
             <div className="mt-6 flex flex-wrap items-center gap-4">
               <a
                 href={QUOTE}
-                className="inline-flex items-center gap-2 rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+                className="inline-flex items-center gap-2 rounded-sm bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
               >
                 <WhatsAppIcon /> Get a free quote
               </a>

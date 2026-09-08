@@ -93,7 +93,7 @@ export function ShopCard({ item }: { item: ShopItem }) {
           <span
             className={`relative z-10 rounded-sm px-3 py-1.5 text-xs font-medium transition-colors ${
               item.buyable
-                ? "bg-oxblood text-white group-hover:bg-oxblood-deep"
+                ? "bg-terra text-white group-hover:bg-terra-deep"
                 : "border border-rule text-slate group-hover:border-ink group-hover:text-ink"
             }`}
           >

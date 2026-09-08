@@ -149,7 +149,7 @@ export function Card({
      * letting the table scroll inside it, and took the page sideways on a phone.
      */
     <section
-      className={`min-w-0 rounded-2xl border border-rule bg-paper ${padded ? "p-5" : ""} ${className}`}
+      className={`sunlit min-w-0 rounded-2xl border border-rule bg-paper ${padded ? "p-5" : ""} ${className}`}
     >
       {children}
     </section>
@@ -231,7 +231,7 @@ export function Stat({
   )
 
   const skin = `rounded-2xl border p-5 ${
-    accent ? "border-oxblood/25 bg-oxblood/5" : "border-rule bg-paper"
+    accent ? "border-terra/25 bg-terra/5" : "border-rule bg-paper"
   }`
 
   /*
@@ -352,7 +352,7 @@ export function EmptyState({
   action?: React.ReactNode
 }) {
   return (
-    <div className="rounded-2xl border border-dashed border-rule py-14 text-center">
+    <div className="rounded-2xl border border-dashed border-rule bg-panel/40 py-14 text-center">
       <h3 className="font-display text-base font-semibold">{title}</h3>
       <p className="mx-auto mt-2 max-w-sm px-6 text-sm leading-relaxed text-slate">{body}</p>
       {action && <div className="mt-5">{action}</div>}
@@ -441,7 +441,7 @@ export function Choices<T extends string>({
             <label
               key={option.value}
               className={`shrink-0 cursor-pointer whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors ${
-                active ? "bg-paper text-ink shadow-sm" : "text-slate hover:text-ink"
+                active ? "sunlit sunlit-near bg-paper text-ink" : "text-slate hover:text-ink"
               }`}
             >
               <input

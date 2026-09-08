@@ -240,7 +240,7 @@ export function EnquiryForm({
           type="button"
           onClick={send}
           disabled={sending}
-          className="inline-flex items-center gap-2 rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep disabled:cursor-not-allowed disabled:opacity-55"
+          className="inline-flex items-center gap-2 rounded-sm bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep disabled:cursor-not-allowed disabled:opacity-55"
         >
           {sending ? "Sending" : copy.submit}
         </button>

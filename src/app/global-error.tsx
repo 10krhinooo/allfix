@@ -28,7 +28,14 @@ export default function GlobalError({
 }) {
   return (
     <html lang="en-KE">
-      <body style={{ background: "#ffffff", color: "#16151a" }}>
+      {/*
+        The two literals on the page, and they have to be literals: this
+        replaces the root layout, so nothing above it has set a ground, and if
+        the stylesheet is the thing that failed then a token would resolve to
+        nothing and leave black on black. The plaster and the espresso, written
+        out, so the worst case is still the shop's own colours.
+      */}
+      <body style={{ background: "#f3ebdd", color: "#221d16" }}>
         <title>Something went wrong | AllFix By Kipekee</title>
         <Fault
           code={error.digest ? `500 · ${error.digest}` : "500"}
@@ -39,7 +46,7 @@ export default function GlobalError({
           <button
             type="button"
             onClick={retry}
-            className="rounded-sm bg-oxblood px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+            className="rounded-sm bg-terra px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
           >
             Try that again
           </button>

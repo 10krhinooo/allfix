@@ -18,7 +18,25 @@ import { reducedMotion } from "@/lib/motion"
  * already going to be where they end up, so no script, a refused animation or
  * `prefers-reduced-motion` all leave the finished picture rather than an empty
  * frame. Nothing here fades in from nothing, for the same reason.
+ *
+ * Each one casts. The shadow is a second copy of the same shapes, skewed and
+ * flattened onto the wall behind, drawn from `--sun-x`/`--sun-y` like every
+ * other shadow on the site. It is not decoration here either: a hard shadow is
+ * what tells you a thing is hanging in a room rather than floating in a
+ * diagram, and this is the one page where the reader needs the site to still
+ * feel like a place. It is `aria-hidden`, because a shadow of a picture is not
+ * a second picture.
  */
+
+/**
+ * The wall's own light, as an SVG transform.
+ *
+ * `skewX` lays the copy over to the right and `scale` flattens it, which is
+ * what noon does to a shadow: short, hard, and all in one direction. The sun
+ * sits upper left, so the shadow falls lower right, matching `.sunlit` in
+ * `globals.css` rather than being eyeballed separately.
+ */
+const CAST = "translate(26 10) skewX(-24) scale(1 0.94)"
 
 function Rail({ gap }: { gap?: boolean }) {
   return (
@@ -48,11 +66,19 @@ function Bracket({ x, missing }: { x: number; missing?: boolean }) {
 function RailWithGap() {
   return (
     <svg
-      viewBox="0 0 480 92"
+      viewBox="0 0 512 100"
       role="img"
       aria-label="A curtain rail with a length missing from the middle, its runners stopped short of the gap"
       className="h-auto w-full"
     >
+      {/* Thrown on the wall behind, from the same shapes. */}
+      <g transform={CAST} fill="var(--shadow)" opacity="0.13" aria-hidden="true">
+        <Bracket x={62} />
+        <Bracket x={392} />
+        <rect x="24" y="46" width="186" height="12" rx="2" />
+        <rect x="270" y="46" width="186" height="12" rx="2" />
+      </g>
+
       <Bracket x={62} />
       <Bracket x={227} missing />
       <Bracket x={392} />
@@ -74,11 +100,19 @@ function RailWithGap() {
 function ClothOffRunners() {
   return (
     <svg
-      viewBox="0 0 480 196"
+      viewBox="0 0 512 204"
       role="img"
       aria-label="A curtain hanging from its rail with one corner come away from the runners"
       className="h-auto w-full"
     >
+      {/* The cloth's own shadow, and the rail's, laid on the wall behind. */}
+      <g transform={CAST} fill="var(--shadow)" opacity="0.13" aria-hidden="true">
+        <Bracket x={62} />
+        <Bracket x={392} />
+        <rect x="24" y="46" width="432" height="12" rx="2" />
+        <path d="M96 58 L300 58 L322 168 L104 178 Z" />
+      </g>
+
       <Bracket x={62} />
       <Bracket x={392} />
       <Rail />
@@ -157,18 +191,36 @@ export function Fault({
   }, [art])
 
   return (
-    <div ref={scope} className="flex min-h-screen flex-col items-center justify-center px-6 py-16">
-      <div className="flex w-full max-w-xl justify-center">
-        {art === "gap" ? <RailWithGap /> : <ClothOffRunners />}
+    /*
+     * A wall with something wrong on it, rather than a notice pinned to the
+     * middle of nowhere.
+     *
+     * The drawing is given the room it needs and the words sit under it and to
+     * the left, where they are read rather than confronted. Centring everything
+     * is what an error page does when it has nothing to say; this one has the
+     * shop's own answer, which is a phone number and a counter, so it reads as
+     * a paragraph rather than as an alert.
+     *
+     * The floor line at the bottom is the only other mark. It is what makes the
+     * shadow above it a shadow: without somewhere for the wall to end, a skewed
+     * grey shape is just a smudge.
+     */
+    <div ref={scope} className="relative flex min-h-screen flex-col justify-center overflow-hidden">
+      <div className="shell w-full max-w-3xl py-20">
+        <div className="w-full max-w-xl">
+          {art === "gap" ? <RailWithGap /> : <ClothOffRunners />}
+        </div>
+
+        <p className="callout mt-14">{code}</p>
+        <h1 className="display-lg sunlit-text mt-4 max-w-[18ch] font-display text-ink">{title}</h1>
+        <p className="mt-5 max-w-md text-base leading-relaxed text-slate">{body}</p>
+
+        <div className="mt-9 flex flex-wrap items-center gap-3">{children}</div>
       </div>
 
-      <p className="mt-9 font-mono text-xs uppercase tracking-[0.24em] text-mute">{code}</p>
-      <h1 className="mt-3 max-w-xl text-center font-display text-3xl font-bold tracking-tight text-ink">
-        {title}
-      </h1>
-      <p className="mt-4 max-w-md text-center text-sm leading-relaxed text-slate">{body}</p>
-
-      <div className="mt-8 flex flex-wrap items-center justify-center gap-3">{children}</div>
+      {/* Where the wall stops and the floor starts. */}
+      <div className="absolute inset-x-0 bottom-0 h-16 bg-panel/60" aria-hidden="true" />
+      <div className="absolute inset-x-0 bottom-16 h-px bg-rule" aria-hidden="true" />
     </div>
   )
 }

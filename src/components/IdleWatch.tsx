@@ -363,7 +363,7 @@ function IdlePanel({ deadline, onStay }: { deadline: number; onStay: () => void 
         ref={stay}
         type="button"
         onClick={onStay}
-        className="mt-4 rounded-sm bg-oxblood px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+        className="mt-4 rounded-sm bg-terra px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
       >
         Stay signed in
       </button>

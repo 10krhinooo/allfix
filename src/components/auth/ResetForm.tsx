@@ -101,7 +101,7 @@ export function ResetForm({ token }: { token: string }) {
       <button
         type="submit"
         disabled={busy}
-        className="w-full bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep disabled:cursor-not-allowed disabled:opacity-55"
+        className="w-full bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep disabled:cursor-not-allowed disabled:opacity-55"
       >
         {busy ? "Setting it" : "Set my new password"}
       </button>

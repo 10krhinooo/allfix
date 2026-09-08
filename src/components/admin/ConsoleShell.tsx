@@ -97,10 +97,10 @@ export function ConsoleShell({
   const rail = (
     <>
       <Link href={nav[0]?.href ?? "/"} onClick={leaving} className="mb-7 block px-3">
-        <span className="block font-display text-lg font-bold leading-none text-stage-ink">
+        <span className="block font-display text-lg font-bold leading-none text-deep-ink">
           AllFix
         </span>
-        <span className="mt-1 block text-[10px] uppercase tracking-[0.24em] text-stage-brass">
+        <span className="mt-1 block text-[10px] uppercase tracking-[0.24em] text-deep-brass">
           {label}
         </span>
       </Link>
@@ -121,8 +121,8 @@ export function ConsoleShell({
               aria-current={active ? "page" : undefined}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
                 active
-                  ? "bg-white/12 text-stage-ink"
-                  : "text-stage-ink/65 hover:bg-white/6 hover:text-stage-ink"
+                  ? "bg-white/12 text-deep-ink"
+                  : "text-deep-ink/65 hover:bg-white/6 hover:text-deep-ink"
               }`}
             >
               <svg
@@ -144,7 +144,7 @@ export function ConsoleShell({
               {badge > 0 && (
                 <span
                   aria-hidden="true"
-                  className="flex h-5 min-w-5 items-center justify-center rounded-full bg-oxblood px-1.5 font-mono text-[11px] font-bold text-white"
+                  className="flex h-5 min-w-5 items-center justify-center rounded-full bg-terra px-1.5 font-mono text-[11px] font-bold text-white"
                 >
                   {badge}
                 </span>
@@ -158,7 +158,7 @@ export function ConsoleShell({
         <Link
           href="/"
           onClick={leaving}
-          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-stage-ink/65 transition-colors hover:bg-white/6 hover:text-stage-ink"
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-deep-ink/65 transition-colors hover:bg-white/6 hover:text-deep-ink"
         >
           <svg
             viewBox="0 0 24 24"
@@ -189,20 +189,20 @@ export function ConsoleShell({
           >
             <span
               aria-hidden="true"
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-oxblood font-mono text-[12px] font-bold text-white"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-terra font-mono text-[12px] font-bold text-white"
             >
               {initials(name)}
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-[13px] font-medium text-stage-ink">{name}</span>
-              <span className="block text-[11px] uppercase tracking-[0.14em] text-stage-mute">
+              <span className="block truncate text-[13px] font-medium text-deep-ink">{name}</span>
+              <span className="block text-[11px] uppercase tracking-[0.14em] text-deep-mute">
                 {role}
               </span>
             </span>
           </Link>
           <SignOutButton
             icon
-            className="shrink-0 rounded-lg p-2 text-stage-mute transition-colors hover:bg-white/6 hover:text-stage-ink"
+            className="shrink-0 rounded-lg p-2 text-deep-mute transition-colors hover:bg-white/6 hover:text-deep-ink"
           />
         </div>
       </div>
@@ -218,7 +218,7 @@ export function ConsoleShell({
         Skip to the screen
       </a>
 
-      <aside className="fixed inset-y-0 left-0 hidden w-60 flex-col overflow-y-auto bg-stage px-3 py-5 lg:flex">
+      <aside className="fixed inset-y-0 left-0 hidden w-60 flex-col overflow-y-auto bg-deep px-3 py-5 lg:flex">
         {rail}
       </aside>
 
@@ -238,7 +238,7 @@ export function ConsoleShell({
           tab stops and being read out. */}
       <aside
         inert={!open}
-        className={`fixed inset-y-0 left-0 z-50 flex w-[17rem] max-w-[85vw] flex-col overflow-y-auto bg-stage px-3 py-5 transition-transform duration-300 ease-out lg:hidden ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-[17rem] max-w-[85vw] flex-col overflow-y-auto bg-deep px-3 py-5 transition-transform duration-300 ease-out lg:hidden ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >

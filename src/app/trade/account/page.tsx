@@ -42,7 +42,7 @@ export default async function TradeAccountPage() {
       >
         <Link
           href="/trade/account/quotes"
-          className="shrink-0 rounded-sm bg-oxblood px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+          className="shrink-0 rounded-sm bg-terra px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
         >
           Price a new list
         </Link>

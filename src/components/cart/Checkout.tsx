@@ -152,7 +152,7 @@ export function Checkout({
         <div className="mt-7 flex flex-wrap gap-3">
           <Link
             href={signedIn ? "/account/orders" : "/auth/register"}
-            className="bg-oxblood px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+            className="bg-terra px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
           >
             {signedIn ? "See it on your account" : "Open an account"}
           </Link>
@@ -173,7 +173,7 @@ export function Checkout({
         <p>Your basket is empty.</p>
         <Link
           href="/shop"
-          className="mt-5 inline-block bg-oxblood px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+          className="mt-5 inline-block bg-terra px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
         >
           Shop the range
         </Link>
@@ -416,7 +416,7 @@ export function Checkout({
         <button
           type="submit"
           disabled={busy || sellableLines.length === 0}
-          className="mt-6 w-full bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep disabled:cursor-not-allowed disabled:opacity-55"
+          className="mt-6 w-full bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep disabled:cursor-not-allowed disabled:opacity-55"
         >
           {busy ? "Placing your order" : "Place the order"}
         </button>
