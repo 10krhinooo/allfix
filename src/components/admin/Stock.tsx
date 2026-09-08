@@ -199,6 +199,19 @@ export function Stock({
       ) : (
         <Card padded={false} className="overflow-hidden">
           <Table>
+            {/*
+              Declared widths, because the part name would otherwise take every
+              spare pixel and push the three figures into the far right of a wide
+              screen, with a hand's width of nothing between the name and the
+              count it belongs to. A reader compares the count against the
+              threshold beside it, so those two want to be adjacent.
+            */}
+            <colgroup>
+              <col />
+              <col className="w-[11rem]" />
+              <col className="w-[8rem]" />
+              <col className="w-[9rem]" />
+            </colgroup>
             <thead>
               <tr>
                 <Th>Part</Th>
@@ -242,8 +255,19 @@ function StockLine({
   const [counted, setCounted] = useState(String(row.stock))
   const [at, setAt] = useState(row.lowStockAt === null ? "" : String(row.lowStockAt))
 
+  // Encoded on the row as well as in the pill at the end of it. A shelf screen
+  // is read by scanning down the left edge for what needs doing, and a word
+  // eleven hundred pixels away is not where that scan is looking. Colour is not
+  // carrying it alone: the pill still says which state in words.
+  const stripe =
+    row.stock <= 0
+      ? "border-l-2 border-l-oxblood"
+      : row.low
+        ? "border-l-2 border-l-brass"
+        : "border-l-2 border-l-transparent"
+
   return (
-    <tr>
+    <tr className={stripe}>
       <Td>
         <span className="block text-ink">{row.name}</span>
         <span className="font-mono text-xs text-mute">
@@ -271,7 +295,7 @@ function StockLine({
               className={FIELD}
             />
           </label>
-          <span className="w-10 text-left text-xs text-mute">{unit(row.basis)}</span>
+          <span className="w-11 text-left text-xs text-mute">{unit(row.basis)}</span>
         </span>
       </Td>
       <Td align="right">
@@ -296,7 +320,7 @@ function StockLine({
           </label>
         ) : (
           <span className="font-mono text-sm text-slate">
-            {row.lowStockAt === null ? "shop" : row.lowStockAt}
+            {row.lowStockAt === null ? "shop's" : row.lowStockAt}
           </span>
         )}
       </Td>
