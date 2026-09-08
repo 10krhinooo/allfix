@@ -1,6 +1,17 @@
 import { test, describe } from "node:test"
 import assert from "node:assert/strict"
-import { fromService } from "@/lib/catalogue"
+import {
+  catalogueData,
+  counted,
+  fromService,
+  partsForRange,
+  partsForSystem,
+  products,
+  ranges,
+  skuCount,
+  skusOf,
+  systems,
+} from "@/lib/catalogue"
 
 /**
  * The shop's vocabulary against the service's.
@@ -66,5 +77,69 @@ describe("reading the service's catalogue", () => {
 
   test("the sku count is a number, whatever the wire made of it", () => {
     assert.equal(read.skuCount, 195)
+  })
+})
+
+describe("the counts a page prints", () => {
+  /**
+   * `skuCount` and `partCount` arrive as stored numbers: the migration writes
+   * them once and the service returns what it was told. That was fine while the
+   * catalogue only ever changed by a migration. The console can add, retire and
+   * remove a part now, so a stored figure is a figure about a catalogue that no
+   * longer exists, and a system page would go on saying "24 parts" over a list
+   * of twenty five with nothing to correct it.
+   *
+   * These assert the figure against the list it labels, which is the only
+   * property that matters: the two are drawn on the same screen, and a reader
+   * can see them disagree.
+   */
+  test("a system's figure is the length of its own part list", async () => {
+    for (const system of await systems()) {
+      const parts = await partsForSystem(system.slug)
+      assert.equal(
+        system.partCount,
+        parts.length,
+        `${system.slug} says ${system.partCount} and lists ${parts.length}`,
+      )
+    }
+  })
+
+  test("a range's figure is the length of its own part list", async () => {
+    for (const range of await ranges()) {
+      const parts = await partsForRange(range.slug)
+      assert.equal(
+        range.partCount,
+        parts.length,
+        `${range.slug} says ${range.partCount} and lists ${parts.length}`,
+      )
+    }
+  })
+
+  test("the shop's SKU count is the SKUs it actually has", async () => {
+    const parts = await products()
+    const counted = parts.reduce((total, product) => total + skusOf(product), 0)
+    assert.equal(await skuCount(), counted)
+  })
+
+  test("a part added after the migration moves the figures", async () => {
+    // The whole point. `counted` runs over whatever the seam hands back, so a
+    // catalogue with one more part in it reports one more part, without anyone
+    // remembering to update a stored number.
+    const before = await systems()
+    const target = before.find((system) => system.partCount > 0)!
+    const grown = counted({
+      ...(await catalogueData()),
+      products: [
+        ...(await products()),
+        {
+          ...(await partsForSystem(target.slug))[0]!,
+          sku: "RL#TEST_999",
+          slug: "a-part-that-did-not-exist",
+        },
+      ],
+    })
+
+    const after = grown.systems.find((system) => system.slug === target.slug)!
+    assert.equal(after.partCount, target.partCount + 1)
   })
 })
