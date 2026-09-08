@@ -45,7 +45,7 @@ export function CartLines({
         <p>Browse the parts that fit your rail and add what you need.</p>
         <Link
           href="/shop"
-          className="mt-5 inline-block bg-oxblood px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+          className="mt-5 inline-block bg-terra px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
         >
           Shop the range
         </Link>

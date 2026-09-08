@@ -281,7 +281,7 @@ export function Settings({ settings }: { settings: ShopSettings }) {
         <button
           type="submit"
           disabled={saving}
-          className="rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep disabled:cursor-not-allowed disabled:opacity-55"
+          className="rounded-sm bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep disabled:cursor-not-allowed disabled:opacity-55"
         >
           {saving ? "Saving" : "Save these settings"}
         </button>

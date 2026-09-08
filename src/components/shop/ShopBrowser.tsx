@@ -301,7 +301,7 @@ export function ShopBrowser({ data, category }: { data: ShopData; category?: Cat
             >
               Filters
               {active > 0 && (
-                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-oxblood px-1 text-[11px] font-bold text-white">
+                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-terra px-1 text-[11px] font-bold text-white">
                   {active}
                 </span>
               )}
@@ -401,7 +401,7 @@ export function ShopBrowser({ data, category }: { data: ShopData; category?: Cat
         {filters}
         <button
           onClick={() => setDrawer(false)}
-          className="mt-8 w-full rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+          className="mt-8 w-full rounded-sm bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
         >
           Show {results.length} {results.length === 1 ? "product" : "products"}
         </button>
@@ -506,7 +506,7 @@ function Row({
         aria-hidden="true"
         className={`flex h-4 w-4 shrink-0 items-center justify-center border transition-colors ${
           round ? "rounded-full" : "rounded-[3px]"
-        } ${checked ? "border-oxblood bg-oxblood text-white" : "border-rule"}`}
+        } ${checked ? "border-terra bg-terra text-white" : "border-rule"}`}
       >
         {checked && !round && (
           <svg viewBox="0 0 12 12" className="h-2.5 w-2.5" fill="none" stroke="currentColor" strokeWidth="2.4">

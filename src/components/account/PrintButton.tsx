@@ -14,7 +14,7 @@ export function PrintButton() {
     <button
       type="button"
       onClick={() => window.print()}
-      className="bg-oxblood px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+      className="bg-terra px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
     >
       Download or print
     </button>

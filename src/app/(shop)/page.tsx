@@ -53,7 +53,19 @@ export default async function Home() {
   return (
     <>
       {/* ---------------------------------------------------------- hero */}
-      <section className="stage relative isolate overflow-hidden">
+      {/*
+        The wall, at noon.
+
+        This used to be a dark house, for one reason: the flagship photograph is
+        white hardware on a near black field and it had to sit on that field or
+        it read as a black tile punched into the page. The photograph is given
+        its own recess now, so the reason has gone, and with it the last thing
+        arguing that the front of a shop selling daylight should be dark.
+
+        `--sun-x`/`--sun-y` are where the light comes from and everything below
+        casts from them: the heading, the buttons, the recess the track sits in.
+      */}
+      <section className="relative isolate overflow-hidden border-b border-rule bg-paper">
         <Curtain />
 
         <div className="shell relative z-10 py-20 sm:py-28">
@@ -61,14 +73,14 @@ export default async function Home() {
             <div>
               <p className="callout">{SHOP.street} · {SHOP.area}</p>
 
-              <h1 className="display-xl mt-5 max-w-[15ch] font-display font-semibold">
+              <h1 className="display-xl sunlit-text mt-5 max-w-[15ch] font-display">
                 Curtains that hang properly.
               </h1>
 
               {/* The brass rule the curtain ran off, left behind as the track. */}
-              <div className="mt-8 h-px w-24 bg-stage-brass" />
+              <div className="mt-8 h-px w-24 bg-brass" />
 
-              <p className="mt-8 max-w-xl text-lg leading-relaxed text-stage-ink/75">
+              <p className="mt-8 max-w-xl text-lg leading-relaxed text-slate">
                 Rails, rods and motorised tracks, with the fittings that actually match them.
                 We measure, we sew, and we come and hang it. Anywhere in Kenya.
               </p>
@@ -76,19 +88,19 @@ export default async function Home() {
               <div className="mt-10 flex flex-wrap items-center gap-4">
                 <a
                   href={QUOTE}
-                  className="rounded-sm bg-oxblood px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+                  className="sunlit rounded-sm bg-terra px-6 py-3.5 text-sm font-medium text-white transition-[background-color,box-shadow] duration-200 hover:bg-terra-deep"
                 >
                   Get a free quote
                 </a>
                 <Link
                   href="/shop"
-                  className="rounded-sm border border-stage-rule px-6 py-3.5 text-sm font-medium text-stage-ink transition-colors hover:border-stage-brass hover:text-stage-brass"
+                  className="rounded-sm border border-ink px-6 py-3.5 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-paper"
                 >
                   Shop the range
                 </Link>
                 <a
                   href={`tel:${SHOP.phoneIntl}`}
-                  className="font-mono text-sm text-stage-brass hover:underline"
+                  className="font-mono text-sm text-brass hover:underline"
                 >
                   or call {SHOP.phone}
                 </a>
@@ -96,28 +108,36 @@ export default async function Home() {
             </div>
 
             {/*
-              The flagship track, on the black field it was shot on. This is the
-              whole reason the hero is dark: the photograph has no edge against
-              the stage, so the product appears to be lying on the page rather
-              than inside a box cut into it.
+              The flagship track, in the field it was shot on.
+
+              It used to lie straight on the ground, because the ground was a
+              near black close enough to the photographs' own field that the
+              shot had no edge. The ground is warm now, and a black field on a
+              warm one is a rectangle. So the shot is given the recess every
+              other photograph on the site gets: a box cut into the plaster,
+              lit from the same direction as everything else. Which is the more
+              honest version of the same idea, since a wall at noon is exactly
+              where a recess reads.
 
               It is capped narrower than the column below the two column
               breakpoint. The shot is square, so at full phone width it stands
               as tall as it is wide and pushes the trust row off the screen.
             */}
             <figure className="relative mx-auto w-full max-w-xs lg:mx-0 lg:max-w-none">
-              <Image
-                src="/products/rlmotor_004.webp"
-                alt="A motorised curtain track with its drive unit and runners"
-                width={1200}
-                height={1200}
-                priority
-                sizes="(max-width: 1024px) 20rem, 45vw"
-                className="w-full"
-              />
-              <figcaption className="callout absolute bottom-6 left-0 w-full text-center">
-                Motorised track · from KES 15,000, fitted
-              </figcaption>
+              <div className="sunlit sunlit-far relative overflow-hidden rounded-sm bg-shot">
+                <Image
+                  src="/products/rlmotor_004.webp"
+                  alt="A motorised curtain track with its drive unit and runners"
+                  width={1200}
+                  height={1200}
+                  priority
+                  sizes="(max-width: 1024px) 20rem, 45vw"
+                  className="w-full"
+                />
+                <figcaption className="callout absolute bottom-6 left-0 w-full text-center">
+                  Motorised track · from KES 15,000, fitted
+                </figcaption>
+              </div>
             </figure>
           </div>
 
@@ -127,7 +147,7 @@ export default async function Home() {
             {TRUST.map(([title, line]) => (
               <li key={title} className="px-5 py-4">
                 <p className="font-display text-base font-semibold">{title}</p>
-                <p className="mt-1 text-sm leading-relaxed text-stage-ink/60">{line}</p>
+                <p className="mt-1 text-sm leading-relaxed text-slate">{line}</p>
               </li>
             ))}
           </ul>
@@ -187,13 +207,13 @@ export default async function Home() {
         <section className="bg-band text-white">
           <div className="shell grid gap-10 py-16 lg:grid-cols-[1.2fr_1fr] lg:items-center">
             <div>
-              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-white/60">
+              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-band-mute">
                 Flagship system
               </p>
               <h2 className="display-lg mt-3 font-display font-bold tracking-tight">
                 Curtains that open on their own
               </h2>
-              <p className="mt-4 max-w-lg leading-relaxed text-white/80">
+              <p className="mt-4 max-w-lg leading-relaxed text-band-mute">
                 A driven track with the motor sized to the length and weight of the run. Runs on a
                 remote, a wall switch or a schedule, and ties into a smart home. From{" "}
                 <span className="font-mono">KES 15,000</span>, fitted.
@@ -227,7 +247,7 @@ export default async function Home() {
                 <div key={label} className="bg-band px-4 py-5">
                   {/* /80 rather than /55: at 11px on the oxblood band the
                       lighter one was 4.5:1 on nothing. */}
-                  <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-white/80">{label}</dt>
+                  <dt className="font-mono text-[11px] uppercase tracking-[0.12em] text-band-mute">{label}</dt>
                   <dd className="mt-1.5 font-medium">{value}</dd>
                 </div>
               ))}
@@ -259,7 +279,7 @@ export default async function Home() {
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <a
               href={QUOTE}
-              className="rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+              className="rounded-sm bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
             >
               Book a measure-up
             </a>

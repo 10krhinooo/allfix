@@ -135,7 +135,7 @@ export function TakeOrderForm({
             <button
               type="button"
               onClick={() => setOpen(true)}
-              className="rounded-sm bg-oxblood px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-oxblood-deep"
+              className="rounded-sm bg-terra px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-terra-deep"
             >
               Write one down
             </button>
@@ -292,7 +292,7 @@ export function TakeOrderForm({
             type="button"
             disabled={!ready || busy}
             onClick={submit}
-            className="rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep disabled:cursor-not-allowed disabled:opacity-55"
+            className="rounded-sm bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep disabled:cursor-not-allowed disabled:opacity-55"
           >
             {busy ? "Writing it down" : "Write it down"}
           </button>

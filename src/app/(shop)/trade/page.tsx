@@ -67,13 +67,13 @@ export default async function Trade() {
         <div className="shell py-14 sm:py-20">
           <Breadcrumbs trail={[{ href: "/", label: "Home" }, { label: "Trade" }]} tone="band" />
 
-          <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.14em] text-white/60">
+          <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.14em] text-band-mute">
             Wholesale
           </p>
           <h1 className="display-xl mt-3 max-w-[16ch] font-display font-bold tracking-tight">
             20% off list, on every part
           </h1>
-          <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/80">
+          <p className="mt-5 max-w-xl text-lg leading-relaxed text-band-mute">
             A trade account for fundis, curtain makers and fit-out contractors: the wholesale rate
             across all {skus} SKUs, bulk entry, and a proforma invoice you settle by bank
             transfer.
@@ -154,7 +154,7 @@ export default async function Trade() {
 
             <a
               href={APPLY}
-              className="mt-8 inline-flex items-center gap-2 rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+              className="mt-8 inline-flex items-center gap-2 rounded-sm bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
             >
               <WhatsAppIcon /> Apply on WhatsApp
             </a>

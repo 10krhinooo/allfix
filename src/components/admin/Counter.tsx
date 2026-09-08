@@ -63,7 +63,7 @@ export function Counter({
       >
         <Link
           href="/admin/parts?show=unpriced"
-          className="shrink-0 rounded-sm bg-oxblood px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+          className="shrink-0 rounded-sm bg-terra px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
         >
           Work the price list
         </Link>

@@ -46,7 +46,7 @@ export function BasketLink({ className = "" }: { className?: string }) {
       {count > 0 && (
         <span
           aria-hidden="true"
-          className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-oxblood px-1 font-mono text-[10px] font-bold text-white"
+          className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-terra px-1 font-mono text-[10px] font-bold text-white"
         >
           {count > 99 ? "99+" : count}
         </span>

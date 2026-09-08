@@ -2,15 +2,28 @@ import Link from "next/link"
 
 type Variant = "primary" | "secondary" | "ghost" | "whatsapp"
 
+/*
+ * Terracotta carries the actions and oxblood is kept for what has gone wrong.
+ * They used to be the same colour, and a shop that takes money cannot say
+ * "place the order" and "this was refused" in one red.
+ *
+ * `whatsapp` stays WhatsApp's own green. It is not ours to restyle: a button
+ * wearing another service's colour is how somebody knows which service it opens.
+ */
 const STYLES: Record<Variant, string> = {
-  primary: "bg-oxblood text-white hover:bg-oxblood-deep",
+  primary: "sunlit sunlit-near bg-terra text-white hover:bg-terra-deep",
   secondary: "border border-ink text-ink hover:bg-ink hover:text-paper",
   ghost: "text-slate hover:text-ink underline underline-offset-4",
-  whatsapp: "bg-[#1d8649] text-white hover:bg-[#15703c]",
+  whatsapp: "sunlit sunlit-near bg-[#1d8649] text-white hover:bg-[#15703c]",
 }
 
+/*
+ * A control stands off the wall, which is what `sunlit` above says, so the
+ * transition has to carry the shadow as well as the colour or a button changes
+ * height under the pointer without moving.
+ */
 const BASE =
-  "inline-flex items-center justify-center gap-2 rounded-sm text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-55"
+  "inline-flex items-center justify-center gap-2 rounded-sm text-sm font-medium transition-[color,background-color,border-color,box-shadow] duration-200 disabled:cursor-not-allowed disabled:opacity-55"
 
 const SIZES = { sm: "px-4 py-2", md: "px-6 py-3" }
 
@@ -45,13 +58,13 @@ export function WhatsAppIcon({ className = "h-4 w-4" }: { className?: string }) 
 }
 
 /**
- * `tone` exists because the trail is drawn on two grounds. On paper it is grey
- * on white; on the oxblood band at the top of `/trade` it has to be white, and
- * the page used to say so with `[&_*]:text-white/80` on a wrapper. That is a tie
+ * `tone` exists because the trail is drawn on two grounds. On the wall it is
+ * muted on plaster; on the band at the top of `/trade` it has to be white, and
+ * the page used to say so with `[&_*]:text-band-mute` on a wrapper. That is a tie
  * on specificity with the classes below, so which colour won came down to the
  * order Tailwind happened to emit its utilities in, and what it settled on was
- * grey on oxblood at 2.27:1. A component that draws itself on two grounds should
- * be told which one it is on.
+ * grey on the band at 2.27:1. A component that draws itself on two grounds
+ * should be told which one it is on.
  */
 export function Breadcrumbs({
   trail,
@@ -60,9 +73,9 @@ export function Breadcrumbs({
   trail: { href?: string; label: string }[]
   tone?: "paper" | "band"
 }) {
-  const link = tone === "band" ? "text-white/80 hover:text-white" : "hover:text-ink"
+  const link = tone === "band" ? "text-band-mute hover:text-band-ink" : "hover:text-ink"
   const here = tone === "band" ? "text-white" : "text-ink"
-  const divider = tone === "band" ? "text-white/60" : ""
+  const divider = tone === "band" ? "text-band-mute" : ""
 
   return (
     <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5">
@@ -105,7 +118,7 @@ export function JsonLd({ schema }: { schema: object }) {
 
 export function Empty({ title, children }: { title: string; children?: React.ReactNode }) {
   return (
-    <div className="border border-dashed border-rule px-6 py-14 text-center">
+    <div className="border border-dashed border-rule bg-panel/40 px-6 py-14 text-center">
       <p className="font-display text-lg font-semibold tracking-tight">{title}</p>
       {children && <div className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-slate">{children}</div>}
     </div>

@@ -3,60 +3,39 @@ import light from "../../public/brand/allfix-logo.png"
 import dark from "../../public/brand/allfix-logo-dark.png"
 
 /**
- * The official logo, in both themes.
+ * The official logo.
  *
- * The wordmark is oxblood, which all but disappears on the dark ground, so a
- * variant with the red lifted ships alongside it. The brass is untouched in
- * both. Swapping is done in CSS rather than in React so the correct one is
- * right on the very first paint.
+ * The wordmark is oxblood, which reads on the plaster ground and all but
+ * disappears on a deep one, so a variant with the red lifted ships alongside it
+ * and `on="deep"` asks for it. The brass is untouched in both.
  *
- * Both variants carry the same alt, because only one is ever displayed and a
- * `display: none` image is not announced. Pass an empty alt when the logo sits
- * inside an already labelled link, so the name is not read out twice.
+ * There used to be a third case, a pair of images swapped in CSS by the theme,
+ * because the ground could change under the same logo. There is one ground now,
+ * so the caller knows which of the two it wants and says so, and nothing has to
+ * be drawn twice and hidden once.
  *
- * `on="dark"` pins it to the lifted variant for ground that is dark whatever the
- * theme says. The auth stage is the case: it is the shop's black house and stays
- * black in light mode, so the theme-driven swap would put the oxblood wordmark
- * on black and lose it.
+ * Pass an empty alt when the logo sits inside an already labelled link, so the
+ * name is not read out twice.
+ *
+ * Still a 240 by 98 raster. It is the only artwork the shop has, and it is too
+ * small to trace into vector without inventing detail it does not contain, so
+ * the vector logo stays what `PROJECT_PLAN.md` already calls it: something to
+ * ask the client for, not something to draw here.
  */
 export function Logo({
   height = 34,
   priority = false,
   alt = "AllFix By Kipekee",
-  on = "theme",
+  on = "paper",
 }: {
   height?: number
   priority?: boolean
   alt?: string
-  /** "theme" swaps with `data-theme`; "dark" is for permanently dark ground. */
-  on?: "theme" | "dark"
+  /** Which ground it is being drawn on. */
+  on?: "paper" | "deep"
 }) {
+  const source = on === "deep" ? dark : light
   const width = Math.round((light.width / light.height) * height)
 
-  if (on === "dark") {
-    return (
-      <Image src={dark} alt={alt} width={width} height={height} priority={priority} />
-    )
-  }
-
-  return (
-    <>
-      <Image
-        src={light}
-        alt={alt}
-        width={width}
-        height={height}
-        priority={priority}
-        className="logo-light"
-      />
-      <Image
-        src={dark}
-        alt={alt}
-        width={width}
-        height={height}
-        priority={priority}
-        className="logo-dark"
-      />
-    </>
-  )
+  return <Image src={source} alt={alt} width={width} height={height} priority={priority} />
 }
