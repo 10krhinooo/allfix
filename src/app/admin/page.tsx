@@ -1,5 +1,8 @@
+import { redirect } from "next/navigation"
 import { readDesk } from "@/lib/admin/guard"
+import { capabilities, landing } from "@/lib/admin/roles"
 import { readSummary } from "@/lib/admin/reports-service"
+import { sampleSummary } from "@/lib/admin/sample"
 import { Dashboard } from "@/components/admin/Dashboard"
 
 /**
@@ -17,7 +20,18 @@ import { Dashboard } from "@/components/admin/Dashboard"
 export const dynamic = "force-dynamic"
 
 export default async function CounterPage() {
-  const [desk, summary] = await Promise.all([readDesk(), readSummary()])
+  const desk = await readDesk()
+  // Not everybody in the console is here for the shop's takings. A platform
+  // keeper belongs on their own screen, and this is a redirect rather than a
+  // `notFound` because the console's front door is not a secret: they simply
+  // have a different one.
+  if (desk && !capabilities(desk.role).takings) redirect(landing(desk.role))
 
-  return <Dashboard summary={summary} name={desk?.name ?? "there"} />
+  const summary = await readSummary()
+
+  // Nothing is hosting the service yet, so a real read comes back empty and the
+  // screen would draw its "no order service" state at everybody who opens it.
+  // The moment `ALLFIX_API_URL` points at a running service this stops being
+  // reached, and removing it is deleting `sample.ts` and this `??`.
+  return <Dashboard summary={summary ?? sampleSummary()} name={desk?.name ?? "there"} />
 }

@@ -127,7 +127,7 @@ export const ENQUIRIES: Enquiry[] = [
 export interface Person {
   email: string
   name: string
-  role: "ADMIN" | "STAFF" | "TRADE" | "CUSTOMER"
+  role: "ADMIN" | "SYSTEM_ADMIN" | "STAFF" | "TRADE" | "CUSTOMER"
   /** What the person is here to do, in the shop's own terms. */
   post: string
   active: boolean
@@ -140,6 +140,13 @@ export interface Person {
  */
 export const PEOPLE: Person[] = [
   { email: "hafsah@allfix.co.ke", name: "Hafsah Ngechi", role: "ADMIN", post: "Owner", active: true },
+  {
+    email: "platform@allfix.co.ke",
+    name: "Mercy Wambui",
+    role: "SYSTEM_ADMIN",
+    post: "Keeps the service running",
+    active: true,
+  },
   { email: "counter@allfix.co.ke", name: "Dennis Kimani", role: "STAFF", post: "Counter, Njugu Lane", active: true },
   { email: "workshop@allfix.co.ke", name: "Faith Auma", role: "STAFF", post: "Workshop and fitting", active: true },
   { email: "njoroge@interiors.co.ke", name: "Njoroge Interiors", role: "TRADE", post: "Curtain maker", active: true },
@@ -149,6 +156,7 @@ export const PEOPLE: Person[] = [
 
 export const ROLE_NOTE: Record<Person["role"], string> = {
   ADMIN: "Everything, including who else gets in.",
+  SYSTEM_ADMIN: "The platform: configuration, schema and failures. Not the shop.",
   STAFF: "The counter: prices, enquiries and orders.",
   TRADE: "Buys at trade rates. No console access.",
   CUSTOMER: "A shopper. No console access.",

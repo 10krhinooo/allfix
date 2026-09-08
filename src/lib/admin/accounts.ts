@@ -68,20 +68,27 @@ export interface SeededLogin {
  * screens. The shopper is included because it now opens the account area, which
  * is the screen phase 3 added.
  */
+/**
+ * What each role opens, in one line, for the roster on the door.
+ *
+ * A table rather than a chain of conditionals: it was four deep and a fifth
+ * role made it unreadable, and this is the shape the rest of the file already
+ * uses for a fact that varies by role.
+ */
+const WHAT_THEY_GET: Record<Person["role"], string> = {
+  ADMIN: "Everything, including People",
+  SYSTEM_ADMIN: "The platform, and nothing else",
+  STAFF: "The counter, without People",
+  TRADE: "Trade rates, no console",
+  CUSTOMER: "The account area, no console",
+}
+
 export const SEEDED_LOGINS: SeededLogin[] = PEOPLE.map((person) => ({
   email: person.email,
   name: person.name,
   role: person.role,
   post: person.post,
-  note: !person.active
-    ? "Suspended, try it"
-    : person.role === "ADMIN"
-      ? "Everything, including People"
-      : person.role === "STAFF"
-        ? "The counter, without People"
-        : person.role === "TRADE"
-          ? "Trade rates, no console"
-          : "The account area, no console",
+  note: person.active ? WHAT_THEY_GET[person.role] : "Suspended, try it",
 }))
 
 export type SignIn =
@@ -111,11 +118,20 @@ export interface ServiceSession {
 
 const API = process.env.ALLFIX_API_URL ?? ""
 
-/** The service names every role an account holds. The desk shows one. */
-const RANK: Person["role"][] = ["ADMIN", "STAFF", "TRADE", "CUSTOMER"]
+/**
+ * The service names every role an account holds. The desk shows one.
+ *
+ * `SYSTEM_ADMIN` sits below `ADMIN` because the desk derives what somebody may
+ * do from the single role it shows, so the higher entry wins outright. That is
+ * why the platform keeper is a separate account rather than a grant onto the
+ * owner's: an owner holding both would be shown as ADMIN and would lose the
+ * screen the grant was for. Worth knowing before granting both to one person.
+ */
+const RANK: Person["role"][] = ["ADMIN", "SYSTEM_ADMIN", "STAFF", "TRADE", "CUSTOMER"]
 
 const POST_FOR: Record<Person["role"], string> = {
   ADMIN: "Owner",
+  SYSTEM_ADMIN: "Keeps the service running",
   STAFF: "Counter",
   TRADE: "Trade account",
   CUSTOMER: "Customer",

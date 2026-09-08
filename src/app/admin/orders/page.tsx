@@ -5,6 +5,7 @@ import { TakeOrderForm } from "@/components/admin/TakeOrderForm"
 import { readDesk } from "@/lib/admin/guard"
 import { capabilities } from "@/lib/admin/roles"
 import { readOrders } from "@/lib/admin/orders-service"
+import { sampleOrders } from "@/lib/admin/sample"
 import { orderable } from "@/lib/admin/rows"
 import { move, take } from "@/app/admin/orders/actions"
 
@@ -22,11 +23,15 @@ export default async function OrdersPage() {
   // screen exists to somebody who may not have it.
   if (!desk || !capabilities(desk.role).orders) notFound()
 
-  const orders = await readOrders()
+  // As on the shelf: `null` is nobody could ask and gets stand-ins, `[]` is the
+  // service saying there is nothing to pack and is left alone. The screen is
+  // told which, because a stand-in order that reads as real is one somebody
+  // tries to pack.
+  const queue = await readOrders()
 
   return (
     <>
-      <Orders orders={orders} onMove={move} />
+      <Orders orders={queue ?? sampleOrders()} live={queue !== null} onMove={move} />
       <div className="mt-10">
         <TakeOrderForm parts={await orderable()} onTake={take} />
       </div>

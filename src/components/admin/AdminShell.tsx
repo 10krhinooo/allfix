@@ -40,15 +40,17 @@ const NAV: NavItem[] = [
   {
     href: "/admin",
     label: "Today",
-    hint: "What is still open",
+    hint: "What the shop took, and what is running out",
     icon: ICONS.today,
     exact: true,
+    needs: "takings",
   },
   {
     href: "/admin/parts",
     label: "Parts",
     hint: "Prices, and what is unphotographed",
     icon: ICONS.parts,
+    needs: "prices",
     count: "parts",
   },
   {
@@ -72,6 +74,7 @@ const NAV: NavItem[] = [
     label: "Enquiries",
     hint: "Quotes, surveys and trade",
     icon: ICONS.enquiries,
+    needs: "enquiries",
     count: "enquiries",
   },
   {

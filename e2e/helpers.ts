@@ -5,6 +5,7 @@ export const PASSWORD = "allfix"
 
 export const WHO = {
   admin: "hafsah@allfix.co.ke",
+  platform: "platform@allfix.co.ke",
   staff: "counter@allfix.co.ke",
   trade: "njoroge@interiors.co.ke",
   customer: "p.ochieng@gmail.com",

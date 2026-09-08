@@ -46,13 +46,18 @@ test.describe("the orders desk", () => {
     await expect(page.getByRole("link", { name: /^Orders/ }).first()).toBeVisible()
   })
 
-  test("with no service it says so rather than showing an empty list", async ({ page }) => {
+  test("with no service it says so, over the top of the orders it is standing in with", async ({
+    page,
+  }) => {
     // An empty orders screen and an unreachable one look identical and mean
-    // opposite things. One says there is nothing to pack.
+    // opposite things. One says there is nothing to pack. The screen now draws
+    // stand-in orders so there is something to work against before the service
+    // is hosted, so what is asserted is the sentence that keeps them honest.
     await signIn(page, WHO.staff)
     await page.waitForURL(/\/admin/)
     await page.goto("/admin/orders")
 
     await expect(page.getByText(/No order service is reachable/i)).toBeVisible()
+    await expect(page.getByText(/Nothing moved here is kept/)).toBeVisible()
   })
 })

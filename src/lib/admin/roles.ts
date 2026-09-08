@@ -44,36 +44,72 @@ export interface Capabilities {
    * The platform itself: which secrets a deployment is missing, whether the
    * schema is current, and what has failed lately.
    *
-   * Admin only, and its own capability rather than folded into `settings`,
-   * because the two are different jobs on the same screen only by accident.
-   * Settings is what the shop says to its customers. This is whether the shop
-   * is working at all, and it names configuration values, which is the one
-   * thing on the console that should not be readable by whoever is covering
-   * the counter on a Saturday.
+   * Its own capability rather than folded into `settings`, because the two are
+   * different jobs on the same screen only by accident. Settings is what the
+   * shop says to its customers. This is whether the shop is working at all, and
+   * it names configuration values, which is the one thing on the console that
+   * should not be readable by whoever is covering the counter on a Saturday.
    *
-   * A separate SYSTEM_ADMIN role would be the fuller answer and is not worth a
-   * fourth role here: this shop has one owner, and a role nobody is assigned is
-   * a gate nobody tests.
+   * `SYSTEM_ADMIN` alone, and deliberately not the owner. This note used to say
+   * a fourth role was not worth having because the shop has one owner, which
+   * confused who owns the shop with who keeps the service running: they are the
+   * same person here only because nobody has been hired yet. The owner has no
+   * use for a migration number, and whoever is paged at midnight over a failed
+   * job has no business changing prices. So this is the one capability an
+   * `ADMIN` does not hold, and the only one `SYSTEM_ADMIN` does.
    */
   platform: boolean
+  /**
+   * The shop's own trade: the day's takings, what is moving, what the shelf is
+   * short. Counter work, so staff have it.
+   *
+   * Its own capability because it stopped being implied by `console`. Every
+   * screen on the rail without a `needs` was open to anybody with console
+   * access, which was correct while console access meant counter staff. It
+   * stopped being correct the moment a role existed that belongs in the console
+   * and has no business reading the month's takings.
+   */
+  takings: boolean
+  /** The enquiry queue. Counter work, and somebody has to ring these people back. */
+  enquiries: boolean
 }
 
 const CAPABILITIES: Record<Person["role"], Capabilities> = {
   ADMIN: {
     console: true, people: true, prices: true, settings: true,
-    orders: true, stock: true, platform: true,
+    orders: true, stock: true, platform: false,
+    takings: true, enquiries: true,
+  },
+  /**
+   * The platform, and nothing else.
+   *
+   * Deliberately not a superset of staff. Whoever keeps the service running
+   * needs to read configuration and failures; they have no business pricing a
+   * bracket, and giving them the console's other screens because it was easier
+   * than listing what they actually need is how a role stops meaning anything.
+   *
+   * `console` is true because the platform screen lives inside the console's
+   * own chrome, and the proxy gates on that.
+   */
+  SYSTEM_ADMIN: {
+    console: true, people: false, prices: false, settings: false,
+    orders: false, stock: false, platform: true,
+    takings: false, enquiries: false,
   },
   STAFF: {
     console: true, people: false, prices: true, settings: false,
     orders: true, stock: true, platform: false,
+    takings: true, enquiries: true,
   },
   TRADE: {
     console: false, people: false, prices: false, settings: false,
     orders: false, stock: false, platform: false,
+    takings: false, enquiries: false,
   },
   CUSTOMER: {
     console: false, people: false, prices: false, settings: false,
     orders: false, stock: false, platform: false,
+    takings: false, enquiries: false,
   },
 }
 
@@ -118,6 +154,10 @@ export function landing(role: Person["role"], next?: string | null): string {
  */
 const HOME: Record<Person["role"], string> = {
   ADMIN: "/admin",
+  // Straight to the screen the role exists for. Landing a platform keeper on a
+  // dashboard of takings would be showing them the one thing they are not here
+  // to look at, and the counter's figures are not theirs.
+  SYSTEM_ADMIN: "/admin/platform",
   STAFF: "/admin",
   TRADE: "/trade/account",
   CUSTOMER: "/account",

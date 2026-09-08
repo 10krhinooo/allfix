@@ -50,11 +50,22 @@ const EMPTY: ReadonlySet<string> = new Set()
 
 export function Stock({
   rows,
+  live,
   owner,
   onCount,
   onThreshold,
 }: {
   rows: StockRow[] | null
+  /**
+   * Whether these counts came from the shop's own records.
+   *
+   * False means nobody could be asked and the figures below are stand-ins, which
+   * this screen says out loud rather than implying by drawing nothing. A shelf
+   * count is acted on: somebody reads a number here and decides whether to
+   * reorder, so a made up figure presented as the shop's own is worse than an
+   * empty screen, and the note is what keeps it from being one.
+   */
+  live: boolean
   /** Whether this account may say what counts as low. Admin's, not the counter's. */
   owner: boolean
   onCount: (slug: string, counted: number | null, note: string | null) => Promise<Counted>
@@ -126,6 +137,13 @@ export function Stock({
   return (
     <>
       <PageHead title="Stock" lead="What is on the shelf, and what is running out.">
+        {!live && (
+          <Note tone="warn">
+            No stock service is reachable, so these are stand-in figures and not the shop&rsquo;s own
+            counts. Nothing typed here is kept. The real counts appear, and this note goes, the
+            moment the service answers.
+          </Note>
+        )}
         <Note>
           Only parts somebody has counted are here. A shelf nobody has been to look at is not the
           same as an empty one, so an uncounted part is left alone: it never runs low and it never

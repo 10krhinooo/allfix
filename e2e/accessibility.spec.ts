@@ -76,12 +76,22 @@ test("the desks are checked too, behind the door", async ({ page }) => {
     "/admin/stock",
     "/admin/enquiries",
     "/admin/settings",
-    "/admin/platform",
   ]) {
     await page.goto(path)
     const found = await violations(page)
     expect(found.map((one) => `${path}: ${one.id}`)).toEqual([])
   }
+})
+
+test("the platform screen is checked as the account that can open it", async ({ page }) => {
+  // Its own test rather than another path in the loop above, because it is the
+  // one console screen the owner cannot reach: it belongs to whoever keeps the
+  // service running. Swept as the owner it answered 404, so the sweep was
+  // auditing the not-found page rather than the screen it named.
+  await signIn(page, WHO.platform)
+  await page.goto("/admin/platform")
+  const found = await violations(page)
+  expect(found.map((one) => one.id)).toEqual([])
 })
 
 test.describe("what a person actually has to do", () => {
