@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Card, CardHeader, EmptyState, Figure, Figures, PageHead, Section } from "@/components/admin/parts"
+import { ExportFigures } from "@/components/admin/ExportFigures"
 import { price } from "@/lib/format"
 import type { ChannelCount, Point, Shelf, StatusCount, Summary, TopPart } from "@/lib/admin/reports-service"
 
@@ -64,7 +65,9 @@ export function Dashboard({ summary, name }: { summary: Summary | null; name: st
       <PageHead
         title={`Good to see you, ${name.split(" ")[0]}.`}
         lead="What the shop took, what is moving, and what the shelf is short."
-      />
+      >
+        {summary !== null && <ExportFigures summary={summary} />}
+      </PageHead>
 
       {summary === null ? (
         // The most important empty state in the console. With no service
