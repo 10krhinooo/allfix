@@ -93,7 +93,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <a
                 href={enquiry}
-                className="inline-flex items-center gap-2 rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+                className="inline-flex items-center gap-2 rounded-sm bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
               >
                 <WhatsAppIcon /> Enquire on WhatsApp
               </a>

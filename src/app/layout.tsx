@@ -1,8 +1,7 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google"
 import { SHOP, SITE } from "@/lib/format"
-import { HINT } from "@/lib/admin/hint"
-import { heroGateScript } from "@/lib/motion"
+import { preflight } from "@/lib/head-scripts"
 import { Painted } from "@/components/Painted"
 import { IdleWatch } from "@/components/IdleWatch"
 import "./globals.css"
@@ -49,56 +48,40 @@ export const metadata: Metadata = {
 }
 
 /*
- * Three decisions that have to be made before the browser paints anything, so
- * all three are plain inline scripts rather than `next/script`.
+ * The plaster ground, so the browser's own chrome is not the one thing on a
+ * phone that stayed white.
  *
- * `beforeInteractive` reads as though it means before the page is drawn. It does
- * not. In the App Router it compiles to a push onto `self.__next_s`, which Next
- * drains in `app-bootstrap` once the client bundle has arrived: before
- * hydration, but long after the first paint. Every one of these exists to stop a
- * flash, so queueing all three behind the bundle defeated all three, and the
- * header shipped showing "Sign in" to people who were already signed in. A raw
- * script in the head runs while the parser is still in the head, which is the
- * whole requirement.
+ * Its own export rather than a key in `metadata`, which is where it used to
+ * live and where Next 16 now refuses it. Not the `prefers-color-scheme` form
+ * either: the shop has one ground and it is this one whatever the device is
+ * set to.
  */
-const THEME =
-  "try{var t=localStorage.getItem('allfix-theme');if(t==='dark')document.documentElement.dataset.theme='dark'}catch(e){}"
-
-/*
- * Which of the header's two controls to show. The cookie carries a boolean and
- * nothing else, and every page that matters is guarded on the server anyway, so
- * the worst a forged one can do is show somebody the wrong label.
- */
-const DESK =
-  `try{if(/(^|;\\s*)${HINT}=1/.test(document.cookie))` +
-  `document.documentElement.dataset.desk='1'}catch(e){}`
+export const viewport: Viewport = {
+  themeColor: "#f3ebdd",
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    // The three scripts below write `data-theme`, `data-desk` and `data-hero`
-    // onto this element before React ever sees it, which is the whole point of
-    // them. React compares what it rendered on the server with what is in the
-    // document and warns about attributes it did not put there, so it is told
-    // not to. This suppresses one level, the attributes of `<html>` itself, and
-    // nothing inside it.
+    // The script below writes `data-desk` and `data-hero` onto this element
+    // before React ever sees it, which is the whole point of it. React compares
+    // what it rendered on the server with what is in the document and warns
+    // about attributes it did not put there, so it is told not to. This
+    // suppresses one level, the attributes of `<html>` itself, and nothing
+    // inside it.
     <html
       lang="en-KE"
       suppressHydrationWarning
       className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable}`}
     >
       <head>
-        {/* The stored theme, so a visitor who chose dark never sees light. */}
-        <script dangerouslySetInnerHTML={{ __html: THEME }} />
-        {/* The door, so nobody signed in is offered the door. */}
-        <script dangerouslySetInnerHTML={{ __html: DESK }} />
         {/*
-          Whether the hero's curtain is going to open. It is drawn closed in the
-          HTML so it is in place at first paint, which means the decision not to
-          open it belongs here too: taken any later, a full screen of red is
-          painted and then pulled away, which is the flash rather than the
-          reveal. No script, no flag, no cloth.
+          Who is at the door, and whether the hero's curtain is going to open.
+          Both are drawn in the HTML as they are on a first visit, so the
+          decision to draw them otherwise has to be taken before that paint:
+          taken any later, a full screen of cloth is painted and then pulled
+          away, which is the flash rather than the reveal.
         */}
-        <script dangerouslySetInnerHTML={{ __html: heroGateScript() }} />
+        <script dangerouslySetInnerHTML={{ __html: preflight() }} />
       </head>
       {/*
         Deliberately bare. The chrome lives in the route groups: the storefront

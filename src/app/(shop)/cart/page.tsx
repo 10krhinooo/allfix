@@ -33,7 +33,7 @@ export default async function CartPage() {
         <CartLines catalogue={await basketCatalogue()}>
           <Link
             href="/checkout"
-            className="bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+            className="bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
           >
             Go to checkout
           </Link>

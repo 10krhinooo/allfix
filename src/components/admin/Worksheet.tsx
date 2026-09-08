@@ -206,7 +206,7 @@ export function Worksheet({
         <div className="flex flex-wrap items-center gap-4">
           <Link
             href="/admin/parts/new"
-            className="rounded-sm bg-oxblood px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-oxblood-deep"
+            className="rounded-sm bg-terra px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-terra-deep"
           >
             Add a part
           </Link>

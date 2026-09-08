@@ -95,7 +95,7 @@ export function AddToCart({ sku }: { sku: string }) {
         </div>
         <Link
           href="/cart"
-          className="inline-block rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+          className="inline-block rounded-sm bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
         >
           Go to basket
         </Link>
@@ -112,7 +112,7 @@ export function AddToCart({ sku }: { sku: string }) {
           addToCart(sku, wanted)
           setAdded(true)
         }}
-        className="rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+        className="rounded-sm bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
       >
         Add to basket
       </button>

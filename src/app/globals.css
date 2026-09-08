@@ -1,105 +1,184 @@
 @import "tailwindcss";
 
 /*
- * AllFix design tokens.
+ * AllFix design tokens: the workshop at noon.
  *
- * The palette is sampled from the shop's own logo: an oxblood wordmark whose X
- * is a crossed spanner and screwdriver, and a brass "By Kipekee" script. Brass
- * is the metal, used to draw the hardware itself, and oxblood is reserved for
- * actions, so a control is never confused with an illustration. The ground is
- * drafting paper rather than a warm cream, because the whole visual language
- * here is the engineering drawing.
+ * The shop is a fundi's workshop in the Nairobi CBD and the light there is the
+ * strongest thing in the room. So the ground is lime washed plaster rather than
+ * paper, the graphic device is the shadow that one hard overhead light casts,
+ * and the palette is the finishes the shop actually sells: brass, copper,
+ * black and silver on a warm wall. Terracotta carries the actions and oxblood,
+ * the logo's own red, is kept for what has gone wrong.
+ *
+ * There is one theme. The opt in dark mode was removed with this direction
+ * rather than inverted, because a room at noon is the identity, and a second
+ * palette that nobody designs for is worse than none.
  *
  * The values live in plain custom properties and the theme references them with
  * `@theme inline`. `@theme` is resolved at build time and hoisted out of any
- * block it sits in, so a dark palette declared inside a media query would
- * silently replace the light one rather than override it at runtime.
+ * block it sits in, so a palette declared inside a media query would silently
+ * replace this one rather than override it at runtime. Plain custom properties
+ * have no such problem, which is what lets the print block near the bottom of
+ * this file restate them and have every `bg-paper` in the codebase follow.
+ *
+ * The contrast floors are asserted in `test/contrast.test.mts` rather than
+ * written into the comments here. A ratio in a comment is right exactly until
+ * somebody moves a value, and then it is confidently wrong, which is worse.
  */
 :root {
-  --paper: #ffffff;
-  --panel: #f7f7f6;
-  --grid: #e7e8e9;
-  --rule: #dcdee0;
-  --ink: #16151a;
-  --slate: #5c5f66;
   /*
-   * Darkened from #8a8e96, which read 3.07:1 against `--panel` and failed WCAG
-   * AA for the small text it is used on. It carries the `callout` class, which
-   * is 11px, so it is the smallest type on the site and the least forgiving.
-   * This is 4.9:1 on the panel and 5.3:1 on paper, with enough headroom that a
-   * later nudge to either ground does not quietly drop it back under.
+   * The ground: lime washed plaster, the wall a fundi's workshop is built of
+   * and the wall a curtain is hung on. Warm rather than white, because the
+   * whole direction is one strong equatorial light falling across a room, and
+   * white paper has no light in it to fall.
    */
-  --mute: #686c73;
+  --paper: #f3ebdd;
+  --panel: #ece0cc;
+  --grid: #e0d2b6;
+  --rule: #d5c4a5;
+
+  --ink: #221d16;
+  --slate: #54463a;
   /*
-   * Darkened from #9d840f, which was 3.65:1 on paper. Brass is the accent and
-   * it is used as text: a part number on the worksheet, the step numbers on the
-   * trade page, the "flagship" line on a system. One legible brass is better
-   * than a decorative one and a second token for when it has to be read.
+   * The smallest type on the site. It carries `.callout` at eleven pixels, so
+   * it is the least forgiving thing in the palette, and it is drawn on both
+   * grounds. Floors asserted in `test/contrast.test.mts`.
    */
-  --brass: #826e0c;
-  --brass-soft: #f6f1d8;
+  --mute: #6a5b49;
+
   /*
-   * Brass, dark enough to be read at eleven pixels on `--brass-soft`.
+   * Brass, and the reason it is darker than brass looks.
    *
-   * `--brass` on `--brass-soft` is 4.42:1, which clears AA for ordinary text and
-   * misses it for small text by six hundredths. The console's `Pill` is exactly
-   * that: an eleven pixel word on the soft tint. It went unseen because the only
-   * screen that draws a brass pill is the enquiry queue, and it draws one per
-   * enquiry that came through the site, of which there were none until the queue
-   * started reading the shop's real records.
-   *
-   * A deeper value rather than a lighter ground, because the ground is shared
-   * with the trade banding on the storefront and this is the console's problem.
+   * Brass is the metal the shop sells and it is also read as text: a part
+   * number on the worksheet, the step numbers on the trade page, the flagship
+   * line on a system. A colour tuned to be legible on white loses about nine
+   * tenths of a point on plaster, which is darker, so the metal in the drawings
+   * and the metal in the sentences are not the same value.
    */
-  --brass-deep: #6f5d0a;
+  --brass: #775d16;
+  --brass-soft: #efe3c2;
+  /* Deep enough to be read at eleven pixels on the soft tint: the console's
+     `Pill`, which is the one place brass is both small and on its own tint. */
+  --brass-deep: #665012;
+
+  /*
+   * Terracotta: the actions.
+   *
+   * One value doing two jobs, which is deliberate. It is a fill under white
+   * text on a button and it is a line of text on the plaster, and a pair of
+   * near identical terracottas for the two cases is how a palette starts
+   * drifting. Tuned to clear the floor in both directions at once.
+   */
+  --terra: #a34a25;
+  --terra-deep: #85391b;
+
+  /*
+   * Oxblood, which used to be the actions and is now the alarm.
+   *
+   * It is the logo's own red and it stays in the palette for that reason, but
+   * an action and a refusal cannot be the same colour, and of the two the
+   * refusal has the better claim on red. So terracotta takes the buttons and
+   * this is kept for what has gone wrong: a validation message, a destructive
+   * confirmation, a part being taken out of the shop.
+   */
   --oxblood: #7c1518;
   --oxblood-deep: #5d0f12;
 
-  /* Fixed in both themes: it carries white text and must stay dark. */
-  --band: #6d1215;
+  /*
+   * The band, and the two things written on it.
+   *
+   * Fixed: it carries white text and must stay dark. `--band-mute` is the
+   * quieter of the two, and it is a token rather than `text-white/60` for a
+   * reason worth keeping: an opacity modifier is invisible to the contrast
+   * test, because the value it resolves to is never written down anywhere the
+   * test can read. `white/60` on this band is 4.32:1 at eleven pixels, which
+   * is under AA and went unnoticed until axe caught it, and the only reason it
+   * was ever fine is that the band used to be darker. Naming the colour puts it
+   * back under the same guard as the rest of the palette.
+   */
+  --band: #7a3419;
+  --band-ink: #ffffff;
+  --band-mute: #eaddd6;
 
   /*
-   * The stage.
+   * The curtain, which is cloth rather than paint.
    *
-   * Fixed dark in both themes, because it is doing a job the light ground
-   * cannot. 56 of the 62 photographs are white hardware on a near-black field,
-   * so on paper they read as black tiles punched into the page.
-   *
-   * `--shot` is sampled from those shots' own field, and the stage is set to
-   * meet it. That match is the whole trick: a full-bleed product photograph
-   * sits on the page with no rectangle around it, needing no mask and no blend
-   * mode to hide its edges.
-   *
-   * It is also where the curtain opens: the hero is the one place the shop's
-   * own product performs, and it needs a dark house for that.
+   * It used to be the brand's own red, back when the hero was a dark house and
+   * a red curtain across it read as a theatre. The hero is a lit wall now, so
+   * the cloth is the fabric the workshop actually sews: an unbleached linen,
+   * with the fold banding drawn in its own shadow rather than in a second hue.
+   * `--curtain-lit` is where the light catches the crown of a fold.
    */
-  --stage: #050505;
-  --stage-2: #141317;
-  --stage-rule: #2b2830;
-  --stage-ink: #f4f2ee;
-  --stage-mute: #9a94a3;
-  --stage-brass: #d9bd57;
+  --curtain: #c0a179;
+  --curtain-deep: #8d7351;
+  --curtain-lit: #dcc7a2;
+
   /*
-   * The focus ring, where the ground is the stage rather than the page.
+   * The sun.
    *
-   * The ring is oxblood everywhere, which is 10.62:1 on paper and 1.92:1 on the
-   * stage. The stage is fixed dark in both themes and it is not decoration: the
-   * console's side rail is drawn on it, on all three desks, so this was every
-   * staff member's focus ring, all day, at a fifth of the contrast a ring is
-   * meant to have. Nothing caught it. A focus indicator is a non text control
-   * and wants 3:1 under WCAG 1.4.11, and axe does not measure an outline.
-   *
-   * The same oxblood the dark theme already lifts to, for the same reason, held
-   * warm so the ring stays the brand's red rather than becoming a second
-   * accent. 6.46:1 on the stage.
+   * One light, declared once, so that everything on the page agrees about where
+   * it is coming from. The WebGL hero shades its geometry from these and every
+   * CSS shadow below is offset by them, which is the whole graphic device: at
+   * noon a shadow is short, hard and all in the same direction, and a page
+   * whose shadows disagree reads as a collage.
    */
-  --stage-focus: #e0705f;
+  --sun-x: -1;
+  --sun-y: 1;
+  --shadow: #2b2118;
+
+  /*
+   * The deep surfaces.
+   *
+   * Fixed dark, and not a theme: the console's side rail, the auth sheet's
+   * other half, the bands on the storefront that want weight. Warm, because it
+   * is the shadow colour rather than a neutral black, so a dark region reads as
+   * the same room with the light off it rather than as a different site.
+   */
+  --deep: #2b2118;
+  --deep-2: #3a2d21;
+  --deep-rule: #4a3b2c;
+  --deep-ink: #f6efe2;
+  --deep-mute: #b3a48e;
+  --deep-brass: #d9bd57;
+  /*
+   * The focus ring where the ground is deep rather than plaster.
+   *
+   * The ring is terracotta on the page and 4.98:1 there. On the deep ground it
+   * would be 2.1:1, and the console's rail is drawn on that ground, on all
+   * three desks, so it would be every staff member's ring all day. A ring is a
+   * non text control and wants 3:1 under WCAG 1.4.11, and axe does not measure
+   * an outline, so nothing would have reported it. 5.98:1.
+   */
+  --deep-focus: #e08a5f;
+
+  /*
+   * Where a photograph performs.
+   *
+   * Sampled from the photographs' own field: 56 of the 62 shots are white
+   * hardware on near black, so the tile a part sits in has to be that field and
+   * cannot be the plaster. Against it the photograph has no edge.
+   *
+   * It used to be near enough to the hero's dark ground that a shot could lie
+   * straight on the page with no tile at all. It is not any more, because the
+   * dark ground is warm now, and rather than dragging one of them back to the
+   * other every photograph is given the same shadow box. That is the honest
+   * version of the same idea: a recess cut into the wall, which is what the
+   * light in this direction would make of it anyway.
+   */
   --shot: #030303;
 
-  /* The curtain itself, in the brand's own red. */
-  --curtain: #5d0f12;
-  --curtain-deep: #3a090b;
-  --curtain-lit: #7c1518;
+  /*
+   * The sheet.
+   *
+   * Fixed light in every context, because a document is printed. It used to be
+   * `bg-white` and `neutral-*` written straight into `DocumentSheet`, which
+   * worked only because the ground happened to be white too; naming it makes it
+   * a contract rather than a coincidence.
+   */
+  --sheet: #ffffff;
+  --sheet-ink: #171412;
+  --sheet-mute: #55504a;
+  --sheet-rule: #cfc9c1;
 
   /*
    * The height of the sticky header, declared once so anything that has to sit
@@ -117,33 +196,6 @@
   --desk-header: 4rem;
 }
 
-/*
- * Dark is opt in, not automatic.
- *
- * The brand is oxblood and brass on white, and a shopper arriving with their
- * operating system set to dark should still see the shop's own colours rather
- * than an inverted approximation of them. The toggle in the header sets
- * `data-theme` on the document, and that is the only thing that switches this.
- */
-:root[data-theme="dark"] {
-  --paper: #141317;
-  --panel: #1c1b21;
-  --grid: #232229;
-  --rule: #2e2d36;
-  --ink: #f2f1ee;
-  --slate: #a8abb3;
-  /* Lifted for the same reason its light twin was darkened: 4.26:1 on the dark
-     panel was under AA, and this is 5.0:1. */
-  --mute: #878b94;
-  --brass: #d4b73a;
-  --brass-soft: #2a2618;
-  /* Already 7.66:1 against the dark ground, so it is the same brass. */
-  --brass-deep: #d4b73a;
-  /* Lifted for contrast on a dark ground, but held warm so it does not read pink. */
-  --oxblood: #e0705f;
-  --oxblood-deep: #c2453a;
-}
-
 @theme inline {
   --color-paper: var(--paper);
   --color-panel: var(--panel);
@@ -158,13 +210,21 @@
   --color-oxblood: var(--oxblood);
   --color-oxblood-deep: var(--oxblood-deep);
   --color-band: var(--band);
-  --color-stage: var(--stage);
-  --color-stage-2: var(--stage-2);
-  --color-stage-rule: var(--stage-rule);
-  --color-stage-ink: var(--stage-ink);
-  --color-stage-mute: var(--stage-mute);
-  --color-stage-brass: var(--stage-brass);
+  --color-band-ink: var(--band-ink);
+  --color-band-mute: var(--band-mute);
+  --color-terra: var(--terra);
+  --color-terra-deep: var(--terra-deep);
+  --color-deep: var(--deep);
+  --color-deep-2: var(--deep-2);
+  --color-deep-rule: var(--deep-rule);
+  --color-deep-ink: var(--deep-ink);
+  --color-deep-mute: var(--deep-mute);
+  --color-deep-brass: var(--deep-brass);
   --color-shot: var(--shot);
+  --color-sheet: var(--sheet);
+  --color-sheet-ink: var(--sheet-ink);
+  --color-sheet-mute: var(--sheet-mute);
+  --color-sheet-rule: var(--sheet-rule);
 
   --font-display: var(--font-fraunces), Georgia, ui-serif, serif;
   --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
@@ -174,10 +234,6 @@
 html {
   background: var(--paper);
   color-scheme: light;
-}
-
-html[data-theme="dark"] {
-  color-scheme: dark;
 }
 
 body {
@@ -228,7 +284,7 @@ body {
 }
 
 :where(a, button, input, select, summary):focus-visible {
-  outline: 2px solid var(--focus, var(--oxblood));
+  outline: 2px solid var(--focus, var(--terra));
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -253,10 +309,6 @@ body {
 .when-signed-in { display: none; }
 :root[data-desk="1"] .when-signed-out { display: none; }
 :root[data-desk="1"] .when-signed-in { display: inline-flex; }
-
-.logo-dark { display: none; }
-:root[data-theme="dark"] .logo-light { display: none; }
-:root[data-theme="dark"] .logo-dark { display: block; }
 
 /*
  * The page shell.
@@ -303,38 +355,41 @@ body {
 
 
 /* Display type scales with the viewport instead of stepping at breakpoints. */
-.display-xl { font-size: clamp(2.25rem, 5.2vw, 4.5rem); line-height: 1.03; }
-.display-lg { font-size: clamp(1.6rem, 2.6vw, 2.5rem); line-height: 1.1; }
+.display-xl { font-size: clamp(2.5rem, 6.4vw, 5.75rem); line-height: 0.94; }
+.display-lg { font-size: clamp(1.75rem, 3vw, 2.75rem); line-height: 1.04; }
 
 /*
  * Fraunces carries the headlines. Its optical size axis is what keeps a large
  * setting from looking like a scaled-up small one: the display cut has finer
  * hairlines and tighter joins, which is the whole reason to use a variable
  * face here rather than one static weight.
+ *
+ * Set heavier and tighter than it used to be. A headline in this direction is
+ * the thing casting the shadow, so it has to have enough weight to cast one:
+ * a hairline display cut throws nothing, and the shadow is the graphic device.
  */
 .display-xl,
 .display-lg {
-  font-variation-settings: "opsz" 108, "SOFT" 20, "WONK" 1;
+  font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
+  font-weight: 500;
+  letter-spacing: -0.022em;
 }
 
 /*
- * The stage: a dark house, fixed in both themes. `--hairline` is redirected so
- * any flush grid dropped onto it draws its rules in the stage's own rule
- * colour rather than the paper one.
+ * A deep region: the console rail, the auth sheet's other half, a band that
+ * wants weight. It declares what it is and the rules that care read it, so a
+ * hairline drawn on it and a control focused on it are both right on arrival
+ * rather than having to be told.
  */
-.stage {
-  background: var(--stage);
-  color: var(--stage-ink);
-  --hairline: var(--stage-rule);
-  /*
-   * The ring, redirected the way the hairline above already is: the region says
-   * what it is and `:focus-visible` reads it, so a control moved onto the stage
-   * is right on arrival rather than having to be told.
-   */
-  --focus: var(--stage-focus);
+.deep {
+  background: var(--deep);
+  color: var(--deep-ink);
+  --hairline: var(--deep-rule);
+  --focus: var(--deep-focus);
 }
 
-.stage .callout { color: var(--stage-mute); }
+.deep .callout { color: var(--deep-mute); }
+
 
 /*
  * The curtain.
@@ -427,4 +482,81 @@ body {
  */
 @media (prefers-reduced-motion: reduce) {
   .curtain { display: none; }
+}
+
+/*
+ * The sun, in CSS.
+ *
+ * One overhead light, declared once in `--sun-x`/`--sun-y`, so that a shadow
+ * cast by the WebGL hero and a shadow cast by a heading agree about where it
+ * is coming from. At noon a shadow is short, hard and all in one direction,
+ * and the moment two of them disagree the page reads as a collage.
+ *
+ * `--throw` is how far this particular thing stands off the wall. A card is
+ * close to it and a headline is not, which is the only thing that varies.
+ */
+.sunlit {
+  --throw: 0.75rem;
+  box-shadow:
+    calc(var(--sun-x) * var(--throw) * -1) calc(var(--sun-y) * var(--throw))
+      calc(var(--throw) * 1.6) color-mix(in srgb, var(--shadow) 22%, transparent),
+    calc(var(--sun-x) * var(--throw) * -0.25) calc(var(--sun-y) * var(--throw) * 0.25)
+      calc(var(--throw) * 0.3) color-mix(in srgb, var(--shadow) 14%, transparent);
+}
+
+/* Standing right against the wall: a row, a chip, a hairline panel. */
+.sunlit-near { --throw: 0.3rem; }
+
+/* Well off it: the hero's own furniture, and anything that should feel lifted. */
+.sunlit-far { --throw: 1.6rem; }
+
+/*
+ * Type casts too, and it is the cheaper half of the device: the hero's
+ * headline is a real shadow in WebGL, and every other heading on the site gets
+ * this, which is close enough at the sizes they are set at.
+ */
+.sunlit-text {
+  --throw: 0.09em;
+  text-shadow:
+    calc(var(--sun-x) * var(--throw) * -1) calc(var(--sun-y) * var(--throw))
+      calc(var(--throw) * 1.1) color-mix(in srgb, var(--shadow) 26%, transparent);
+}
+
+/*
+ * Print.
+ *
+ * There was no print block at all, which was survivable only while the ground
+ * was white. Plaster is not, and a page printed on plaster is a page printed on
+ * a wash of ink nobody asked for.
+ *
+ * This restates the plain custom properties rather than overriding utilities,
+ * and because `@theme inline` maps `--color-paper` to `var(--paper)` instead of
+ * baking a literal, every `bg-paper` in the codebase follows from these six
+ * lines. That indirection is the reason `@theme inline` is worth keeping.
+ */
+@media print {
+  :root {
+    --paper: #ffffff;
+    --panel: #ffffff;
+    --ink: #111111;
+    --slate: #333333;
+    --mute: #555555;
+    --rule: #cccccc;
+    --grid: #ffffff;
+  }
+
+  html,
+  body {
+    background: #ffffff;
+    color: #111111;
+  }
+
+  /* A 28px grid across a full page is a cartridge tax for nothing. */
+  .drafting { background-image: none; }
+
+  /* The sun does not print. */
+  .sunlit,
+  .sunlit-near,
+  .sunlit-far { box-shadow: none; }
+  .sunlit-text { text-shadow: none; }
 }

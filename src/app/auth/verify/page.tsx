@@ -42,7 +42,7 @@ export default async function VerifyPage({
       <div className="mt-7">
         <Link
           href={ok ? "/sign-in" : "/auth/forgot"}
-          className="inline-block bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+          className="inline-block bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
         >
           {ok ? "Sign in" : "Ask for a new link"}
         </Link>

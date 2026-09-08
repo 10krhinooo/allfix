@@ -2,7 +2,6 @@ import Link from "next/link"
 import { Logo } from "@/components/Logo"
 import { MobileNav } from "@/components/MobileNav"
 import { BasketLink } from "@/components/cart/BasketLink"
-import { ThemeToggle } from "@/components/ThemeToggle"
 import { SHOP } from "@/lib/format"
 
 const NAV = [
@@ -14,7 +13,10 @@ const NAV = [
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-40 border-b border-rule bg-paper/95 backdrop-blur">
+    // The header stands off the wall rather than being ruled off it: at noon a
+    // thing fixed to a wall casts a shadow onto what is behind it, and that is
+    // what says this one is in front of the page rather than part of it.
+    <header className="sunlit sunlit-near sticky top-0 z-40 border-b border-rule bg-paper/95 backdrop-blur">
       <div className="shell flex h-20 items-center gap-6">
         <Link href="/" className="shrink-0" aria-label={`${SHOP.name} home`}>
           <Logo height={44} priority alt="" />
@@ -75,7 +77,6 @@ export function Header() {
               on a phone. */}
           <BasketLink className="text-ink" />
 
-          <ThemeToggle />
           <MobileNav items={NAV} />
         </div>
       </div>

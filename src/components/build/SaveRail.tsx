@@ -119,7 +119,7 @@ export function SaveRail({
       <div className="flex flex-wrap gap-3">
         <button
           type="submit"
-          className="rounded-sm bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep"
+          className="rounded-sm bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep"
         >
           Save
         </button>

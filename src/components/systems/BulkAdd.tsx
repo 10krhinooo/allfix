@@ -172,7 +172,7 @@ export function BulkAdd({ parts, system }: { parts: BulkPart[]; system: string }
               type="button"
               onClick={add}
               disabled={lines.length === 0}
-              className="bg-oxblood px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-oxblood-deep disabled:cursor-not-allowed disabled:opacity-55"
+              className="bg-terra px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-terra-deep disabled:cursor-not-allowed disabled:opacity-55"
             >
               Add {lines.length > 0 ? `${lines.length} ` : ""}
               {lines.length === 1 ? "part" : "parts"} to the basket
