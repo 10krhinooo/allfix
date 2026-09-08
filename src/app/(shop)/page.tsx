@@ -4,7 +4,7 @@ import { Curtain } from "@/components/Curtain"
 import { SystemPicker } from "@/components/SystemPicker"
 import { TraceOnView } from "@/components/TraceOnView"
 import { systems, ranges, rails, rods } from "@/lib/catalogue"
-import { SHOP, whatsapp } from "@/lib/format"
+import { SHOP, directions, whatsapp } from "@/lib/format"
 import { ratePhrase } from "@/lib/tiers"
 
 /**
@@ -35,6 +35,30 @@ const TRUST = [
   ["Our own fitters", "We hang it, and our workshop sews it."],
   ["On Njugu Lane", "A real counter, not a warehouse."],
 ]
+
+/**
+ * A map pin, drawn rather than fetched.
+ *
+ * The same stroke weight as the profile drawings and the social marks, because
+ * an icon lifted from a set is the one thing on this page that would not have
+ * been drawn by the shop. No icon package, which the repository does not have
+ * and should not gain for one shape.
+ */
+function Pin() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      aria-hidden="true"
+    >
+      <path d="M8 14.5S13 9.9 13 6.4A5 5 0 0 0 3 6.4c0 3.5 5 8.1 5 8.1Z" strokeLinejoin="round" />
+      <circle cx="8" cy="6.3" r="1.9" />
+    </svg>
+  )
+}
 
 const QUOTE = whatsapp(
   "Hello AllFix, I would like a quote for curtains. Here is my window and what I have in mind:",
@@ -344,7 +368,7 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="border border-rule p-6">
+          <div className="sunlit border border-rule bg-paper p-6">
             <p className="callout">Visit the shop</p>
             <p className="mt-3 font-display text-xl font-semibold tracking-tight">
               {SHOP.street}, {SHOP.area}
@@ -353,9 +377,23 @@ export default async function Home() {
               The full range is on the shelf. Bring your offcut and we will match the section
               across the counter.
             </p>
-            <a href={`tel:${SHOP.phoneIntl}`} className="mt-5 inline-block font-mono text-lg text-oxblood">
-              {SHOP.phone}
-            </a>
+
+            <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
+              <a href={`tel:${SHOP.phoneIntl}`} className="font-mono text-lg text-terra-deep">
+                {SHOP.phone}
+              </a>
+              {/* Opens whichever maps app the phone already has, rather than
+                  loading a map for everybody who was never going to walk here. */}
+              <a
+                href={directions()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-medium text-ink underline-offset-4 hover:underline"
+              >
+                <Pin />
+                Directions to the counter
+              </a>
+            </div>
           </div>
         </div>
       </section>
