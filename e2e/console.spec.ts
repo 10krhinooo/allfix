@@ -50,6 +50,27 @@ test.describe("the counter console", () => {
     await expect(page).toHaveURL(/\/admin\/parts\?show=unshot/)
   })
 
+  test("a stored enquiry from an older browser does not take the console down", async ({
+    page,
+  }) => {
+    // The console's inbox is `localStorage`, standing in for a table the
+    // service will own, so what is in it is whatever some earlier build wrote.
+    // A record missing two fields this build reads used to throw during render
+    // and put the error page over every console screen, for one browser, until
+    // somebody cleared it by hand. The person locked out is a member of staff
+    // at a counter, and the enquiry is worth less than the console.
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "allfix-admin-v1",
+        JSON.stringify({ enquiries: {}, inbox: [{ id: "x", reference: "AF-Q-1", at: 1 }] }),
+      )
+    })
+    await signIn(page, WHO.staff)
+
+    await page.goto("/admin/enquiries")
+    await expect(page.getByRole("heading", { name: "Enquiries", level: 1 })).toBeVisible()
+  })
+
   test("signing out closes the door behind you", async ({ page }) => {
     await signIn(page, WHO.admin)
     await expect(page).toHaveURL(/\/admin$/)
