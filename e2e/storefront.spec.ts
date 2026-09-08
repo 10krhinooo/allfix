@@ -168,7 +168,7 @@ test.describe("the curtain", () => {
     await page.locator(`a[href="${href}"]`).last().click()
 
     await expect(page).toHaveURL(/\/product\//)
-    await expect(page.locator(".curtain-leaf")).toHaveCount(0)
+    await expect(page.locator('[data-transition="wipe"]')).toHaveCount(0)
   })
 
   test("is still the front page's own arrival", async ({ page }) => {
@@ -196,12 +196,13 @@ test.describe("the curtain", () => {
     await page.getByRole("link", { name: "The shop", exact: true }).click()
     await page.waitForURL("**/")
 
-    // The runners are the wipe's own: the hero draws a rail and a motor, and
-    // this draws neither.
-    await expect(page.locator(".page-curtain-runners").first()).toBeVisible()
+    // `data-transition` names which of the two is on the page. The hero marks
+    // itself "hero" and this marks itself "wipe", so the pair below says the
+    // wipe owned this arrival without asking about a class that a restyle owns.
+    await expect(page.locator('[data-transition="wipe"]')).toBeVisible()
 
     // And it takes itself off the page rather than parking there.
-    await expect(page.locator(".page-curtain-runners")).toHaveCount(0, { timeout: 4000 })
+    await expect(page.locator('[data-transition="wipe"]')).toHaveCount(0, { timeout: 4000 })
     await expect(page.locator("h1")).toBeVisible()
   })
 })

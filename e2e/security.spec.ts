@@ -26,6 +26,27 @@ test.describe("the headers every page carries", () => {
     expect(response.headers()["referrer-policy"]).toBe("strict-origin-when-cross-origin")
   })
 
+  test("a worker may only be built from this origin", async ({ request }) => {
+    // Its own test because it guards a decision rather than a header. A worker
+    // built from a `blob:` URL is how several WebGL loaders ship their decoders,
+    // and `default-src 'self'` already refuses one, silently. Naming the
+    // directive means the refusal is visible, and adding `blob:` to it has to
+    // pass this test, which is the point: it should be a conversation rather
+    // than a line in a dependency's setup guide.
+    const response = await request.get("/")
+    const csp = response.headers()["content-security-policy"] ?? ""
+
+    expect(csp).toContain("worker-src 'self'")
+
+    // `blob:` belongs to the image optimiser and nowhere else. Read per
+    // directive rather than over the whole string, so this cannot be satisfied
+    // by the token appearing somewhere it does not belong.
+    for (const directive of csp.split(";").map((part) => part.trim())) {
+      if (directive.startsWith("img-src")) continue
+      expect(directive, `${directive} should not allow blob:`).not.toContain("blob:")
+    }
+  })
+
   test("the framework version is not advertised", async ({ request }) => {
     const response = await request.get("/")
     expect(response.headers()["x-powered-by"]).toBeUndefined()

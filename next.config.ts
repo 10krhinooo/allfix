@@ -84,6 +84,14 @@ const CSP = [
   "img-src 'self' data: blob:",
   // Self hosted through next/font. Nothing is fetched from a font CDN.
   "font-src 'self'",
+  // Named rather than left to fall through to `default-src`, which already
+  // denies this. Written out because `img-src` above carries `blob:` for the
+  // image optimiser, and the two are easy to confuse: a reader checking whether
+  // a worker may be built from a blob should find the answer stated rather than
+  // inferred. It is also the line a library that wants a blob worker would have
+  // to change, and changing it is meant to be a decision somebody takes rather
+  // than a diff that passes unread.
+  "worker-src 'self'",
   `connect-src 'self'${API ? ` ${API}` : ""}`,
   "object-src 'none'",
   "base-uri 'self'",
