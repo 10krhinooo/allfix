@@ -6,12 +6,29 @@ import { Breadcrumbs, JsonLd, WhatsAppIcon } from "@/components/ui"
 // second, so it says the second: promising 195 parts and landing on 188 is a
 // small lie that a customer can check in one click.
 import { products, skuCount, systems } from "@/lib/catalogue"
+import { ratePhrase } from "@/lib/tiers"
+
+/**
+ * What the shop promises a trade account, in the one place that knows it.
+ *
+ * This page's headline, its metadata and its structured data all stated the
+ * figure as characters. `tiers.ts` is what actually prices an order and what
+ * the backend's `unitPriceFor` is kept in step with, so a rate change would
+ * have left the shop advertising the old one to a search engine while charging
+ * the new one at the counter.
+ */
+const RATE = ratePhrase("trade")
+
+/** The same phrase where a sentence starts with it. */
+function capital(phrase: string): string {
+  return phrase.charAt(0).toUpperCase() + phrase.slice(1)
+}
 import { SHOP, whatsapp } from "@/lib/format"
 
 export const metadata: Metadata = {
   title: "Trade accounts",
   description:
-    "Wholesale curtain hardware for fundis, curtain makers and fit-out contractors. 20% off list, " +
+    `Wholesale curtain hardware for fundis, curtain makers and fit-out contractors. ${RATE}, ` +
     "bulk quantity entry and proforma invoices for bank transfer. Open a trade account with AllFix " +
     "on Njugu Lane, Nairobi.",
 }
@@ -19,7 +36,7 @@ export const metadata: Metadata = {
 /**
  * The trade proposition.
  *
- * The header strip already advertises "wholesale 20% off"; this is the page it
+ * The header strip already advertises the wholesale rate; this is the page it
  * points at. Applications hand off to WhatsApp rather than a form, because trade
  * accounts are approved by the shop against a KRA PIN and a business name, and
  * the account backend that would hold a tier and a proforma does not exist yet.
@@ -34,7 +51,7 @@ const WHO = [
 ]
 
 const BENEFITS = [
-  ["20% off list", "The trade rate on every SKU, not a coupon on a few lines."],
+  [capital(RATE), "The trade rate on every SKU, not a coupon on a few lines."],
   ["Tier pricing", "The more you move, the better the rate. Set against your account, not the till."],
   ["Bulk quantity entry", "Order 40 runners and 12 brackets in one go, without opening two product pages."],
   ["Proforma invoices", "Settle by bank transfer against a proforma instead of paying at checkout."],
@@ -50,7 +67,7 @@ const schema = {
   "@context": "https://schema.org",
   "@type": "Offer",
   name: "AllFix trade account",
-  description: "Wholesale pricing, 20% off list, for curtain-hardware trade customers in Kenya.",
+  description: `Wholesale pricing, ${RATE}, for curtain-hardware trade customers in Kenya.`,
   category: "Wholesale",
   areaServed: "Kenya",
   seller: { "@type": "HardwareStore", name: SHOP.name },
@@ -71,7 +88,7 @@ export default async function Trade() {
             Wholesale
           </p>
           <h1 className="display-xl mt-3 max-w-[16ch] font-display font-bold tracking-tight">
-            20% off list, on every part
+            {capital(RATE)}, on every part
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-band-mute">
             A trade account for fundis, curtain makers and fit-out contractors: the wholesale rate
