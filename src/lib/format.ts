@@ -28,6 +28,31 @@ export function priceOrAsk(kes: number | null | undefined, basis?: string) {
   return price(kes, basis) ?? "Price on request"
 }
 
+/**
+ * The way to the counter.
+ *
+ * A link rather than an embedded map, and that is a decision. An embed means a
+ * Google iframe and Google's script on every page that carries it, which would
+ * be the first third party script in this repository, would need `frame-src`
+ * and `script-src` opened in a CSP written to refuse exactly that, and would
+ * load a map for every visitor on a phone in Nairobi whether or not they were
+ * ever going to walk to the shop. A link costs nothing until somebody wants it,
+ * and it opens the app they already have directions in.
+ *
+ * `ALLFIX_MAPS_URL` is the exact pin when the shop supplies one, which is the
+ * only way to be exact: a shop front on Njugu Lane is not a coordinate this
+ * repository can know, and a guessed one sends a customer to the wrong door.
+ * Without it this searches for the shop by name and address, which is what a
+ * person would type anyway.
+ */
+export function directions(): string {
+  const pinned = process.env.NEXT_PUBLIC_ALLFIX_MAPS_URL?.trim()
+  if (pinned) return pinned
+
+  const query = [SHOP.name, SHOP.street, SHOP.area, SHOP.city, SHOP.country].join(", ")
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
+}
+
 export const SHOP = {
   name: "AllFix By Kipekee",
   street: "Njugu Lane",

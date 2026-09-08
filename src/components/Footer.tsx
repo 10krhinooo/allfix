@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Logo } from "@/components/Logo"
 import { SocialRow } from "@/components/Social"
 import { systems } from "@/lib/catalogue"
-import { SHOP } from "@/lib/format"
+import { SHOP, directions } from "@/lib/format"
 import { readSettings } from "@/lib/settings-service"
 
 /**
@@ -65,6 +65,14 @@ export async function Footer() {
             <p>{SHOP.street}</p>
             <p>{SHOP.area}</p>
             <a href={`tel:${SHOP.phoneIntl}`} className="block font-mono text-ink">{SHOP.phone}</a>
+            <a
+              href={directions()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block underline-offset-4 hover:text-ink hover:underline"
+            >
+              Directions
+            </a>
           </address>
 
           <SocialRow links={social} className="mt-5" />
