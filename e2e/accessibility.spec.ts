@@ -76,6 +76,10 @@ test("the desks are checked too, behind the door", async ({ page }) => {
     "/admin/stock",
     "/admin/enquiries",
     "/admin/settings",
+    // Added with the screen that made it worth adding. People was a poster
+    // until this commit and had never been swept; the first sweep of it found
+    // three contrast failures and a scroll region no keyboard could reach.
+    "/admin/people",
   ]) {
     await page.goto(path)
     const found = await violations(page)
