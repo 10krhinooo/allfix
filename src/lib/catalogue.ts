@@ -155,7 +155,48 @@ export interface Catalogue {
 }
 
 /** The committed migration, which is what the shop reads with no service wired. */
-const FILE = catalogue as unknown as Catalogue
+const FILE = counted(catalogue as unknown as Catalogue)
+
+/**
+ * The counts, worked out from the parts rather than believed.
+ *
+ * `skuCount` on the catalogue and `partCount` on every system and range arrive
+ * as stored numbers: the migration writes them once, and the service returns
+ * whatever it was told. That is correct exactly until somebody adds a part, and
+ * the console can now add, retire and remove one. A system page would go on
+ * saying "24 parts" over a list of twenty five, and nothing would ever correct
+ * it, because no code path recomputes a number that was handed over as a fact.
+ *
+ * So they are recomputed here, once, where the catalogue enters the shop. Doing
+ * it at the seam rather than at each call site means a screen added later
+ * cannot get it wrong: there is no stale number left in the object to read.
+ * `partsForSystem` and `partsForRange` are the same rules the pages themselves
+ * browse by, so the figure and the list under it can never disagree.
+ */
+export function counted(source: Catalogue): Catalogue {
+  const live = source.products
+
+  return {
+    ...source,
+    skuCount: live.reduce((total, product) => total + skusOf(product), 0),
+    systems: source.systems.map((system) => ({
+      ...system,
+      // The test `partsForSystem` applies, and only that: a universal part is
+      // offered separately on the page rather than counted into the system, so
+      // counting one here would put the figure one above the list beneath it.
+      partCount: live.filter((product) => product.fitsSystems.includes(system.slug)).length,
+    })),
+    ranges: source.ranges.map((range) => ({
+      ...range,
+      // `partsForRange` reads rods only, so this does too. A rail carrying a rod
+      // range would be a migration fault rather than something to count around,
+      // but the figure should still be of the list it labels.
+      partCount: live.filter(
+        (product) => product.family === "rod" && product.range === range.slug,
+      ).length,
+    })),
+  }
+}
 
 const API = process.env.ALLFIX_API_URL ?? ""
 
@@ -205,7 +246,7 @@ export async function catalogueData(): Promise<Catalogue> {
       return FILE
     }
 
-    return fromService(bundle, list)
+    return counted(fromService(bundle, list))
   } catch (failure) {
     warn(String(failure))
     return FILE
