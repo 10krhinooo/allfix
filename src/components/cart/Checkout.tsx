@@ -144,8 +144,9 @@ export function Checkout({
 
         {!signedIn && (
           <p className="mt-5 border-l-2 border-brass bg-brass-soft px-3 py-2 text-sm leading-relaxed text-ink">
-            Keep that reference. It and your phone number are how we find this order, and it is
-            what to quote if you call. Opening an account keeps it for you.
+            Keep that reference. It and your phone number are how we find this order: look it up
+            any time at <Link href="/orders" className="underline underline-offset-2">Find your
+            order</Link>, or quote it if you call. Opening an account keeps it for you.
           </p>
         )}
 

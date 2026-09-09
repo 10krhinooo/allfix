@@ -72,6 +72,15 @@ const DEFAULTS: Record<string, Limit> = {
    * one.
    */
   photo: { hits: 40, seconds: 300 },
+  /*
+   * Finding an order again, by reference and the number it was placed on.
+   *
+   * Mean on purpose. A reference is a short sequence and the pairing with a
+   * phone number is the only thing making it somebody's own order rather than
+   * anybody's, so this is the one screen on the shop worth being slow to answer
+   * repeatedly. Ten tries is more than anybody mistyping needs.
+   */
+  lookup: { hits: 10, seconds: 300 },
 }
 
 /**

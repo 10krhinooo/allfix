@@ -48,6 +48,7 @@ const PUBLIC = [
   ["trade", "/trade"],
   ["the basket", "/cart"],
   ["checkout", "/checkout"],
+  ["finding an order", "/orders"],
   ["the door", "/sign-in"],
   ["registration", "/auth/register"],
 ]
