@@ -12,6 +12,7 @@ import { signIn, WHO } from "./helpers"
 const PUBLIC_PAGES = [
   ["/", /Curtains that hang properly/i],
   ["/systems", /rail/i],
+  ["/ranges", /finish/i],
   ["/shop", /./],
   ["/build", /Build a rail/i],
   ["/services", /./],

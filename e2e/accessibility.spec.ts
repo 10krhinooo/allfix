@@ -39,6 +39,8 @@ const PUBLIC = [
   ["the front page", "/"],
   ["the systems index", "/systems"],
   ["a system", "/systems/20"],
+  ["the rod finishes", "/ranges"],
+  ["a finish", "/ranges/antique-brass"],
   ["the shop", "/shop"],
   ["a product", "/product/20-runners"],
   ["the configurator", "/build"],

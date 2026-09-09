@@ -35,7 +35,18 @@ export interface BulkPart {
   priceBasis: string
 }
 
-export function BulkAdd({ parts, system }: { parts: BulkPart[]; system: string }) {
+export function BulkAdd({
+  parts,
+  /**
+   * What to call the parts in the sentence above the list. A rail says its
+   * short name and a rod finish says its own, because this component is now
+   * used on both axes and "system" was only ever true of one of them.
+   */
+  label,
+}: {
+  parts: BulkPart[]
+  label: string
+}) {
   const { tier } = useTier()
   const cart = useCart()
   const [open, setOpen] = useState(false)
@@ -79,7 +90,7 @@ export function BulkAdd({ parts, system }: { parts: BulkPart[]; system: string }
             Order several at once
           </h2>
           <p className="mt-1 max-w-2xl text-sm leading-relaxed text-slate">
-            Set the quantities against the {system} parts you need and add the whole lot to the
+            Set the quantities against the {label} parts you need and add the whole lot to the
             basket in one go.
           </p>
         </div>

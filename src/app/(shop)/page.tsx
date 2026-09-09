@@ -202,14 +202,14 @@ export default async function Home() {
           </li>
 
           <li>
-            <Link href="/shop/rod" className="flex h-full flex-col bg-paper p-6 transition-colors hover:bg-brass-soft">
+            <Link href="/ranges" className="flex h-full flex-col bg-paper p-6 transition-colors hover:bg-brass-soft">
               <p className="callout">{allRanges.length} finishes</p>
               <p className="mt-2 font-display text-xl font-semibold tracking-tight">Curtain rods</p>
               <p className="mt-2 text-sm leading-relaxed text-slate">
                 Poles in antique brass, black, copper and silver, with finials, rings and tie
                 backs to match. In 19, 25 and 28mm.
               </p>
-              <p className="mt-4 text-sm font-medium text-oxblood">Browse rods</p>
+              <p className="mt-4 text-sm font-medium text-oxblood">Browse the finishes</p>
             </Link>
           </li>
 

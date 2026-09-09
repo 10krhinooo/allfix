@@ -511,3 +511,32 @@ export async function partsForSystemByComponent(slug: string) {
 export async function skuCountForSystem(slug: string) {
   return (await partsForSystem(slug)).reduce((total, product) => total + skusOf(product), 0)
 }
+
+/**
+ * The same bucketing for a rod finish, and it has to be its own function rather
+ * than a parameter on the system one: a rod carries `range` and an empty
+ * `fitsSystems`, so `partsForSystem` can never find it. The two axes meet only
+ * in the sort, which is `ASSEMBLY` for both, so a rod page reads the way a rail
+ * page does: the pole first, then what holds it up, then what runs on it, then
+ * what finishes the end.
+ */
+export async function partsForRangeByComponent(slug: string, diameter?: number) {
+  const grouped = new Map<string, Product[]>()
+  for (const product of await partsForRange(slug, diameter)) {
+    const bucket = grouped.get(product.component)
+    if (bucket) bucket.push(product)
+    else grouped.set(product.component, [product])
+  }
+
+  const known = await components()
+  return [...grouped].map(([component, parts]) => ({
+    component: known.find((c) => c.slug === component)
+      ?? { slug: component, name: parts[0].componentLabel, purpose: "" },
+    parts,
+  }))
+}
+
+/** How many orderable SKUs sit behind a finish, counting variants separately. */
+export async function skuCountForRange(slug: string) {
+  return (await partsForRange(slug)).reduce((total, product) => total + skusOf(product), 0)
+}

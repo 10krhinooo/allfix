@@ -66,7 +66,16 @@ this directly, and there are two families with two axes:
   every product, and by `/systems`, the home page picker, `partsForSystem()`.
 - **Rods** (`RD#` prefixes: `RD#AB_`, `RD#BL_`) browse by **finish**, then diameter. Nothing
   that fits a #20 fits a 28mm pole, so rods carry `range` and `diameter` and an empty
-  `fitsSystems`, never a `system`. Driven by `partsForRange()`.
+  `fitsSystems`, never a `system`. Driven by `/ranges`, `/ranges/[slug]` and
+  `partsForRange()`/`partsForRangeByComponent()`.
+
+The two axes are deliberately symmetrical: `/systems` is to a rail what `/ranges` is to a
+rod, both prerendered, both in the sitemap, both grouped by component in assembly order.
+Rods had neither page until the axes were levelled up, which left seventy four parts
+reachable only by working a filter, and a filter combination is not a page: no sitemap lists
+one and no search engine ranks one. Diameter stays a filter and does **not** get a route,
+for the same reason. `/ranges/[slug]` hands the bore off to `/shop/rod?range=&diameter=`,
+which is the browser that already does faceting well.
 
 Component type (bracket, stopper, finial...) is a filter within either axis, never the
 primary one.
@@ -200,9 +209,9 @@ and look at it). **The social links are not hardcoded anywhere.** None are set t
 `SocialRow` renders nothing rather than six icons pointing at accounts that do not exist.
 
 Every route the header and footer link to is now built: `/`, `/systems`, `/systems/[slug]`,
-`/shop`, `/product/[slug]`, `/build`, `/services`, `/services/[slug]`, `/book`, `/trade`,
-`/privacy`, `/terms`, plus `/sign-in`, `/auth/*`, `/admin/*`, `/trade/account/*` and
-`/account/*`. This section previously said the last five 404ed, which stopped being true
+`/ranges`, `/ranges/[slug]`, `/shop`, `/shop/[category]`, `/product/[slug]`, `/build`,
+`/services`, `/services/[slug]`, `/book`, `/trade`, `/orders`, `/privacy`, `/terms`, plus
+`/sign-in`, `/auth/*`, `/admin/*`, `/trade/account/*` and `/account/*`. This section previously said the last five 404ed, which stopped being true
 without the note being updated. The rule it existed for still holds: check what actually has
 a `page.tsx` before assuming a page exists, and do not add a call to action that points at a
 route which does not. `/build` reading only `?system=` and ignoring the rest of a saved

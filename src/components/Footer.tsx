@@ -48,6 +48,7 @@ export async function Footer() {
           <ul className="mt-3 space-y-1.5">
             {[
               ["/shop", "All parts"],
+              ["/ranges", "Rod finishes"],
               ["/build", "Build a rail"],
               ["/services", "Installation & curtaining"],
               ["/trade", "Trade accounts"],

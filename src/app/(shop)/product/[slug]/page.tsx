@@ -135,7 +135,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           { href: "/", label: "Home" },
           { href: "/shop", label: "All parts" },
           ...(system ? [{ href: `/systems/${system.slug}`, label: system.name }] : []),
-          ...(range ? [{ href: `/shop/rod?range=${range.slug}`, label: range.name }] : []),
+          ...(range ? [{ href: `/ranges/${range.slug}`, label: range.name }] : []),
           { label: product.name },
         ]}
       />
