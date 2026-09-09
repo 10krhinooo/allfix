@@ -28,6 +28,7 @@ export function PartScreen({
   onRetire,
   onRestore,
   onRemove,
+  children,
 }: {
   part: PartFormValues & { slug: string; retiredAt?: string | null }
   price: PriceEdit
@@ -38,6 +39,8 @@ export function PartScreen({
   onRetire: (slug: string) => Promise<Saved>
   onRestore: (slug: string) => Promise<Saved>
   onRemove: (slug: string) => Promise<Saved>
+  /** What this part has done: read on the server, rendered under the form. */
+  children?: React.ReactNode
 }) {
   const router = useRouter()
   const [busy, start] = useTransition()
@@ -67,6 +70,8 @@ export function PartScreen({
         onSave={(values) => onSave(part.slug, values)}
         onPrice={onPrice}
       />
+
+      {children}
 
       <div className="mt-10 space-y-4">
         <Card>

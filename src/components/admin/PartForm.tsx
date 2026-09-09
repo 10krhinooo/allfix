@@ -3,8 +3,9 @@
 import { useState, useTransition } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Card, CardHeader, Note, PageHead, Section } from "@/components/admin/parts"
+import { Note, PageHead, Section } from "@/components/admin/parts"
 import { PartPhoto } from "@/components/admin/PartPhoto"
+import { useFades } from "@/lib/notice"
 import type { PartEdit, PriceEditWire, Saved } from "@/lib/admin/catalogue-api"
 import { BASES, priceProblem, samePrice, toPrice, type PriceEdit } from "@/lib/admin/pricing"
 
@@ -115,6 +116,11 @@ export function PartForm({
   const [categories, setCategories] = useState(part?.categories ?? "")
   const [busy, start] = useTransition()
   const [problem, setProblem] = useState<string | null>(null)
+  const [saved, setSaved] = useState(false)
+
+  // Confirmations take themselves away and refusals do not, which is the rule
+  // this console already follows: a refusal is something somebody has to read.
+  useFades(saved, () => setSaved(false))
 
   const [priceKes, setPriceKes] = useState(price.priceKes === null ? "" : String(price.priceKes))
   const [priceBasis, setPriceBasis] = useState(price.priceBasis)
@@ -140,6 +146,7 @@ export function PartForm({
 
   function submit() {
     setProblem(null)
+    setSaved(false)
     start(async () => {
       /*
        * Only what somebody actually filled in.
@@ -194,7 +201,25 @@ export function PartForm({
         }
       }
 
-      router.push(adding ? `/admin/parts/${answer.slug}` : "/admin/parts")
+      /*
+       * Adding lands on the part just created, because there is nowhere else to
+       * be: the code is now taken and the next thing anybody does is price it or
+       * photograph it.
+       *
+       * Altering stays exactly where it is. It used to push back to the
+       * worksheet, which threw away the screen somebody was working on and made
+       * two corrections to one part into two round trips through a list of two
+       * hundred. `refresh` re-reads the server components in place, so the form
+       * keeps its scroll position and its focus and the figures below it are the
+       * saved ones. The confirmation is what says it worked, and it takes itself
+       * away, which is the rule the rest of this console follows.
+       */
+      if (adding) {
+        router.push(`/admin/parts/${answer.slug}`)
+        return
+      }
+      setSaved(true)
+      router.refresh()
     })
   }
 
@@ -470,8 +495,14 @@ export function PartForm({
             {busy ? "Saving" : adding ? "Add the part" : "Save"}
           </button>
           <Link href="/admin/parts" className="text-sm text-slate hover:text-ink">
-            Cancel
+            {adding ? "Cancel" : "Back to the worksheet"}
           </Link>
+
+          {/* Announced, and holding its height whether or not it is showing, so
+              saving does not shift the button somebody is about to press again. */}
+          <p role="status" className="callout h-4">
+            {saved ? "Saved." : ""}
+          </p>
         </div>
       </div>
     </>
