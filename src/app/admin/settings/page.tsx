@@ -4,6 +4,9 @@ import { readDesk } from "@/lib/admin/guard"
 import { capabilities } from "@/lib/admin/roles"
 import { readSettings } from "@/lib/settings-service"
 import { Settings } from "@/components/admin/Settings"
+import { Ohala } from "@/components/admin/Ohala"
+import { readOhala } from "@/lib/admin/ohala-service"
+import { retryEvent } from "@/app/admin/settings/actions"
 
 export const metadata: Metadata = { title: "Settings" }
 
@@ -24,5 +27,20 @@ export default async function SettingsPage() {
   const desk = await readDesk()
   if (!desk || !capabilities(desk.role).settings) notFound()
 
-  return <Settings settings={await readSettings(true)} />
+  // Read side by side: neither answer depends on the other, and this screen is
+  // opened to look at something rather than to wait for it.
+  const [settings, ohala] = await Promise.all([readSettings(true), readOhala()])
+
+  return (
+    <>
+      <Settings settings={settings} />
+      {/* Below the shop's own settings, because it is about where what the shop
+          does goes rather than about what the shop says. Owner only, like
+          everything else on this screen and for the same reason: it is true of
+          the whole shop rather than of one part on a shelf. */}
+      <div className="mt-6">
+        <Ohala state={ohala} onRetry={retryEvent} />
+      </div>
+    </>
+  )
 }

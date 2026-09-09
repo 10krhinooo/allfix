@@ -37,6 +37,18 @@ test.describe("the settings screen", () => {
     await expect(page.getByText(/Read from the environment/)).toBeVisible()
   })
 
+  test("the back office panel does not report an empty queue when it cannot read one", async ({
+    page,
+  }) => {
+    // No console service is reachable in this suite. Nothing waiting and nobody
+    // to ask are different facts, and only the first one means the shop's orders
+    // are reaching the accounts.
+    await signIn(page, WHO.admin, "/admin/settings")
+    await expect(page.getByRole("heading", { name: "Ohala" })).toBeVisible()
+    await expect(page.getByText(/No console service is reachable/)).toBeVisible()
+    await expect(page.getByText(/not the same as nothing being sent/)).toBeVisible()
+  })
+
   test("a half typed address is not previewed as a live link", async ({ page }) => {
     await signIn(page, WHO.admin, "/admin/settings")
     await page.getByLabel("Instagram").fill("instagram.com/allfix")
