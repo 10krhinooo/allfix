@@ -6,9 +6,9 @@ import { useRouter } from "next/navigation"
 import { useCart, clearCart } from "@/lib/cart"
 import { buyable, type BasketPart } from "@/lib/basket"
 import type { Address } from "@/lib/account"
-import { price, SHOP } from "@/lib/format"
+import { price, SHOP, whatsapp } from "@/lib/format"
 import { ratePhrase, unitFor, type Tier } from "@/lib/tiers"
-import { Empty } from "@/components/ui"
+import { Button, Empty, WhatsAppIcon } from "@/components/ui"
 
 /**
  * The last screen before an order exists.
@@ -66,6 +66,15 @@ export function Checkout({
   const [street, setStreet] = useState("")
   const [area, setArea] = useState("")
   const [problems, setProblems] = useState<string[]>([])
+  /**
+   * Whether the shop could not be reached, as opposed to refusing the basket.
+   *
+   * Only this one offers the way out below. A basket the shop refused is a
+   * basket somebody can correct; a basket the shop never saw is one that is
+   * about to be lost, and a customer who has just typed out a delivery address
+   * will not type it again tomorrow.
+   */
+  const [down, setDown] = useState(false)
   const [busy, setBusy] = useState(false)
   const [placed, setPlaced] = useState<Placed | null>(null)
 
@@ -83,6 +92,7 @@ export function Checkout({
     if (busy || sellableLines.length === 0) return
     setBusy(true)
     setProblems([])
+    setDown(false)
 
     const chosen = addresses.find((one) => one.id === addressId)
     const collecting = addressId === "collect"
@@ -107,10 +117,21 @@ export function Checkout({
           guest: signedIn ? null : { name, phone, email },
         }),
       })
-      const body = (await response.json()) as Placed & { message?: string; problems?: string[] }
+      const body = (await response.json().catch(() => ({}))) as Placed & {
+        message?: string
+        problems?: string[]
+      }
 
       if (!response.ok) {
         setProblems(body.problems?.length ? body.problems : [body.message ?? "That did not work."])
+        /*
+         * A refusal and an outage are different things and the difference is
+         * what the customer should do next. A 400 is the shop saying something
+         * about this basket is wrong, and it is fixable here. A 5xx is the shop
+         * being unable to answer at all, and no amount of correcting the form
+         * will help: that is when the basket is worth carrying somewhere else.
+         */
+        setDown(response.status >= 500)
         setBusy(false)
         return
       }
@@ -120,10 +141,35 @@ export function Checkout({
       setPlaced(body)
       router.refresh()
     } catch {
-      setProblems(["We could not reach the shop just then. Try again in a moment."])
+      // Never reached the shop at all, which is the case this exists for.
+      setProblems(["We could not reach the shop just then."])
+      setDown(true)
       setBusy(false)
     }
   }
+
+  /*
+   * The basket, written out for a chat window.
+   *
+   * Deliberately carries no total. The figures on this screen are display only
+   * and the order route re-prices from the cookie, so a total pasted into a chat
+   * is a number the shop never agreed to and would have to argue with later.
+   * Quantities and codes are what the counter needs; the price is theirs to say.
+   */
+  const handover = whatsapp(
+    `Hello ${SHOP.name}, the website could not take this order just now. Please could you price ` +
+      `and confirm it:\n` +
+      sellableLines
+        .map((line) => `- ${line.quantity} x ${catalogue[line.sku]?.name ?? line.sku} (${line.sku})`)
+        .join("\n") +
+      (name.trim() ? `\nName: ${name.trim()}` : "") +
+      (phone.trim() ? `\nPhone: ${phone.trim()}` : "") +
+      (addressId === "collect"
+        ? "\nCollecting at the counter."
+        : street.trim() || area.trim()
+          ? `\nDeliver to: ${[street.trim(), area.trim()].filter(Boolean).join(", ")}`
+          : ""),
+  )
 
   if (placed) {
     return (
@@ -400,6 +446,20 @@ export function Checkout({
           Delivery is quoted by county and confirmed with your order. We confirm the final
           figure before anything is charged.
         </p>
+
+        {down && (
+          <div className="mt-4 border-l-2 border-brass bg-brass-soft px-3 py-3">
+            <p className="text-sm leading-relaxed text-ink">
+              Nothing was ordered and nothing was charged. Send it to us on WhatsApp instead and
+              we will price it and confirm: the message already has your basket in it, so there is
+              nothing to type again.
+            </p>
+            <Button href={handover} variant="whatsapp" className="mt-3">
+              <WhatsAppIcon />
+              Send this order on WhatsApp
+            </Button>
+          </div>
+        )}
 
         {problems.length > 0 && (
           <ul role="alert" className="mt-4 space-y-2">
