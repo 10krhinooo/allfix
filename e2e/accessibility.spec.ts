@@ -61,32 +61,44 @@ for (const [what, path] of PUBLIC) {
   })
 }
 
-test("the desks are checked too, behind the door", async ({ page }) => {
-  // A staff screen worked all day is worth as much care as a shop page, and it
-  // is the one nobody outside the shop ever files a complaint about.
-  await signIn(page, WHO.admin)
-  // Orders was built in phase 3 and never added here, which is exactly how a
-  // sweep quietly stops covering the console: the list is hand kept, so a new
-  // screen is only checked if somebody remembers to name it.
-  for (const path of [
-    "/admin",
-    "/admin/parts",
-    "/admin/parts/new",
-    "/admin/parts/20-runners",
-    "/admin/orders",
-    "/admin/stock",
-    "/admin/enquiries",
-    "/admin/settings",
-    // Added with the screen that made it worth adding. People was a poster
-    // until this commit and had never been swept; the first sweep of it found
-    // three contrast failures and a scroll region no keyboard could reach.
-    "/admin/people",
-  ]) {
+/*
+ * A staff screen worked all day is worth as much care as a shop page, and it is
+ * the one nobody outside the shop ever files a complaint about.
+ *
+ * Orders was built in phase 3 and never added here, which is exactly how a
+ * sweep quietly stops covering the console: the list is hand kept, so a new
+ * screen is only checked if somebody remembers to name it.
+ *
+ * One test per screen rather than one loop over all of them. As a single test
+ * it signed in once and then walked nine screens with an axe run on each, which
+ * grew past the thirty second cap the moment the console gained a screen: it
+ * failed on time under a loaded suite while every screen on it was clean. The
+ * cost is a sign in per screen, which is cheap; what is bought is that a failure
+ * names the screen it is on rather than the loop it was in.
+ */
+const DESKS = [
+  "/admin",
+  "/admin/parts",
+  "/admin/parts/new",
+  "/admin/parts/20-runners",
+  "/admin/orders",
+  "/admin/stock",
+  "/admin/enquiries",
+  "/admin/settings",
+  // Added with the screen that made it worth adding. People was a poster
+  // until this commit and had never been swept; the first sweep of it found
+  // three contrast failures and a scroll region no keyboard could reach.
+  "/admin/people",
+]
+
+for (const path of DESKS) {
+  test(`${path} is checked too, behind the door`, async ({ page }) => {
+    await signIn(page, WHO.admin)
     await page.goto(path)
     const found = await violations(page)
     expect(found.map((one) => `${path}: ${one.id}`)).toEqual([])
-  }
-})
+  })
+}
 
 test("the platform screen is checked as the account that can open it", async ({ page }) => {
   // Its own test rather than another path in the loop above, because it is the
