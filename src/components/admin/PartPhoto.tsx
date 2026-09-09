@@ -119,7 +119,7 @@ export function PartPhoto({
               className="object-contain"
             />
           ) : (
-            <span className="flex h-full items-center justify-center px-2 text-center text-[10px] leading-tight text-niche-mute">
+            <span className="flex h-full items-center justify-center px-2 text-center text-[10px] leading-tight text-deep-mute">
               No photograph
             </span>
           )}
