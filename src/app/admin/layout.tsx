@@ -60,7 +60,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       kind: "part" as const,
     })),
     ...searchable.map((enquiry) => ({
-      ref: enquiry.id,
+      // Filed enquiries carry the reference the customer was actually given
+      // (`AF-1042`), and that is what a counter searches on when somebody
+      // calls back and quotes it. The seeded rows never went through the
+      // site and have no reference, so they fall back to the id.
+      ref: "reference" in enquiry ? (enquiry as { reference: string }).reference : enquiry.id,
       name: enquiry.name,
       href: `/admin/enquiries#${enquiry.id}`,
       kind: "enquiry" as const,

@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation"
  * not think that way: somebody is on the phone holding a bracket, and the
  * question is just "what do we know about this".
  *
- * The index is built on the server and kept to three string fields per row, so
+ * The index is built on the server and kept to a few string fields per row, so
  * carrying it in the chrome costs a few kilobytes rather than the catalogue.
  */
 
@@ -20,6 +20,8 @@ export interface Findable {
   name: string
   href: string
   kind: "part" | "enquiry"
+  /** The number to ring back, on an enquiry. A part has none. */
+  phone?: string
 }
 
 export function ConsoleSearch({ items }: { items: Findable[] }) {
@@ -30,10 +32,15 @@ export function ConsoleSearch({ items }: { items: Findable[] }) {
   const hits = useMemo(() => {
     const needle = query.trim().toLowerCase()
     if (needle.length < 2) return []
+    // A phone number is compared on its digits alone, so a dash, a space or
+    // the leading 0 typed differently from how it is stored still matches.
+    const digits = needle.replace(/\D/g, "")
     return items
       .filter(
         (item) =>
-          item.name.toLowerCase().includes(needle) || item.ref.toLowerCase().includes(needle),
+          item.name.toLowerCase().includes(needle) ||
+          item.ref.toLowerCase().includes(needle) ||
+          (digits.length > 0 && item.phone !== undefined && item.phone.replace(/\D/g, "").includes(digits)),
       )
       .slice(0, 8)
   }, [items, query])
@@ -49,8 +56,8 @@ export function ConsoleSearch({ items }: { items: Findable[] }) {
       <input
         type="search"
         value={query}
-        placeholder="Search parts and enquiries"
-        aria-label="Search parts and enquiries"
+        placeholder="Search parts, enquiries or a phone number"
+        aria-label="Search parts, enquiries or a phone number"
         onChange={(event) => {
           setQuery(event.target.value)
           setOpen(true)
