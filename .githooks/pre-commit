@@ -1,0 +1,33 @@
+#!/bin/sh
+# What CI used to answer, asked before the commit exists instead.
+#
+# CI is parked until there is somewhere to deploy to, so these hooks are the only
+# thing that runs the checks at all. This one stays cheap enough to run on every
+# commit: it looks at what is staged, not the whole tree. The full suite is
+# pre-push. `git commit --no-verify` skips it when you know why.
+set -e
+
+# The em dash, spelled as bytes so this file does not contain one.
+EM=$(printf '\342\200\224')
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -z "$staged" ] && exit 0
+
+# The project bans the em dash everywhere, and a review is a poor place to find one.
+if git diff --cached -U0 --diff-filter=ACMR | grep -n "^+.*$EM" >/dev/null; then
+  echo "pre-commit: an em dash is staged. Use a comma, colon, parentheses or a period." >&2
+  git diff --cached -U0 --diff-filter=ACMR | grep "^+.*$EM" | head -5 >&2
+  exit 1
+fi
+
+if [ ! -d node_modules ]; then
+  echo "pre-commit: node_modules is missing, run npm ci first." >&2
+  exit 1
+fi
+
+scripts=$(echo "$staged" | grep -E '\.(ts|tsx|mts|js|mjs)$' || true)
+if [ -n "$scripts" ]; then
+  echo "$scripts" | xargs npx --no-install eslint
+fi
+
+npm test --silent
