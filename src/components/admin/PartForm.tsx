@@ -3,8 +3,11 @@
 import { useState, useTransition } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Card, CardHeader, Note, PageHead, Section } from "@/components/admin/parts"
-import type { PartEdit, Saved } from "@/lib/admin/catalogue-api"
+import { Note, PageHead, Section } from "@/components/admin/parts"
+import { PartPhoto } from "@/components/admin/PartPhoto"
+import { useFades } from "@/lib/notice"
+import type { PartEdit, PriceEditWire, Saved } from "@/lib/admin/catalogue-api"
+import { BASES, priceProblem, samePrice, toPrice, type PriceEdit } from "@/lib/admin/pricing"
 
 /**
  * Adding a part, and altering one.
@@ -24,8 +27,20 @@ import type { PartEdit, Saved } from "@/lib/admin/catalogue-api"
  * are not guessable and the alternative is finding them one refusal at a time.
  */
 
-const FIELD =
-  "mt-1.5 w-full rounded-sm border border-rule bg-paper px-3 py-2 text-sm outline-none focus:border-ink"
+/*
+ * Width is kept out of the base so a narrow field can set its own.
+ * `w-full` here and `w-32` on the element are both width utilities, and
+ * Tailwind settles that by stylesheet order rather than by the order they are
+ * written, so the override was a coin toss: the price boxes came out full
+ * width, a shilling figure in a field built for a sentence.
+ */
+const FIELD_BASE =
+  "mt-1.5 rounded-sm border border-rule bg-paper px-3 py-2 text-sm outline-none focus:border-ink"
+
+const FIELD = `${FIELD_BASE} w-full`
+
+/** A figure, in a box the size of a figure. */
+const MONEY = `${FIELD_BASE} mt-0 w-32 text-right font-mono`
 
 /**
  * A labelled field whose hint is a description rather than part of its name.
@@ -66,16 +81,28 @@ export interface PartFormValues extends PartEdit {
   slug?: string
 }
 
+const NO_PRICE: PriceEdit = {
+  priceKes: null,
+  priceBasis: "each",
+  priceNote: null,
+  tradePriceKes: null,
+}
+
 export function PartForm({
   part,
+  price = NO_PRICE,
   prefixes,
   onSave,
+  onPrice,
 }: {
   /** Absent when adding. Present, with its slug, when altering. */
   part?: PartFormValues
+  /** What the part costs now. Absent when adding, because it does not exist yet. */
+  price?: PriceEdit
   /** The codes the shop actually files parts under, read from the catalogue. */
   prefixes: { rails: string[]; rods: string[] }
   onSave: (values: PartEdit) => Promise<Saved>
+  onPrice: (slug: string, block: PriceEditWire) => Promise<Saved>
 }) {
   const adding = !part?.slug
   const router = useRouter()
@@ -85,14 +112,41 @@ export function PartForm({
   const [summary, setSummary] = useState(part?.summary ?? "")
   const [description, setDescription] = useState(part?.description ?? "")
   const [imageName, setImageName] = useState(part?.imageName ?? "")
+  const [photoUrl, setPhotoUrl] = useState(part?.photoUrl ?? "")
   const [categories, setCategories] = useState(part?.categories ?? "")
   const [busy, start] = useTransition()
   const [problem, setProblem] = useState<string | null>(null)
+  const [saved, setSaved] = useState(false)
+
+  // Confirmations take themselves away and refusals do not, which is the rule
+  // this console already follows: a refusal is something somebody has to read.
+  useFades(saved, () => setSaved(false))
+
+  const [priceKes, setPriceKes] = useState(price.priceKes === null ? "" : String(price.priceKes))
+  const [priceBasis, setPriceBasis] = useState(price.priceBasis)
+  const [tradeKes, setTradeKes] = useState(
+    price.tradePriceKes === null ? "" : String(price.tradePriceKes),
+  )
+  const [priceNote, setPriceNote] = useState(price.priceNote ?? "")
+  const [reason, setReason] = useState("")
 
   const isRod = sku.trim().toUpperCase().startsWith("RD#")
 
+  const priceFault = priceProblem(priceKes)
+  const tradeFault = priceProblem(tradeKes)
+
+  function block(): PriceEdit {
+    return {
+      priceKes: toPrice(priceKes),
+      priceBasis,
+      priceNote: priceNote.trim() || null,
+      tradePriceKes: toPrice(tradeKes),
+    }
+  }
+
   function submit() {
     setProblem(null)
+    setSaved(false)
     start(async () => {
       /*
        * Only what somebody actually filled in.
@@ -106,6 +160,13 @@ export function PartForm({
       if (summary.trim()) values.summary = summary.trim()
       if (description.trim()) values.description = description.trim()
       if (imageName.trim()) values.imageName = imageName.trim()
+      /*
+       * Sent only when it differs from what was already there, because absent
+       * means unchanged and "" means take the photograph down. Sending "" on
+       * every save of a part that never had one is harmless; sending it on a
+       * part that does would quietly unphotograph it.
+       */
+      if (photoUrl !== (part?.photoUrl ?? "")) values.photoUrl = photoUrl
       if (adding && isRod && categories.trim()) values.categories = categories.trim()
 
       const answer = await onSave(values)
@@ -113,11 +174,57 @@ export function PartForm({
         setProblem(answer.message)
         return
       }
-      router.push(adding ? `/admin/parts/${answer.slug}` : "/admin/parts")
+
+      /*
+       * The price is a second write, to the endpoint that refuses a zero and
+       * writes the audit row. Unlike the fields above it is sent whole, nulls
+       * included: clearing a price back to "price on request" is a real edit,
+       * and a shape that omitted the key could not say it.
+       *
+       * The half-failure is the case worth wording carefully. The part is
+       * already saved by the time this runs, so on the way in it now exists
+       * unpriced, and somebody who reads "could not save" will try again and
+       * be told the code is taken. Say what landed.
+       */
+      const wanted = block()
+      if (!samePrice(wanted, price)) {
+        const priced = await onPrice(answer.slug, { ...wanted, reason: reason.trim() || null })
+        if (!priced.ok) {
+          setProblem(
+            adding
+              ? `The part was added, but its price was not: ${priced.message} It is in the catalogue unpriced, so price it here rather than adding it again.`
+              : `The details were saved, but the price was not: ${priced.message}`,
+          )
+          if (adding) router.push(`/admin/parts/${answer.slug}`)
+          else router.refresh()
+          return
+        }
+      }
+
+      /*
+       * Adding lands on the part just created, because there is nowhere else to
+       * be: the code is now taken and the next thing anybody does is price it or
+       * photograph it.
+       *
+       * Altering stays exactly where it is. It used to push back to the
+       * worksheet, which threw away the screen somebody was working on and made
+       * two corrections to one part into two round trips through a list of two
+       * hundred. `refresh` re-reads the server components in place, so the form
+       * keeps its scroll position and its focus and the figures below it are the
+       * saved ones. The confirmation is what says it worked, and it takes itself
+       * away, which is the rule the rest of this console follows.
+       */
+      if (adding) {
+        router.push(`/admin/parts/${answer.slug}`)
+        return
+      }
+      setSaved(true)
+      router.refresh()
     })
   }
 
-  const ready = name.trim().length > 0 && (!adding || sku.trim().length > 0)
+  const ready =
+    name.trim().length > 0 && (!adding || sku.trim().length > 0) && !priceFault && !tradeFault
 
   return (
     <>
@@ -239,6 +346,13 @@ export function PartForm({
               )}
             </Field>
 
+            <PartPhoto
+              sku={adding ? sku : (part?.sku ?? sku)}
+              photoUrl={photoUrl}
+              onChange={setPhotoUrl}
+              disabled={busy}
+            />
+
             <Field
               label="The shot it is waiting for"
               hint="What to call the photograph when it is taken, so the shot list reads as instructions. A part with a photograph does not need one."
@@ -257,22 +371,113 @@ export function PartForm({
           </div>
         </Section>
 
-        {!adding && (
-          <Card>
-            <CardHeader
-              title="The price is set on the worksheet"
-              hint="Not here, and deliberately: a zero is refused there and the change is recorded against whoever made it."
-              action={
-                <Link
-                  href={`/admin/parts?q=${encodeURIComponent(part!.sku ?? part!.slug ?? "")}`}
-                  className="callout hover:text-ink"
-                >
-                  Price it
-                </Link>
-              }
-            />
-          </Card>
-        )}
+        {/* This used to be a card pointing at the worksheet. The worksheet is
+            good at pricing forty parts in a sitting, which is no reason to send
+            somebody there who is already looking at the one part they want to
+            price. */}
+        <Section title="What it costs">
+          <div className="space-y-5">
+            {/* The figure and what it buys are one answer, not two, and the
+                worksheet row already pairs them this way. Split across two
+                labelled fields, the first one's hint pushed the basis to the
+                far side of the card, where it read as unrelated to the money. */}
+            <Field
+              label="Price"
+              hint="Leave it blank to keep the part unpriced. It shows &ldquo;price on request&rdquo; on the shop and can still be asked about. A track at 400 is 400 per metre, not 400 for the track."
+            >
+              {({ id, describedBy }) => (
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-mono text-xs text-mute">KES</span>
+                  <input
+                    id={id}
+                    aria-describedby={describedBy}
+                    aria-invalid={priceFault ? true : undefined}
+                    value={priceKes}
+                    onChange={(event) => setPriceKes(event.target.value)}
+                    inputMode="decimal"
+                    placeholder="blank"
+                    className={`${MONEY} ${priceFault ? "border-oxblood text-oxblood" : ""}`}
+                  />
+                  <select
+                    value={priceBasis}
+                    onChange={(event) => setPriceBasis(event.target.value as PriceEdit["priceBasis"])}
+                    aria-label="What that price buys"
+                    className={`${FIELD_BASE} mt-0 w-40`}
+                  >
+                    {BASES.map((basis) => (
+                      <option key={basis.value} value={basis.value}>
+                        {basis.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </Field>
+
+            {priceFault && (
+              <p role="alert" className="text-xs leading-relaxed text-oxblood">
+                {priceFault}
+              </p>
+            )}
+
+            <Field
+              label="Trade price"
+              hint="What a trade account pays. Leave it blank and the trade rate comes off the list price instead, which is what most parts do."
+            >
+              {({ id, describedBy }) => (
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs text-mute">KES</span>
+                  <input
+                    id={id}
+                    aria-describedby={describedBy}
+                    aria-invalid={tradeFault ? true : undefined}
+                    value={tradeKes}
+                    onChange={(event) => setTradeKes(event.target.value)}
+                    inputMode="decimal"
+                    placeholder="off list"
+                    className={`${MONEY} ${tradeFault ? "border-oxblood text-oxblood" : ""}`}
+                  />
+                </div>
+              )}
+            </Field>
+
+            {tradeFault && (
+              <p role="alert" className="text-xs leading-relaxed text-oxblood">
+                {tradeFault}
+              </p>
+            )}
+
+            <Field
+              label="How it is quoted, in words"
+              hint="For a part priced by arrangement rather than by a figure. Shown on the shop in place of a price."
+            >
+              {({ id, describedBy }) => (
+                <input
+                  id={id}
+                  aria-describedby={describedBy}
+                  value={priceNote}
+                  onChange={(event) => setPriceNote(event.target.value)}
+                  className={FIELD}
+                />
+              )}
+            </Field>
+
+            <Field
+              label="Why, for the record"
+              hint="Optional, and kept with this change in the shop's price history."
+            >
+              {({ id, describedBy }) => (
+                <input
+                  id={id}
+                  aria-describedby={describedBy}
+                  value={reason}
+                  onChange={(event) => setReason(event.target.value)}
+                  className={FIELD}
+                />
+              )}
+            </Field>
+          </div>
+        </Section>
 
         {problem && (
           <Note tone="warn">
@@ -290,8 +495,14 @@ export function PartForm({
             {busy ? "Saving" : adding ? "Add the part" : "Save"}
           </button>
           <Link href="/admin/parts" className="text-sm text-slate hover:text-ink">
-            Cancel
+            {adding ? "Cancel" : "Back to the worksheet"}
           </Link>
+
+          {/* Announced, and holding its height whether or not it is showing, so
+              saving does not shift the button somebody is about to press again. */}
+          <p role="status" className="callout h-4">
+            {saved ? "Saved." : ""}
+          </p>
         </div>
       </div>
     </>

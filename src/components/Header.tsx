@@ -5,8 +5,15 @@ import { BasketLink } from "@/components/cart/BasketLink"
 import { SHOP } from "@/lib/format"
 import { ratePercent } from "@/lib/tiers"
 
+/*
+ * Both browse axes, because they are co-equal and the customer arrives knowing
+ * which one they are on. A rail owner and a rod owner are looking for different
+ * things and nothing that fits a #20 fits a 28mm pole, so sending both to "All
+ * parts" and letting them filter is what the old site did.
+ */
 const NAV = [
   { href: "/systems", label: "Rail systems" },
+  { href: "/ranges", label: "Rod finishes" },
   { href: "/shop", label: "All parts" },
   { href: "/build", label: "Build a rail" },
   { href: "/services", label: "Services" },

@@ -24,6 +24,8 @@ export interface ConsolePart {
   summary: string | null
   description: string | null
   imageName: string | null
+  /** Where the shop's own photograph is, when somebody has uploaded one. */
+  photoUrl: string | null
   priceKes: number | null
   priceBasis: PriceBasis
   priceNote: string | null
@@ -57,6 +59,7 @@ export async function readPart(slug: string): Promise<ConsolePart | null> {
       summary: p.summary ?? null,
       description: p.description ?? null,
       imageName: p.imageName ?? null,
+      photoUrl: p.photoUrl ?? null,
       priceKes: p.priceKes ?? null,
       priceBasis: down(p.priceBasis),
       priceNote: p.priceNote ?? null,
@@ -125,6 +128,89 @@ function down(basis: unknown): PriceBasis {
   return typeof basis === "string" ? (basis.toLowerCase() as PriceBasis) : "each"
 }
 
+/**
+ * What a part's price has done, and what its shelf has done.
+ *
+ * Both endpoints existed and nothing called them. The console could change a
+ * price and count a shelf and then show neither back, so the answer to "what did
+ * we charge for this in June" lived only in the database. A part screen that can
+ * alter a figure and cannot say what the figure used to be is asking somebody to
+ * trust it without evidence.
+ *
+ * `null` means nobody could be asked, as everywhere else on these seams, which
+ * the screen says rather than drawing an empty list: a part nobody has repriced
+ * and a service nobody could reach look identical and mean opposite things.
+ */
+export interface PriceMoment {
+  at: string
+  by: string | null
+  fromKes: number | null
+  fromBasis: PriceBasis
+  toKes: number | null
+  toBasis: PriceBasis
+  reason: string | null
+}
+
+export async function readPriceHistory(slug: string, held?: string): Promise<PriceMoment[] | null> {
+  const body = await readList(`/api/admin/products/${encodeURIComponent(slug)}/price-history`, held)
+  if (!body) return null
+  return body.map((entry) => ({
+    at: String(entry.changedAt),
+    by: entry.changedBy ?? null,
+    fromKes: money(entry.oldPriceKes),
+    fromBasis: down(entry.oldPriceBasis),
+    toKes: money(entry.newPriceKes),
+    toBasis: down(entry.newPriceBasis),
+    reason: entry.reason ?? null,
+  }))
+}
+
+/** Why a count moved. `COUNT` is somebody at the drawer; the rest are the shop trading. */
+export type StockReason = "COUNT" | "ORDER" | "CANCELLED" | "IMPORT" | "CORRECTION"
+
+export interface StockMoment {
+  at: string
+  by: string | null
+  /** How much it moved. Negative when something left the shelf. */
+  delta: number | null
+  /** What it was counted to, when this was a count rather than a sale. */
+  countedTo: number | null
+  reason: StockReason
+  orderReference: string | null
+  note: string | null
+}
+
+export async function readStockHistory(slug: string, held?: string): Promise<StockMoment[] | null> {
+  const body = await readList(`/api/admin/products/${encodeURIComponent(slug)}/stock-history`, held)
+  if (!body) return null
+  return body.map((entry) => ({
+    at: String(entry.at),
+    by: entry.byEmail ?? null,
+    delta: money(entry.delta),
+    countedTo: money(entry.countedTo),
+    reason: (entry.reason ?? "CORRECTION") as StockReason,
+    orderReference: entry.orderReference ?? null,
+    note: entry.note ?? null,
+  }))
+}
+
+/** Quantities arrive as numbers already, but a null must stay null and not become 0. */
+function money(value: unknown): number | null {
+  return value === null || value === undefined ? null : Number(value)
+}
+
+async function readList(path: string, held?: string): Promise<Record<string, never>[] | null> {
+  if (!API) return null
+  try {
+    const response = await fetch(`${API}${path}`, { headers: as(held), cache: "no-store" })
+    if (!response.ok) return null
+    const body: unknown = await response.json()
+    return Array.isArray(body) ? body : null
+  } catch {
+    return null
+  }
+}
+
 export type Saved =
   | { ok: true; slug: string }
   | { ok: false; message: string }
@@ -142,6 +228,11 @@ export interface PartEdit {
   summary?: string
   description?: string
   imageName?: string
+  /**
+   * Where the photograph is. Absent leaves it alone and "" takes it down, the
+   * same rule the rest of this record follows and the service's own.
+   */
+  photoUrl?: string
   /** Only read when adding a rod, to work out what kind of part it is. */
   categories?: string
   specs?: { label: string; value: string }[]

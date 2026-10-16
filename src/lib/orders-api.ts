@@ -55,6 +55,15 @@ export interface PlacedLine {
   quantity: number
   unitKes: number
   lineKes: number
+  /**
+   * What the unit figure buys, as the service spells it.
+   *
+   * The service has always sent this and the shape never declared it, so
+   * anything reading a placed order back had a figure with no unit attached. A
+   * track at 450 is 450 the metre, and a line that shows the number without the
+   * basis is the same class of mistake as showing a null price as zero.
+   */
+  basis?: string
 }
 
 export interface Placed {
@@ -125,6 +134,9 @@ async function priceLocally(request: PlaceRequest, tier: Tier): Promise<PlaceRes
       quantity: line.quantity,
       unitKes: unit,
       lineKes: unit * line.quantity,
+      // Upper case, because this is the shape the service returns and the two
+      // must not differ depending on which one priced the order.
+      basis: product.priceBasis.toUpperCase(),
     })
   }
 
@@ -198,6 +210,55 @@ export async function placeOrder(
       ok: false,
       status: 503,
       message: "We could not reach the shop just then. Try again in a moment.",
+    }
+  }
+}
+
+/**
+ * Finding an order again, with the reference and the number it was placed on.
+ *
+ * The checkout ends by telling somebody to keep their reference, and until now
+ * there was nowhere to use it: the endpoint existed on the service and nothing
+ * called it, so a customer who had not registered could be given a number and
+ * then had no way to ask what had become of it. Ringing the counter was the
+ * whole of the answer.
+ *
+ * Both halves are required and neither says which was wrong. A reference is a
+ * short sequence and guessing one is easy; pairing it with the phone number the
+ * order was placed on is what makes it somebody's own order rather than anybody's,
+ * and an answer that said "wrong phone" would confirm the reference exists.
+ */
+export type Found =
+  | { ok: true; order: Placed }
+  | { ok: false; message: string }
+
+const NOT_FOUND =
+  "We cannot find an order with that reference and phone number. Check both, or ring the counter and we will look it up."
+
+export async function findOrder(ref: string, phone: string): Promise<Found> {
+  const wanted = ref.trim().toUpperCase()
+  const digits = phone.replace(/\D/g, "")
+  if (!wanted || digits.length < 9) return { ok: false, message: NOT_FOUND }
+
+  if (!API) {
+    return {
+      ok: false,
+      message:
+        "Orders are kept by the shop's own records, and this site is not connected to them yet. Ring the counter with your reference and we will look it up.",
+    }
+  }
+
+  try {
+    const response = await fetch(
+      `${API}/api/orders/guest/${encodeURIComponent(wanted)}?phone=${encodeURIComponent(phone.trim())}`,
+      { cache: "no-store" },
+    )
+    if (!response.ok) return { ok: false, message: NOT_FOUND }
+    return { ok: true, order: (await response.json()) as Placed }
+  } catch {
+    return {
+      ok: false,
+      message: "Could not reach the shop's records. Try again in a moment, or ring the counter.",
     }
   }
 }

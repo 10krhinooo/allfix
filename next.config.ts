@@ -70,6 +70,20 @@ const CONSOLE_REDIRECTS: { source: string; destination: string }[] = [
  */
 const API = process.env.NEXT_PUBLIC_API_URL
 
+/**
+ * The blob store this deployment writes photographs to, as a hostname.
+ *
+ * Read out of the write token rather than configured twice. A Vercel Blob token
+ * is `vercel_blob_rw_<storeId>_<secret>`, and the store's public host is
+ * `<storeId>.public.blob.vercel-storage.com`, so the host and the credential
+ * cannot drift apart or name two different stores. Only the store id half is
+ * read; the secret never leaves the server and this only ever yields a hostname.
+ */
+const BLOB_HOST = (() => {
+  const id = process.env.BLOB_READ_WRITE_TOKEN?.split("_")[3]
+  return id ? `${id}.public.blob.vercel-storage.com` : null
+})()
+
 const CSP = [
   "default-src 'self'",
   // 'unsafe-eval' in development only: React uses eval there to rebuild server
@@ -115,6 +129,27 @@ const nextConfig: NextConfig = {
   // The version of the framework is a free hint to somebody deciding which
   // exploit to try first.
   poweredByHeader: false,
+
+  /*
+   * Photographs the shop uploads live in blob storage, on a host that is not
+   * this one, and the CSP above says `img-src 'self'`.
+   *
+   * Naming the host here rather than widening that policy is the narrower
+   * change. An optimised next/image renders as `/_next/image?url=...`, which the
+   * browser fetches from this origin: the picture travels server to server and
+   * the policy never admits another host at all. Widening `img-src` would let
+   * every page load images from there, which is a larger promise than "our own
+   * product shots come from our own store".
+   *
+   * With no token configured there is no host to name and the list is empty,
+   * which refuses everything. That is the right answer: a deployment with
+   * nowhere to put a photograph has none to render.
+   */
+  images: {
+    remotePatterns: BLOB_HOST
+      ? [{ protocol: "https" as const, hostname: BLOB_HOST, pathname: "/**" }]
+      : [],
+  },
 
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }]

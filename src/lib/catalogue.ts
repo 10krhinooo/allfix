@@ -44,6 +44,8 @@ export interface Variant {
   tradePriceKes: number | null
   stock: number | null
   image: string | null
+  /** The finish's own photograph, when the shop has uploaded one. */
+  photoUrl?: string | null
   legacyUrl: string | null
 }
 
@@ -78,6 +80,13 @@ export interface Product {
   image: string | null
   /** The shot this part is waiting for, on everything not yet photographed. */
   imageName: string | null
+  /**
+   * The shop's own photograph, when somebody has uploaded one from the console.
+   *
+   * Separate from `image`, which is a dead WooCommerce link kept only as the
+   * signal that a shot exists under `public/products/`. This one is fetched.
+   */
+  photoUrl?: string | null
   legacyUrl: string | null
   variantAxis?: string
   variants?: Variant[]
@@ -450,6 +459,17 @@ export async function componentsInOrder() {
  */
 export function imageFor(product: Product, variant?: Variant) {
   const entry = variant ?? product
+
+  /*
+   * A photograph the shop uploaded wins, and it is an address rather than a
+   * signal. `image` below is the opposite: a dead WooCommerce URL kept only to
+   * mean "the migration shot this", which is then turned into a path under
+   * public/products from the SKU. Asked in the other order, a part photographed
+   * at the counter would be sent to a file that was never written.
+   */
+  const stored = entry.photoUrl ?? (variant ? product.photoUrl : null)
+  if (stored) return stored
+
   if (!entry.image) return null
   // A variant group has no SKU of its own, and the migration writes one file
   // per variant keyed by that variant's SKU. The group shows its lead, so the
@@ -490,4 +510,33 @@ export async function partsForSystemByComponent(slug: string) {
 /** How many orderable SKUs sit behind a system, counting variants separately. */
 export async function skuCountForSystem(slug: string) {
   return (await partsForSystem(slug)).reduce((total, product) => total + skusOf(product), 0)
+}
+
+/**
+ * The same bucketing for a rod finish, and it has to be its own function rather
+ * than a parameter on the system one: a rod carries `range` and an empty
+ * `fitsSystems`, so `partsForSystem` can never find it. The two axes meet only
+ * in the sort, which is `ASSEMBLY` for both, so a rod page reads the way a rail
+ * page does: the pole first, then what holds it up, then what runs on it, then
+ * what finishes the end.
+ */
+export async function partsForRangeByComponent(slug: string, diameter?: number) {
+  const grouped = new Map<string, Product[]>()
+  for (const product of await partsForRange(slug, diameter)) {
+    const bucket = grouped.get(product.component)
+    if (bucket) bucket.push(product)
+    else grouped.set(product.component, [product])
+  }
+
+  const known = await components()
+  return [...grouped].map(([component, parts]) => ({
+    component: known.find((c) => c.slug === component)
+      ?? { slug: component, name: parts[0].componentLabel, purpose: "" },
+    parts,
+  }))
+}
+
+/** How many orderable SKUs sit behind a finish, counting variants separately. */
+export async function skuCountForRange(slug: string) {
+  return (await partsForRange(slug)).reduce((total, product) => total + skusOf(product), 0)
 }

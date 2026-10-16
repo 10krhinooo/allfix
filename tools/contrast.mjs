@@ -29,7 +29,13 @@ const STYLESHEET = resolve(ROOT, "src/app/globals.css")
  * would mean resolving `var()` chains that point back at what we are reading.
  */
 function blockFor(css, selector) {
-  const start = css.indexOf(selector)
+  /*
+   * Matched with its opening brace, because the file talks about its own
+   * selectors in prose. The comment at the top of globals.css explains why
+   * `@theme inline` is used, and a bare indexOf finds that sentence first, then
+   * counts braces from inside a comment and returns whatever block it lands in.
+   */
+  const start = css.indexOf(`${selector} {`)
   if (start === -1) throw new Error(`no ${selector} block in globals.css`)
 
   let depth = 0
@@ -69,6 +75,25 @@ export function palette(...selectors) {
     }
   }
   return resolved
+}
+
+/**
+ * The colour utilities Tailwind will actually generate, as bare names.
+ *
+ * `@theme inline` turns `--color-deep-mute` into `text-deep-mute`, `bg-deep-mute`
+ * and the rest. A class naming a token that was never declared is not an error
+ * anywhere: Tailwind emits nothing, the element silently inherits, and the first
+ * anybody knows is grey text on a near-black tile in a screenshot. Neither
+ * TypeScript nor ESLint can see it, and axe only catches it if that exact screen
+ * is swept. So the list is read from the stylesheet and checked against usage.
+ */
+export function colourNames() {
+  const css = readFileSync(STYLESHEET, "utf8")
+  const names = new Set()
+  for (const [name] of declarations(blockFor(css, "@theme inline"))) {
+    if (name.startsWith("--color-")) names.add(name.slice("--color-".length))
+  }
+  return names
 }
 
 /** `#rgb`, `#rrggbb`, or a bare `rgb(r g b)`. Enough for what the file holds. */

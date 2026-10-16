@@ -61,3 +61,59 @@ test.describe("the orders desk", () => {
     await expect(page.getByText(/Nothing moved here is kept/)).toBeVisible()
   })
 })
+
+/**
+ * Finding an order again, without an account.
+ *
+ * The checkout ends by telling somebody to keep their reference, and until this
+ * screen there was nowhere to use one. Both halves are asked for on purpose: a
+ * reference is a short sequence, and the phone number the order was placed on
+ * is what makes it somebody's own order rather than anybody's.
+ *
+ * Unwired there are no records to search, and the screen says exactly that
+ * rather than answering "not found", which would be a lie about a reference
+ * that may well be real. That is the case CI runs, so it is the case asserted.
+ */
+test.describe("finding an order", () => {
+  test("it asks for both halves before it will look", async ({ page }) => {
+    await page.goto("/orders")
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(/find your order/i)
+
+    const find = page.getByRole("button", { name: /find my order/i })
+    await expect(find).toBeDisabled()
+
+    await page.getByLabel("Your reference").fill("AF-2327")
+    await expect(find).toBeDisabled()
+
+    await page.getByLabel("The number it was placed on").fill("0712345678")
+    await expect(find).toBeEnabled()
+  })
+
+  test("with no records it says so, rather than saying not found", async ({ page }) => {
+    await page.goto("/orders")
+    await page.getByLabel("Your reference").fill("AF-2327")
+    await page.getByLabel("The number it was placed on").fill("0712345678")
+    await page.getByRole("button", { name: /find my order/i }).click()
+
+    // Filtered, because Next's own route announcer is an empty alert on every page.
+    await expect(
+      page.getByRole("alert").filter({ hasText: /not connected to them yet/i }),
+    ).toBeVisible()
+  })
+
+  test("nobody's order is worth indexing", async ({ page }) => {
+    await page.goto("/orders")
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content",
+      /noindex/,
+    )
+  })
+
+  test("the reference typed goes with the question to WhatsApp", async ({ page }) => {
+    await page.goto("/orders")
+    await page.getByLabel("Your reference").fill("af-2327")
+
+    const asking = page.getByRole("link", { name: /ask on whatsapp/i })
+    await expect(asking).toHaveAttribute("href", /AF-2327/)
+  })
+})

@@ -206,7 +206,7 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
       {/* --------------------------------------------------- bulk entry */}
       {groups.length > 0 && (
         <div className="shell pb-14">
-          <BulkAdd parts={bulk} system={system.shortName} />
+          <BulkAdd parts={bulk} label={system.shortName} />
         </div>
       )}
 

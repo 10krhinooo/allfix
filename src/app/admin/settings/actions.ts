@@ -12,6 +12,7 @@ import {
   type EmailSettings,
   type SocialKind,
 } from "@/lib/settings"
+import { retryOhalaEvent } from "@/lib/admin/ohala-service"
 import { saveSettings, type SaveResult } from "@/lib/settings-service"
 
 /**
@@ -82,4 +83,27 @@ export async function save(next: {
    */
   if (result.ok) updateTag("settings")
   return result
+}
+
+/**
+ * Putting a given-up Ohala event back in the queue.
+ *
+ * The same third check the save above makes, at the top of the function and for
+ * the same reason: a Server Function is not a route in the matcher chain, so the
+ * proxy never sees this call and the capability has to be read from the cookie
+ * here. This one is worth guarding as hard as the save is, because it reaches a
+ * console endpoint that is admin's on the other side too and a retry storm is
+ * how an integration gets an account locked.
+ */
+export async function retryEvent(id: number): Promise<{ ok: boolean; message?: string }> {
+  const desk = await readDesk()
+  if (!desk || !capabilities(desk.role).settings) {
+    return {
+      ok: false,
+      message: "Only the owner can change what the shop sends to the back office.",
+    }
+  }
+
+  const answer = await retryOhalaEvent(id)
+  return answer.ok ? { ok: true } : { ok: false, message: answer.message }
 }

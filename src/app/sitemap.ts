@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next"
-import { products, systems } from "@/lib/catalogue"
+import { products, ranges, systems } from "@/lib/catalogue"
 import { SITE } from "@/lib/format"
 import { services } from "@/lib/services"
 import { CATEGORIES } from "@/lib/shop"
@@ -20,6 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: at("/"), changeFrequency: "weekly", priority: 1 },
     { url: at("/systems"), changeFrequency: "monthly", priority: 0.9 },
+    { url: at("/ranges"), changeFrequency: "monthly", priority: 0.9 },
     { url: at("/shop"), changeFrequency: "weekly", priority: 0.9 },
     { url: at("/build"), changeFrequency: "monthly", priority: 0.8 },
     { url: at("/services"), changeFrequency: "monthly", priority: 0.7 },
@@ -45,6 +46,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
+  // The rod half of the same idea. A finish is what a rod is chosen by, so it
+  // is a page for the same reason a rail section is one.
+  const rangeRoutes: MetadataRoute.Sitemap = (await ranges()).map((range) => ({
+    url: at(`/ranges/${range.slug}`),
+    changeFrequency: "monthly",
+    priority: 0.8,
+  }))
+
   const serviceRoutes: MetadataRoute.Sitemap = services.map((service) => ({
     url: at(`/services/${service.slug}`),
     changeFrequency: "monthly",
@@ -61,6 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...staticRoutes,
     ...categoryRoutes,
     ...systemRoutes,
+    ...rangeRoutes,
     ...serviceRoutes,
     ...productRoutes,
   ].map((entry) => ({ ...entry, lastModified: now }))

@@ -48,9 +48,14 @@ export async function Footer() {
           <ul className="mt-3 space-y-1.5">
             {[
               ["/shop", "All parts"],
+              ["/ranges", "Rod finishes"],
               ["/build", "Build a rail"],
               ["/services", "Installation & curtaining"],
               ["/trade", "Trade accounts"],
+              // Linked here rather than only from the checkout's confirmation,
+              // because the moment somebody needs it is days later, on a phone,
+              // with the reference written on the back of something.
+              ["/orders", "Find your order"],
             ].map(([href, label]) => (
               <li key={href}>
                 <Link href={href} className="text-sm text-slate hover:text-ink">{label}</Link>

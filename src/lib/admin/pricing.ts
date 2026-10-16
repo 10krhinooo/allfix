@@ -58,20 +58,24 @@ export function toPrice(raw: string): number | null {
   return Math.round(Number(trimmed) * 100) / 100
 }
 
+/**
+ * Whether an edit is worth a write, and so worth a line of history.
+ *
+ * Every field the form can change has to be compared here. The trade price is
+ * in the block and was not in this comparison, so editing it alone answered
+ * "nothing changed" and saved nothing at all.
+ */
 export function samePrice(a: PriceEdit, b: PriceEdit) {
-  return a.priceKes === b.priceKes && a.priceBasis === b.priceBasis && a.priceNote === b.priceNote
+  return (
+    a.priceKes === b.priceKes &&
+    a.priceBasis === b.priceBasis &&
+    a.priceNote === b.priceNote &&
+    a.tradePriceKes === b.tradePriceKes
+  )
 }
 
 /**
- * What a part costs right now: the console's edit if there is one, otherwise
- * the figure the migration wrote.
- *
- * Every screen reads a price through this rather than off the row, so an edit
- * made on the worksheet shows on the counter's totals in the same breath. When
- * the backend lands, the override disappears and this returns the row.
- */
-/**
- * A part's pricing block, as three fields rather than a row.
+ * A part's pricing block, as fields rather than a row.
  *
  * There used to be an overlay of unsaved edits held in this browser and this
  * function chose between it and the catalogue. There is no overlay any more: a
@@ -81,14 +85,22 @@ export interface PriceEdit {
   priceKes: number | null
   priceBasis: PriceBasis
   priceNote: string | null
+  /** Blank means the trade rate comes off list, in `tiers.ts`, rather than 0. */
+  tradePriceKes: number | null
 }
 
 export function currentPrice(row: {
   priceKes: number | null
   priceBasis: PriceBasis
   priceNote: string | null
+  tradePriceKes?: number | null
 }): PriceEdit {
-  return { priceKes: row.priceKes, priceBasis: row.priceBasis, priceNote: row.priceNote }
+  return {
+    priceKes: row.priceKes,
+    priceBasis: row.priceBasis,
+    priceNote: row.priceNote,
+    tradePriceKes: row.tradePriceKes ?? null,
+  }
 }
 
 export function isSellable(edit: PriceEdit) {
