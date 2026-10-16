@@ -36,7 +36,7 @@ export default async function OrdersPage() {
           title="No orders yet"
           body="When you buy something, it appears here and you can follow it from the counter to your door."
           action={
-            <Link href="/shop" className="text-sm font-medium text-oxblood hover:underline">
+            <Link href="/shop" className="text-sm font-medium text-terra hover:underline">
               Browse the shop
             </Link>
           }
@@ -62,7 +62,7 @@ export default async function OrdersPage() {
                       {!isOpen(order) && order.stage !== "cancelled" && (
                         <a
                           href={again}
-                          className="callout text-oxblood transition-colors hover:text-oxblood-deep"
+                          className="callout text-terra transition-colors hover:text-terra-deep"
                         >
                           Order these again
                         </a>
@@ -79,7 +79,7 @@ export default async function OrdersPage() {
                           <Link
                             key={kind}
                             href={`/account/orders/${order.reference}/${kind}`}
-                            className="callout text-oxblood transition-colors hover:text-oxblood-deep"
+                            className="callout text-terra transition-colors hover:text-terra-deep"
                           >
                             {SHEETS[kind].title}
                           </Link>

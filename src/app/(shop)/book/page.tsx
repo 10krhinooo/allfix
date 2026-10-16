@@ -36,7 +36,7 @@ export default function Book() {
 
         <aside className="border border-rule p-6">
           <p className="callout">Rather just call</p>
-          <a href={`tel:${SHOP.phoneIntl}`} className="mt-2 block font-mono text-lg text-oxblood">
+          <a href={`tel:${SHOP.phoneIntl}`} className="mt-2 block font-mono text-lg text-terra">
             {SHOP.phone}
           </a>
           <p className="mt-4 leading-relaxed text-slate">

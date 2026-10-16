@@ -145,13 +145,13 @@ export function YourDetails({
           <CardHeader title="Everything else" hint="Where the rest of it lives." />
           <ul className="mt-4 space-y-3 text-sm leading-relaxed text-slate">
             <li>
-              <Link href="/account/addresses" className="text-ink hover:text-oxblood">
+              <Link href="/account/addresses" className="text-ink hover:text-terra">
                 Your addresses
               </Link>{" "}
               are where we deliver to, and checkout reaches for the default.
             </li>
             <li>
-              <Link href="/account/orders" className="text-ink hover:text-oxblood">
+              <Link href="/account/orders" className="text-ink hover:text-terra">
                 Your orders
               </Link>{" "}
               carry their own receipts and delivery notes.

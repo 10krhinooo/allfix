@@ -203,13 +203,13 @@ export function PriceRow({
                 two navigations in the drawer read as captions. */}
             <Link
               href={`/admin/parts/${row.slug}`}
-              className="text-xs font-medium text-oxblood hover:underline"
+              className="text-xs font-medium text-terra hover:underline"
             >
               Alter this part
             </Link>
             <Link
               href={`/product/${row.slug}`}
-              className="text-xs font-medium text-oxblood hover:underline"
+              className="text-xs font-medium text-terra hover:underline"
             >
               See it on the shop
             </Link>

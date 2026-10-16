@@ -261,7 +261,7 @@ export function Checkout({
                   value={way.value}
                   checked={settlement === way.value}
                   onChange={() => setSettlement(way.value)}
-                  className="mt-1 accent-oxblood"
+                  className="mt-1 accent-terra"
                 />
                 <span>
                   <span className="block font-medium text-ink">{way.label}</span>
@@ -287,7 +287,7 @@ export function Checkout({
                   name="address"
                   checked={addressId === address.id}
                   onChange={() => setAddressId(address.id)}
-                  className="mt-1 accent-oxblood"
+                  className="mt-1 accent-terra"
                 />
                 <span className="min-w-0">
                   <span className="block font-medium text-ink">{address.label}</span>
@@ -307,7 +307,7 @@ export function Checkout({
                 name="address"
                 checked={addressId === "collect"}
                 onChange={() => setAddressId("collect")}
-                className="mt-1 accent-oxblood"
+                className="mt-1 accent-terra"
               />
               <span>
                 <span className="block font-medium text-ink">Collect at the counter</span>
@@ -321,7 +321,7 @@ export function Checkout({
             <p className="mt-3 text-sm text-slate">
               <Link
                 href="/account/addresses"
-                className="text-oxblood underline underline-offset-4"
+                className="text-terra underline underline-offset-4"
               >
                 Manage your addresses
               </Link>

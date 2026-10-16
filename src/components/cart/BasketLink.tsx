@@ -23,7 +23,7 @@ export function BasketLink({ className = "" }: { className?: string }) {
     <Link
       href="/cart"
       aria-label={count === 0 ? "Basket, empty" : `Basket, ${count} ${count === 1 ? "part" : "parts"}`}
-      className={`relative inline-flex h-10 w-10 items-center justify-center rounded-sm transition-colors hover:text-oxblood ${className}`}
+      className={`relative inline-flex h-10 w-10 items-center justify-center rounded-sm transition-colors hover:text-terra ${className}`}
     >
       <svg
         viewBox="0 0 24 24"

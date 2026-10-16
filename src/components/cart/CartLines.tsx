@@ -90,7 +90,7 @@ export function CartLines({
               {part ? (
                 <Link
                   href={`/product/${part.slug}`}
-                  className="font-medium text-ink hover:text-oxblood"
+                  className="font-medium text-ink hover:text-terra"
                 >
                   {part.name}
                 </Link>

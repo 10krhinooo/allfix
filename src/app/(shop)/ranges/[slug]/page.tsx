@@ -190,7 +190,7 @@ export default async function RangePage({ params }: { params: Promise<{ slug: st
                 need and we will confirm it from the shelf.
               </p>
               <p className="mt-4">
-                <a href={ask} className="font-medium text-oxblood underline underline-offset-4">
+                <a href={ask} className="font-medium text-terra underline underline-offset-4">
                   Ask on WhatsApp
                 </a>{" "}
                 <span className="text-mute">or call {SHOP.phone}</span>

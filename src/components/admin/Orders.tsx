@@ -193,7 +193,7 @@ export function Orders({
                       {order.customerPhone && (
                         <a
                           href={`tel:${order.customerPhone.replace(/\s/g, "")}`}
-                          className="font-mono text-xs text-oxblood hover:underline"
+                          className="font-mono text-xs text-terra hover:underline"
                         >
                           {order.customerPhone}
                         </a>

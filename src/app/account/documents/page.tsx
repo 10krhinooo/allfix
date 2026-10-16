@@ -37,7 +37,7 @@ export default async function DocumentsPage() {
           title="Nothing issued yet"
           body="A receipt is issued when an order is paid, and a proforma when you ask for one before paying."
           action={
-            <Link href="/account/orders" className="text-sm font-medium text-oxblood hover:underline">
+            <Link href="/account/orders" className="text-sm font-medium text-terra hover:underline">
               See your orders
             </Link>
           }
@@ -61,7 +61,7 @@ export default async function DocumentsPage() {
                   <Td>
                     <Link
                       href={`/account/documents/${document.reference}`}
-                      className="font-mono text-sm text-ink hover:text-oxblood"
+                      className="font-mono text-sm text-ink hover:text-terra"
                     >
                       {document.reference}
                     </Link>
@@ -83,7 +83,7 @@ export default async function DocumentsPage() {
                   <Td align="right">
                     <Link
                       href={`/account/documents/${document.reference}`}
-                      className="callout text-oxblood hover:text-oxblood-deep"
+                      className="callout text-terra hover:text-terra-deep"
                     >
                       Open
                     </Link>
@@ -99,7 +99,7 @@ export default async function DocumentsPage() {
               it?{" "}
               <a
                 href={whatsapp("Hello AllFix, could you check this document for me:")}
-                className="text-oxblood underline underline-offset-4"
+                className="text-terra underline underline-offset-4"
               >
                 Ask the counter
               </a>

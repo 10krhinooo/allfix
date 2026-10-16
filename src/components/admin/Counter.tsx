@@ -128,7 +128,7 @@ export function Counter({
                   <li key={row.slug} className="border-b border-rule last:border-b-0">
                     <Link
                       href={`/admin/parts?q=${encodeURIComponent(row.ref)}`}
-                      className="block py-3 transition-colors hover:text-oxblood"
+                      className="block py-3 transition-colors hover:text-terra"
                     >
                       <span className="flex items-baseline justify-between gap-4">
                         <span className="text-sm font-medium text-ink">{row.name}</span>
@@ -174,7 +174,7 @@ export function Counter({
                   <li key={enquiry.id} className="border-b border-rule last:border-b-0">
                     <Link
                       href={`/admin/enquiries#${enquiry.id}`}
-                      className="block py-3 transition-colors hover:text-oxblood"
+                      className="block py-3 transition-colors hover:text-terra"
                     >
                       <span className="flex items-baseline justify-between gap-4">
                         <span className="text-sm font-medium text-ink">{enquiry.name}</span>

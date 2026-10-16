@@ -197,7 +197,7 @@ export default async function Home() {
                 Aluminium track from the slim #10 to the heavy #28, bendable for a bay,
                 roller and zebra blinds, and every part that fits them.
               </p>
-              <p className="mt-4 text-sm font-medium text-oxblood">Browse rails</p>
+              <p className="mt-4 text-sm font-medium text-terra">Browse rails</p>
             </Link>
           </li>
 
@@ -209,7 +209,7 @@ export default async function Home() {
                 Poles in antique brass, black, copper and silver, with finials, rings and tie
                 backs to match. In 19, 25 and 28mm.
               </p>
-              <p className="mt-4 text-sm font-medium text-oxblood">Browse the finishes</p>
+              <p className="mt-4 text-sm font-medium text-terra">Browse the finishes</p>
             </Link>
           </li>
 
@@ -221,7 +221,7 @@ export default async function Home() {
                 Curtains that open on a remote, a wall switch, an app or a schedule. Fitted to
                 a new track or to the one you already have.
               </p>
-              <p className="mt-4 text-sm font-medium text-oxblood">See the motorised range</p>
+              <p className="mt-4 text-sm font-medium text-terra">See the motorised range</p>
             </Link>
           </li>
         </ul>
@@ -308,7 +308,7 @@ export default async function Home() {
             >
               Book a measure-up
             </a>
-            <a href={`tel:${SHOP.phoneIntl}`} className="font-mono text-sm text-oxblood hover:underline">
+            <a href={`tel:${SHOP.phoneIntl}`} className="font-mono text-sm text-terra hover:underline">
               {SHOP.phone}
             </a>
           </div>

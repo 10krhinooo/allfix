@@ -41,7 +41,7 @@ export default async function TradeOrdersPage() {
           action={
             <Link
               href="/trade/account/quotes"
-              className="text-sm font-medium text-oxblood hover:underline"
+              className="text-sm font-medium text-terra hover:underline"
             >
               Price a new list
             </Link>
@@ -58,7 +58,7 @@ export default async function TradeOrdersPage() {
       <p className="mt-6 max-w-2xl text-xs leading-relaxed text-slate">
         The stages are {Object.values(ORDER_STAGE).join(", ").toLowerCase()}. They are set at the
         counter, so if one looks wrong it is worth a call rather than a wait:{" "}
-        <a href={`tel:${SHOP.phoneIntl}`} className="text-oxblood underline underline-offset-4">
+        <a href={`tel:${SHOP.phoneIntl}`} className="text-terra underline underline-offset-4">
           {SHOP.phone}
         </a>
         .

@@ -152,6 +152,32 @@
   --deep-focus: #e08a5f;
 
   /*
+   * The stage: the showroom after dark.
+   *
+   * The workshop is where a part is read about and the stage is where it is
+   * looked at: the hero, the motorised band and every frame a photograph sits
+   * in. Darker and warmer than `--deep`, because 56 of the 62 photographs are
+   * white hardware on a black field, and a photograph blended onto this ground
+   * loses its edge entirely, so the part stands in the room rather than in a
+   * tile. `--shot` stays the photographs' own field for anything that is not
+   * blended.
+   *
+   * Brass is lighter here than on the wall for the same reason the wall's brass
+   * is darker than the metal: it is read as text on both, and a value tuned for
+   * one ground fails the other.
+   */
+  --stage: #0d0b09;
+  --stage-2: #15120e;
+  --stage-3: #1d1913;
+  --stage-ink: #efe6d6;
+  --stage-mute: #a99b86;
+  --stage-brass: #c9a45c;
+  --stage-rule: rgb(239 230 214 / 0.14);
+  --stage-rule-strong: rgb(239 230 214 / 0.26);
+  /* The ring on the stage: brass, the one warm light in a dark room. */
+  --stage-focus: #c9a45c;
+
+  /*
    * Where a photograph performs.
    *
    * Sampled from the photographs' own field: 56 of the 62 shots are white
@@ -220,6 +246,14 @@
   --color-deep-ink: var(--deep-ink);
   --color-deep-mute: var(--deep-mute);
   --color-deep-brass: var(--deep-brass);
+  --color-stage: var(--stage);
+  --color-stage-2: var(--stage-2);
+  --color-stage-3: var(--stage-3);
+  --color-stage-ink: var(--stage-ink);
+  --color-stage-mute: var(--stage-mute);
+  --color-stage-brass: var(--stage-brass);
+  --color-stage-rule: var(--stage-rule);
+  --color-stage-rule-strong: var(--stage-rule-strong);
   --color-shot: var(--shot);
   --color-sheet: var(--sheet);
   --color-sheet-ink: var(--sheet-ink);
@@ -389,6 +423,108 @@ body {
 }
 
 .deep .callout { color: var(--deep-mute); }
+
+/*
+ * A stage: the showroom after dark, declared the way `.deep` is so a hairline,
+ * a ring and a callout drawn on it are right on arrival.
+ *
+ * Its headings set Fraunces light where the wall sets it at 500, with one word
+ * in brass italic. On the wall a heading casts the noon shadow and wants the
+ * weight to cast it; in a dark room nothing casts, and the heavy cut reads as
+ * shouting.
+ */
+.stage {
+  background: var(--stage);
+  color: var(--stage-ink);
+  --hairline: var(--stage-rule);
+  --focus: var(--stage-focus);
+}
+
+.stage .callout { color: var(--stage-brass); }
+
+.stage :is(h1, h2).display-xl,
+.stage :is(h1, h2).display-lg {
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+.stage :is(h1, h2) em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--stage-brass);
+}
+
+/*
+ * The seams between the two rooms.
+ *
+ * The rail hangs above a stage: a track drawn in section with its runners on
+ * the 28px drafting grid, so the paper above it reads as the wall the stage is
+ * fixed to. The hem hangs below one: folds of the stage's own colour scalloped
+ * onto the paper, on the same grid. Either way the page changes room at a
+ * curtain, which is the one thing the shop sells everywhere, rather than at a
+ * hard colour cut.
+ */
+.rail-seam {
+  position: relative;
+  height: 24px;
+}
+
+.rail-seam::before {
+  content: "";
+  position: absolute;
+  inset: 4px 0 auto;
+  height: 8px;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--brass);
+  background: linear-gradient(to bottom, var(--panel), var(--rule));
+}
+
+.rail-seam::after {
+  content: "";
+  position: absolute;
+  inset: 13px 0 0;
+  background: repeating-linear-gradient(
+    to right,
+    transparent 0 13px,
+    var(--ink) 13px 14px,
+    transparent 14px 28px
+  );
+}
+
+.hem {
+  position: relative;
+  z-index: 1;
+  height: 14px;
+  background: radial-gradient(ellipse 14px 14px at 14px 0, var(--stage) 0 92%, transparent 100%) 0 0 / 28px 14px
+    repeat-x;
+}
+
+/*
+ * A photograph's frame on the stage.
+ *
+ * `lighten` keeps whichever of the photograph and the ground is lighter, pixel
+ * by pixel, so a black field becomes the stage and the white hardware stays
+ * itself. It needs `isolation` on the frame, or it blends with whatever sits
+ * behind the frame on the page instead, and nothing inside may keep a
+ * transform once an animation ends, for the same reason. The six white field
+ * shots stay light tiles, which is the honest result: there is no edge to lose.
+ */
+.frame {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--stage);
+}
+
+.frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(ellipse 60% 48% at 50% 42%, rgb(232 200 140 / 0.09), transparent 70%);
+}
+
+.frame img { mix-blend-mode: lighten; }
 
 
 /*

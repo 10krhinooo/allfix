@@ -160,7 +160,7 @@ export function Configurator({
               setInput((prev) => ({ ...prev, widthM: Number(event.target.value) }))
             }
             aria-label="Window width slider"
-            className="mt-4 w-full accent-oxblood"
+            className="mt-4 w-full accent-terra"
           />
           <p className="mt-2 callout">
             {WIDTH_MIN} m to {WIDTH_MAX} m. Measure the finished track run, not the glass

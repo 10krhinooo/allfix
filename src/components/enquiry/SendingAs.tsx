@@ -23,7 +23,7 @@ export function SendingAs({ contact, onChange }: { contact: Contact; onChange: (
         <button
           type="button"
           onClick={onChange}
-          className="text-xs font-medium text-oxblood underline underline-offset-2 hover:no-underline"
+          className="text-xs font-medium text-terra underline underline-offset-2 hover:no-underline"
         >
           Use different details
         </button>

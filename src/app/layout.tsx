@@ -17,6 +17,9 @@ const fraunces = Fraunces({
   variable: "--font-fraunces",
   display: "swap",
   axes: ["SOFT", "WONK", "opsz"],
+  // The italic is drawn, not slanted: a stage heading sets one word in it, and a
+  // browser faking the slope from the roman is the one place that would show.
+  style: ["normal", "italic"],
 })
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],

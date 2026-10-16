@@ -95,7 +95,7 @@ export default function Privacy() {
           <h2 className="font-display text-lg font-semibold tracking-tight text-ink">Contact us</h2>
           <p className="mt-3">
             {SHOP.name}, {SHOP.street}, {SHOP.area}.{" "}
-            <a href={`tel:${SHOP.phoneIntl}`} className="font-mono text-oxblood hover:underline">
+            <a href={`tel:${SHOP.phoneIntl}`} className="font-mono text-terra hover:underline">
               {SHOP.phone}
             </a>
             .
@@ -104,7 +104,7 @@ export default function Privacy() {
 
         <p className="text-sm">
           See also our{" "}
-          <Link href="/terms" className="text-oxblood underline underline-offset-4">
+          <Link href="/terms" className="text-terra underline underline-offset-4">
             terms
           </Link>
           .

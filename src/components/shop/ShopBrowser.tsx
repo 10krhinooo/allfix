@@ -257,7 +257,7 @@ export function ShopBrowser({ data, category }: { data: ShopData; category?: Cat
       </Group>
 
       {active > 0 && (
-        <button onClick={clear} className="text-sm text-oxblood underline underline-offset-4">
+        <button onClick={clear} className="text-sm text-terra underline underline-offset-4">
           Clear all filters
         </button>
       )}

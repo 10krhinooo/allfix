@@ -61,6 +61,18 @@ const TEXT: [string, string, string][] = [
   ["--deep-ink", "--deep", "text on a deep ground"],
   ["--deep-mute", "--deep", "the callout on a deep ground"],
   ["--deep-brass", "--deep", "brass on a deep ground"],
+  // The stage is the darkest ground on the site and carries the most type: the
+  // hero, the motorised band, the product page's gallery. Each of its three
+  // grounds is drawn under each of its three inks somewhere.
+  ["--stage-ink", "--stage", "text on the stage"],
+  ["--stage-ink", "--stage-3", "text on the stage's lifted panel"],
+  ["--stage-mute", "--stage", "secondary text on the stage"],
+  ["--stage-mute", "--stage-2", "secondary text on the stage's second ground"],
+  ["--stage-mute", "--stage-3", "secondary text on the stage's lifted panel"],
+  ["--stage-brass", "--stage", "the callout and the italic word on the stage"],
+  ["--stage-brass", "--stage-3", "brass on the stage's lifted panel"],
+  // The stage's own button: its dark written on a brass fill, the reverse pair.
+  ["--stage", "--stage-brass", "the stage's primary action"],
   // The document, which is printed and so is fixed light whatever else is.
   ["--sheet-ink", "--sheet", "a printed document"],
   ["--sheet-mute", "--sheet", "the small print on one"],
@@ -88,6 +100,8 @@ const CONTROLS: [string, string, string][] = [
   ["--terra", "--paper", "the focus ring on the wall"],
   ["--terra", "--panel", "the focus ring on a panel"],
   ["--deep-focus", "--deep", "the focus ring on a deep ground"],
+  ["--stage-focus", "--stage", "the focus ring on the stage"],
+  ["--stage-focus", "--stage-3", "the focus ring on the stage's lifted panel"],
 ]
 
 function value(from: Map<string, string>, token: string): string {
@@ -171,6 +185,14 @@ describe("the ring is wired to the ground it is drawn on", () => {
       css,
       /:focus-visible\s*{[^}]*outline:[^;]*var\(--focus/,
       "the ring is hardcoded, so a dark region cannot correct it",
+    )
+  })
+
+  test("a stage sets one", () => {
+    assert.match(
+      css,
+      /\.stage\s*{[^}]*--focus:\s*var\(--stage-focus\)/,
+      "a stage does not redirect the ring, so it falls back to the wall's terracotta at under 3:1",
     )
   })
 
