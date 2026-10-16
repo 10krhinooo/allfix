@@ -7,7 +7,7 @@ import dark from "../../public/brand/allfix-logo-dark.png"
  *
  * The wordmark is oxblood, which reads on the plaster ground and all but
  * disappears on a deep one, so a variant with the red lifted ships alongside it
- * and `on="deep"` asks for it. The brass is untouched in both.
+ * and `on="deep"` or `on="stage"` asks for it. The brass is untouched in both.
  *
  * There used to be a third case, a pair of images swapped in CSS by the theme,
  * because the ground could change under the same logo. There is one ground now,
@@ -32,9 +32,9 @@ export function Logo({
   priority?: boolean
   alt?: string
   /** Which ground it is being drawn on. */
-  on?: "paper" | "deep"
+  on?: "paper" | "deep" | "stage"
 }) {
-  const source = on === "deep" ? dark : light
+  const source = on === "paper" ? light : dark
   const width = Math.round((light.width / light.height) * height)
 
   return <Image src={source} alt={alt} width={width} height={height} priority={priority} />

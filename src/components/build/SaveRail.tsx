@@ -48,7 +48,7 @@ export function SaveRail({
     return (
       <p className="flex flex-wrap items-center gap-3 text-sm text-ink">
         Saved as <span className="font-medium">{name}</span>.
-        <Link href="/account/rails" className="callout text-oxblood hover:text-oxblood-deep">
+        <Link href="/account/rails" className="callout text-terra hover:text-terra-deep">
           Your saved rails
         </Link>
         <button
@@ -135,7 +135,7 @@ export function SaveRail({
       {!signedIn && (
         <p className="text-xs leading-relaxed text-mute">
           Kept in this browser.{" "}
-          <Link href="/sign-in?next=%2Fbuild" className="text-oxblood underline underline-offset-4">
+          <Link href="/sign-in?next=%2Fbuild" className="text-terra underline underline-offset-4">
             Sign in
           </Link>{" "}
           and it goes on your account instead.

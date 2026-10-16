@@ -74,7 +74,7 @@ export default async function Ranges() {
       <p className="mt-10 max-w-2xl text-sm leading-relaxed text-slate">
         Rails are a separate question and browse on their own axis: nothing that fits a #20 track
         fits a 28mm pole.{" "}
-        <Link href="/systems" className="font-medium text-oxblood underline underline-offset-4">
+        <Link href="/systems" className="font-medium text-terra underline underline-offset-4">
           Compare the rail sections
         </Link>{" "}
         <span className="text-mute">

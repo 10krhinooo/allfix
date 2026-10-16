@@ -255,7 +255,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             system && (
               <p className="mt-7 border-t border-rule pt-5 text-sm leading-relaxed text-slate">
                 Fits the{" "}
-                <Link href={`/systems/${system.slug}`} className="text-oxblood underline underline-offset-4">
+                <Link href={`/systems/${system.slug}`} className="text-terra underline underline-offset-4">
                   {system.name}
                 </Link>{" "}
                 rail system.
@@ -266,7 +266,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           {range && (
             <p className="mt-7 border-t border-rule pt-5 text-sm leading-relaxed text-slate">
               Part of the{" "}
-              <Link href={`/shop/rod?range=${range.slug}`} className="text-oxblood underline underline-offset-4">
+              <Link href={`/shop/rod?range=${range.slug}`} className="text-terra underline underline-offset-4">
                 {range.name}
               </Link>{" "}
               rod range

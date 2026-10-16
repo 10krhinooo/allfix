@@ -147,7 +147,7 @@ export default async function TradeAccountPage() {
             href={whatsapp(`Trade account: ${desk.name}.`)}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-mono text-sm text-oxblood hover:underline"
+            className="font-mono text-sm text-terra hover:underline"
           >
             Talk to the counter
           </a>

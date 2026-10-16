@@ -60,7 +60,7 @@ export function Rails({ seed }: { seed: Seed }) {
               ))}
             </dl>
             <div className="mt-4 flex flex-wrap gap-4 border-t border-rule pt-3">
-              <Link href={reopen(rail)} className="callout text-oxblood hover:text-oxblood-deep">
+              <Link href={reopen(rail)} className="callout text-terra hover:text-terra-deep">
                 Open in the configurator
               </Link>
               <button

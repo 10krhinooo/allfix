@@ -75,7 +75,7 @@ export function MobileNav({ items }: { items: { href: string; label: string }[] 
             >
               Your account
             </Link>
-            <a href={`tel:${SHOP.phoneIntl}`} className="py-3.5 font-mono text-base text-oxblood">
+            <a href={`tel:${SHOP.phoneIntl}`} className="py-3.5 font-mono text-base text-terra">
               {SHOP.phone}
             </a>
           </nav>

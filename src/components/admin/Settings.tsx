@@ -228,7 +228,7 @@ export function Settings({ settings }: { settings: ShopSettings }) {
                       })
                     }
                     disabled={saving}
-                    className="mt-1 h-4 w-4 accent-oxblood"
+                    className="mt-1 h-4 w-4 accent-terra"
                   />
                   <span>
                     <span className="block text-sm font-medium text-ink">{label}</span>

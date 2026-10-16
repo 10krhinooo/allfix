@@ -196,7 +196,7 @@ export function Addresses({ seed }: { seed: Seed }) {
               type="checkbox"
               checked={draft.isDefault}
               onChange={(event) => setDraft({ ...draft, isDefault: event.target.checked })}
-              className="h-4 w-4 accent-oxblood"
+              className="h-4 w-4 accent-terra"
             />
             <span className="text-sm text-slate">Deliver here unless I say otherwise</span>
           </label>

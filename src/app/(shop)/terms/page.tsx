@@ -105,7 +105,7 @@ export default function Terms() {
           <p className="mt-3">
             Trade pricing is for approved accounts and is not to be passed on as our retail price. We
             may set or change a tier, or close an account, at our discretion.{" "}
-            <Link href="/trade" className="text-oxblood underline underline-offset-4">
+            <Link href="/trade" className="text-terra underline underline-offset-4">
               See the trade page
             </Link>{" "}
             to apply.
@@ -127,7 +127,7 @@ export default function Terms() {
           <h2 className="font-display text-lg font-semibold tracking-tight text-ink">Contact us</h2>
           <p className="mt-3">
             {SHOP.name}, {SHOP.street}, {SHOP.area}.{" "}
-            <a href={`tel:${SHOP.phoneIntl}`} className="font-mono text-oxblood hover:underline">
+            <a href={`tel:${SHOP.phoneIntl}`} className="font-mono text-terra hover:underline">
               {SHOP.phone}
             </a>
             .
@@ -136,7 +136,7 @@ export default function Terms() {
 
         <p className="text-sm">
           See also our{" "}
-          <Link href="/privacy" className="text-oxblood underline underline-offset-4">
+          <Link href="/privacy" className="text-terra underline underline-offset-4">
             privacy policy
           </Link>
           .

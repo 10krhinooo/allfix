@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-type Variant = "primary" | "secondary" | "ghost" | "whatsapp"
+type Variant = "primary" | "secondary" | "ghost" | "whatsapp" | "brass" | "stage"
 
 /*
  * Terracotta carries the actions and oxblood is kept for what has gone wrong.
@@ -15,6 +15,11 @@ const STYLES: Record<Variant, string> = {
   secondary: "border border-ink text-ink hover:bg-ink hover:text-paper",
   ghost: "text-slate hover:text-ink underline underline-offset-4",
   whatsapp: "sunlit sunlit-near bg-[#1d8649] text-white hover:bg-[#15703c]",
+  // On a stage nothing casts a shadow, so neither of these stands off the wall.
+  // Brass is the stage's primary action and carries the stage's own dark as
+  // its text; `stage` is the quiet outlined one beside it.
+  brass: "bg-stage-brass text-stage hover:bg-stage-ink",
+  stage: "border border-stage-rule-strong text-stage-ink hover:border-stage-ink",
 }
 
 /*
@@ -71,11 +76,15 @@ export function Breadcrumbs({
   tone = "paper",
 }: {
   trail: { href?: string; label: string }[]
-  tone?: "paper" | "band"
+  tone?: "paper" | "band" | "stage"
 }) {
-  const link = tone === "band" ? "text-band-mute hover:text-band-ink" : "hover:text-ink"
-  const here = tone === "band" ? "text-white" : "text-ink"
-  const divider = tone === "band" ? "text-band-mute" : ""
+  const link = {
+    paper: "hover:text-ink",
+    band: "text-band-mute hover:text-band-ink",
+    stage: "text-stage-mute hover:text-stage-ink",
+  }[tone]
+  const here = { paper: "text-ink", band: "text-white", stage: "text-stage-ink" }[tone]
+  const divider = { paper: "", band: "text-band-mute", stage: "text-stage-mute" }[tone]
 
   return (
     <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5">

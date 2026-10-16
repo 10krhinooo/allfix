@@ -72,7 +72,7 @@ export function Figure({
         <dl>{body}</dl>
         <Link
           href={href}
-          className="mt-3 inline-block text-xs font-medium text-oxblood hover:underline"
+          className="mt-3 inline-block text-xs font-medium text-terra hover:underline"
         >
           {/* Named for where it goes, so a screen reader hears four distinct
               destinations rather than four identical "read more" links. */}

@@ -61,7 +61,7 @@ export default function Services() {
             >
               <WhatsAppIcon /> Get a free quote
             </a>
-            <a href={`tel:${SHOP.phoneIntl}`} className="font-mono text-sm text-oxblood hover:underline">
+            <a href={`tel:${SHOP.phoneIntl}`} className="font-mono text-sm text-terra hover:underline">
               or call {SHOP.phone}
             </a>
           </div>
@@ -94,7 +94,7 @@ export default function Services() {
                   ))}
                 </ul>
 
-                <span className="mt-auto pt-6 text-sm font-medium text-oxblood">
+                <span className="mt-auto pt-6 text-sm font-medium text-terra">
                   Read more
                   <span aria-hidden="true" className="ml-1 inline-block transition-transform group-hover:translate-x-0.5">
                     &rarr;
@@ -167,7 +167,7 @@ export default function Services() {
               The full range is on the shelf. Bring your offcut and we will match the section across
               the counter.
             </p>
-            <a href={`tel:${SHOP.phoneIntl}`} className="mt-5 inline-block font-mono text-lg text-oxblood">
+            <a href={`tel:${SHOP.phoneIntl}`} className="mt-5 inline-block font-mono text-lg text-terra">
               {SHOP.phone}
             </a>
           </div>

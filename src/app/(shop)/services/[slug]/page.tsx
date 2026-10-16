@@ -105,7 +105,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
                   {service.action.label}
                 </Link>
               )}
-              <a href={`tel:${SHOP.phoneIntl}`} className="font-mono text-sm text-oxblood hover:underline">
+              <a href={`tel:${SHOP.phoneIntl}`} className="font-mono text-sm text-terra hover:underline">
                 or call {SHOP.phone}
               </a>
             </div>
@@ -148,7 +148,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
                       </span>
                       <span className="mt-0.5 block text-sm text-slate">{entry.lead}</span>
                     </span>
-                    <span aria-hidden="true" className="text-oxblood transition-transform group-hover:translate-x-0.5">
+                    <span aria-hidden="true" className="text-terra transition-transform group-hover:translate-x-0.5">
                       &rarr;
                     </span>
                   </Link>
@@ -162,7 +162,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
               </p>
               <Link
                 href="/book"
-                className="mt-3 inline-block text-sm font-medium text-oxblood underline underline-offset-4"
+                className="mt-3 inline-block text-sm font-medium text-terra underline underline-offset-4"
               >
                 Book a visit &rarr;
               </Link>
