@@ -1,0 +1,24 @@
+#!/bin/sh
+# Everything the CI checks job ran, run before anything leaves the machine.
+#
+# The browser suite is opt in (ALLFIX_PUSH_E2E=1 git push) because it builds the
+# app and takes minutes, which is a cost worth paying before a merge and not on
+# every push of a work in progress branch.
+set -e
+
+if [ ! -d node_modules ]; then
+  echo "pre-push: node_modules is missing, run npm ci first." >&2
+  exit 1
+fi
+
+npm run lint --silent
+npm run typecheck --silent
+npm test --silent
+
+# A wrong SKU prefix silently drops a part, so the migration answers for itself.
+python3 -m unittest discover -s tools/migrate -t tools/migrate -q
+
+if [ "$ALLFIX_PUSH_E2E" = "1" ]; then
+  npm run build --silent
+  npm run test:e2e
+fi
